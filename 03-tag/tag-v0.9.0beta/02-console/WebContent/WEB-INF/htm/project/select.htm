@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Project List</title>
+<link rel="stylesheet" type="text/css" href="../../themes/general.css">
+<link rel="stylesheet" type="text/css" href="../../themes/icon.css">
+<link rel="stylesheet" type="text/css" href="../../themes/default/easyui.css">
+<script type="text/javascript" src="../../scripts/jquery-1.8.0.min.js"></script>
+<script type="text/javascript" src="../../scripts/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../../scripts/src/jquery.parser.js"></script>
+<script type="text/javascript" src="../../scripts/locale/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript" src="../../scripts/sessionExpriation.js"></script>
+<script type="text/javascript">
+$(function(){
+	//双击得到的查询结果的某一行后调用view()函数
+	$('#query_result').datagrid({//easyui的函数，数据表格，也就是查看选中的那一行，跳转至view()函数
+		onDblClickRow: function(rowIndex, rowData){//绑定表格单击事件，当用户双击一行时触发，参数包括： rowIndex：被双击行的索引，从 0 开始。rowData：被双击行对应的记录。
+			view(rowData["proId"]);
+		}
+	});
+	var page = $('#query_result').datagrid('getPager');	//得到这些数据，用datagrid 做分页显示的时候datagrid分页 有一个附加的分页控件，只需后台获取分页控件自动提交的两个参数rows每页显示的记录数和page;//当前第几页
+	//然后读取相应页数的记录，和总记录数total一块返回即可
+	//点击查询按钮
+	$('#btn_query').bind('click', function(){
+		//在这里，如果日期控件没有选择，那么，。。。。
+		//点查询钮查询时总是以第一页开始 
+		$(page).pagination('select', 1);//主要是用来做分页的，选择一个新页面，从1开始计数
+      	});
+	//重置按钮
+	$('#btn_reset').bind('click', function(){  
+		$('#query_form').form('clear'); 
+		$('#query_result').datagrid('loadData',{total:0,rows:[]});//加载本地数据，旧的行会被移除
+      	});
+	
+	init_view_by_permission();//函数声明，后面有详解
+	
+	$(page).pagination({  
+	 	onBeforeRefresh : function() {//刷新按钮点击之前触发，返回 false 就取消刷新动作。
+		},
+		onRefresh : function(pageNumber, pageSize) {//刷新之后触发。
+			do_submit(pageNumber, pageSize)
+		},
+		onChangePageSize : function() {//当用户改变页面尺寸时触发。
+		},
+		onSelectPage : function(pageNumber, pageSize) {//当用户选择新的页面时触发。回调函数包含两个参数：pageNumber：新的页码  pageSize：新的页面尺寸
+			do_submit(pageNumber, pageSize);
+		}
+	});  
+	$('#proStartTime').datebox({
+		onSelect: function(date){
+			
+		},
+	});
+});
+function myformatter(date){  
+    var y = date.getFullYear();  
+    var m = date.getMonth()+1;  
+    var d = date.getDate();  
+    return y+'-'+(m<10?('0'+m):m)+'-'+(d<10?('0'+d):d);  
+} 
+function dealDate() {
+	//设置时间  
+	 
+	 var proStartTime=$("#proStartTime").datebox("getValue"); 
+		if(proStartTime == null || proStartTime == '') {
+			 var curr_time = new Date(1900,0);   
+			 $("#proStartTime").datebox("setValue",myformatter(curr_time));
+		}
+ }
+	
+function do_submit(pageNumber,pageSize){//使用ajax来进行真正的查询
+	$('#query_form').form('submit',{
+		url:'../../project/queryProject.ajax',
+		onSubmit:function(param){
+			dealDate();
+			param.paging = true;
+			param.offset = (pageNumber-1)*pageSize;
+			param.limit = pageSize;
+			return $(this).form('validate');
+		},
+		success:function(data){
+			var obj = $.parseJSON(data);
+			alert(obj.message);
+			$('#query_result').datagrid('loadData',obj);
+			$("#proStartTime").datebox("setValue",null);
+		}
+	});
+}
+//打开新页面查看		
+function view (msgId) {
+	parent.addTabWithIcon("项目详述", "./project/view.html?proId="+msgId, "icon-list");
+}
+
+function do_view() {
+	var row = $('#query_result').datagrid('getSelections');
+	if(row.length > 1){
+		$.messager.alert('Info', '查看只能选择一行', 'info');
+		$('#query_result').datagrid('clearSelections');
+		return;
+	}
+	if(row == null){
+		$.messager.alert('Info', '请选择行', 'info');
+		return;
+	}
+	view(row.msgId);
+}
+
+function do_delet() {
+	var rows = $('#query_result').datagrid('getSelections');
+	if(rows == null){
+		$.messager.alert('Info', '请选择行', 'info');
+		return;
+	}
+	var parm="";
+	$.each(rows, function (i, n) {
+		if (i == 0) {
+			parm = n.proId;
+		} else {
+			parm += "," + n.proId;
+		}
+	});
+	$.messager.confirm('提示', '是否删除选中数据?', function (r) {
+		if (!r) {return;}
+		//提交
+		$.post('../../project/deleteProject.ajax', {parm:parm}, function (data) {
+			var msg = $.parseJSON(data);
+			if (msg.success) {
+				$.messager.alert('提示', msg.message, 'info', function () {
+					//重新加载当前页
+					//$('#query_result').datagrid('load');
+					$('#query_form').form('submit',{
+						url:'../../project/queryProject.ajax',
+						success:function(data){
+							var obj = $.parseJSON(data);
+							$('#query_result').datagrid('loadData',obj);
+							$("#proStartTime").datebox("setValue",null);
+						}
+					});
+				});
+			} 
+			else {
+				$.messager.alert('提示', msg.message, 'info');
+			}
+		});
+	});
+
+}
+	
+	
+function init_view_by_permission() {
+	//查看和修改的功能是否正常
+	/* $.ajax({
+		url : '../../ana/xxx.ajax',//待修改
+		type : 'get',
+		dataType : 'JSON',
+		data : {
+			permissionCode : 'PROJECT_EDIT'
+		},
+		success : function(data) {
+			 if (data.success) {
+				$('#divBtnEdit').show();
+			} else {
+				$('#divBtnEdit').hide();
+			} 
+		} 
+	});	*/
+	$.ajax({
+		url : '../../ana/checkPermission.ajax',//待修改
+		type : 'get',
+		dataType : 'JSON',
+		data : {
+			permissionCode : 'PROJECT_VIEW'
+		},
+		success : function(data) {
+			/* if (data.success) {
+				$('#divBtnView').show();
+			} else {
+				$('#divBtnView').hide();
+			} */
+		}
+	});	
+}
+</script>
+
+</head>
+<body>
+	
+<div style="margin: 5px 0"></div>
+<div style="margin: 0 5px">
+<form id="query_form" method="post">
+	<table class="table_view" style="font-size: 14px; background: #F1F1F1;">
+	<tr>
+		<td class="td_view_name_1">项目名称</td>
+		<td class="td_view_value_1"><input class="easyui-validatebox input_70" type="text" id="projectName" name="proBigProjectName" /></td>
+		<td class="td_view_name_1">委托单号</td>
+		<td class="td_view_value_1" ><input class="easyui-validatebox input_70" type="text" id="entrustCode" name="proNum" /></td>
+		<td class="td_view_name_1">项目人员</td>
+		<td class="td_view_value_1" ><input class="easyui-validatebox input_70" type="text"  name="member" /></td>
+		<td class="td_view_name_1">子项目名称</td>
+		<td class="td_view_value_1"><input class="easyui-validatebox input_70" type="text" id="subProjectName" name="projectName" /></td>
+	</tr>
+	<tr>
+		<td class="td_view_name_1">业主单位</td>
+		<td class="td_view_value_1"><input class="easyui-validatebox input_70" type="text" id="ownerContacts" name="proUnit" /></td>
+		<td class="td_view_name_1">起始时间</td>
+		<td class="td_view_value_1" ><input class="easyui-validatebox input_70" type="text" name="proStartTime" id="proStartTime" /></td>
+		<td class="td_view_name_1">监造物资</td>
+		<td class="td_view_value_1"><input class="easyui-validatebox input_70" type="text" name="proGoods" /></td>
+		<td class="td_view_name_1">项目状态</td>
+		<td class="td_view_value_1">
+			<select class="easyui-combobox" id="operatingStatus" name="proStatus" data-options="panelHeight:'auto'" editable="true" style="width: 140px">
+				<option value="">请选择项目状态</option>
+				<option value="O">项目正在运行</option>
+				<option value="C">项目已完成</option>
+				<option value="S">项目暂停</option>
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td colspan="8" align="center" class="td_view_name">
+			<div align="center">
+				<a id="btn_query" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"	>查询</a>
+				<a id="btn_reset" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-reset" 	>重置</a>
+			</div>
+		</td>
+	</tr>
+	</table>
+</form>
+</div>
+
+<div style="margin: 10px 0;"></div>
+<div style="margin: 0 5px">
+<table  title="查询结果" id="query_result"
+	data-options="pagination:true,rownumbers:true,pageNumber:1,pageSize:10,pageList:[1,5,10]"
+	toolbar="#tb">
+	<thead>
+	<tr>
+		<th field="ck" checkbox="true"></th>
+		<th data-options="field:'proId',width:150,hidden:true,align:'center'">ID</th>
+		<th data-options="field:'proStatus',width:80,align:'center'"			 >项目状态</th>
+		<th data-options="field:'proUnit',width:120,hidden:false,align:'center'">业主单位</th>
+		<th data-options="field:'proBigProjectName',width:120,align:'center'"	 >项目名称</th>
+		<th data-options="field:'projectName',width:120,align:'center'"		     >子项目名称</th>
+		<th data-options="field:'proEntrustTime',width:100,align:'right'"		>委托日期</th>
+		<th data-options="field:'proNum',width:120,sortable:'true',align:'right'">委托单号</th>
+		<th data-options="field:'proConpeople',width:80,align:'right'"		     >业主联系人</th>
+		<th data-options="field:'proConntel',width:120,align:'right'"			 >联系电话</th>
+		<th data-options="field:'proGoods',width:120,align:'center'"			 >监造物资</th>
+		<th data-options="field:'proGoodsnum',width:80,align:'center'"			 >委托数量</th>
+		<th data-options="field:'proFactory',width:80,align:'center'"			 >生产厂家</th>
+		<th data-options="field:'proFactoryconnpeople',width:80,align:'center'"			 >生产厂家联系人</th>
+		<th data-options="field:'proStartTime',width:80,align:'center'"			 >起始日期</th>
+		<th data-options="field:'memberName',width:80,align:'center'"			 >项目人员</th>
+	</tr>
+	</thead>
+</table>
+
+<div id="tb">
+	<div id="divBtnView" style="float:left ;display:inline;">
+		<a href="#" class="easyui-linkbutton" iconCls="icon-view" plain="true" onclick="javascript:do_view()">查看</a>
+	</div>
+		<div id="divBtnView" style="float:left ;display:inline;">
+		<a href="#" class="easyui-linkbutton" iconCls="icon-cancel" plain="true" onclick="javascript:do_delet()">删除</a>
+	</div>
+</div>
+</div>
+
+
+</body>

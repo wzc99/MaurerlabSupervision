@@ -1,0 +1,647 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="sys.spvisor.core.dao.process.TDeliveryPipeProcessMapper" >
+  <resultMap id="BaseResultMap" type="sys.spvisor.core.entity.process.TDeliveryPipeProcess" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="type_id" property="typeId" jdbcType="INTEGER" />
+    <result column="pro_id" property="proId" jdbcType="INTEGER" />
+    <result column="product_name" property="productName" jdbcType="CHAR" />
+    <result column="product_norm" property="productNorm" jdbcType="VARCHAR" />
+    <result column="pipe_arrive_juan" property="pipeArriveJuan" jdbcType="DOUBLE" />
+    <result column="pipe_arrive_dun" property="pipeArriveDun" jdbcType="DOUBLE" />
+    <result column="pipe_rolling_drawing" property="pipeRollingDrawing" jdbcType="INTEGER" />
+    <result column="forming_welding" property="formingWelding" jdbcType="INTEGER" />
+    <result column="non_des_check" property="nonDesCheck" jdbcType="INTEGER" />
+    <result column="water_press_experoment" property="waterPressExperoment" jdbcType="INTEGER" />
+    <result column="demotion" property="demotion" jdbcType="INTEGER" />
+    <result column="finishing_warehousing_zhi" property="finishingWarehousingZhi" jdbcType="INTEGER" />
+    <result column="finishing_warehousing_mi" property="finishingWarehousingMi" jdbcType="DOUBLE" />
+    <result column="finishing_warehousing_dun" property="finishingWarehousingDun" jdbcType="DOUBLE" />
+    <result column="tufu_zhi" property="tufuZhi" jdbcType="INTEGER" />
+    <result column="tufu_mi" property="tufuMi" jdbcType="DOUBLE" />
+    <result column="tufu_dun" property="tufuDun" jdbcType="DOUBLE" />
+    <result column="pipe_ruku_zhi" property="pipeRukuZhi" jdbcType="INTEGER" />
+    <result column="pipe_ruku_mi" property="pipeRukuMi" jdbcType="DOUBLE" />
+    <result column="pipe_ruku_dun" property="pipeRukuDun" jdbcType="DOUBLE" />
+    <result column="pipe_liufang" property="pipeLiufang" jdbcType="INTEGER" />
+    <result column="pipe_falaing_zhi" property="pipeFalaingZhi" jdbcType="INTEGER" />
+    <result column="pipe_falaing_mi" property="pipeFalaingMi" jdbcType="DOUBLE" />
+    <result column="pipe_falaing_dun" property="pipeFalaingDun" jdbcType="DOUBLE" />
+    <result column="complete_rate" property="completeRate" jdbcType="DOUBLE" />
+    <result column="plan_date" property="planDate" jdbcType="DATE" />
+    <result column="promise_date" property="promiseDate" jdbcType="DATE" />
+    <result column="submit_date" property="submitDate" jdbcType="DATE" />
+    <result column="which_day" property="whichDay" jdbcType="DATE" />
+    <result column="user_id" property="userId" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, type_id, pro_id, product_name, product_norm, pipe_arrive_juan, pipe_arrive_dun, 
+    pipe_rolling_drawing, forming_welding, non_des_check, water_press_experoment, demotion, 
+    finishing_warehousing_zhi, finishing_warehousing_mi, finishing_warehousing_dun, tufu_zhi, 
+    tufu_mi, tufu_dun, pipe_ruku_zhi, pipe_ruku_mi, pipe_ruku_dun, pipe_liufang, pipe_falaing_zhi, 
+    pipe_falaing_mi, pipe_falaing_dun, complete_rate, plan_date, promise_date, submit_date, 
+    which_day, user_id
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="sys.spvisor.core.entity.process.TDeliveryPipeProcessExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from t_delivery_pipe_process
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_delivery_pipe_process
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_delivery_pipe_process
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="sys.spvisor.core.entity.process.TDeliveryPipeProcessExample" >
+    delete from t_delivery_pipe_process
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="sys.spvisor.core.entity.process.TDeliveryPipeProcess" useGeneratedKeys="true" keyProperty="id">
+    insert into t_delivery_pipe_process (type_id, pro_id, 
+      product_name, product_norm, pipe_arrive_juan, 
+      pipe_arrive_dun, pipe_rolling_drawing, forming_welding, 
+      non_des_check, water_press_experoment, demotion, 
+      finishing_warehousing_zhi, finishing_warehousing_mi, 
+      finishing_warehousing_dun, tufu_zhi, tufu_mi, 
+      tufu_dun, pipe_ruku_zhi, pipe_ruku_mi, 
+      pipe_ruku_dun, pipe_liufang, pipe_falaing_zhi, 
+      pipe_falaing_mi, pipe_falaing_dun, complete_rate, 
+      plan_date, promise_date, submit_date, 
+      which_day, user_id)
+    values (#{typeId,jdbcType=INTEGER}, #{proId,jdbcType=INTEGER}, 
+      #{productName,jdbcType=CHAR}, #{productNorm,jdbcType=VARCHAR}, #{pipeArriveJuan,jdbcType=DOUBLE}, 
+      #{pipeArriveDun,jdbcType=DOUBLE}, #{pipeRollingDrawing,jdbcType=INTEGER}, #{formingWelding,jdbcType=INTEGER}, 
+      #{nonDesCheck,jdbcType=INTEGER}, #{waterPressExperoment,jdbcType=INTEGER}, #{demotion,jdbcType=INTEGER}, 
+      #{finishingWarehousingZhi,jdbcType=INTEGER}, #{finishingWarehousingMi,jdbcType=DOUBLE}, 
+      #{finishingWarehousingDun,jdbcType=DOUBLE}, #{tufuZhi,jdbcType=INTEGER}, #{tufuMi,jdbcType=DOUBLE}, 
+      #{tufuDun,jdbcType=DOUBLE}, #{pipeRukuZhi,jdbcType=INTEGER}, #{pipeRukuMi,jdbcType=DOUBLE}, 
+      #{pipeRukuDun,jdbcType=DOUBLE}, #{pipeLiufang,jdbcType=INTEGER}, #{pipeFalaingZhi,jdbcType=INTEGER}, 
+      #{pipeFalaingMi,jdbcType=DOUBLE}, #{pipeFalaingDun,jdbcType=DOUBLE}, #{completeRate,jdbcType=DOUBLE}, 
+      #{planDate,jdbcType=DATE}, #{promiseDate,jdbcType=DATE}, #{submitDate,jdbcType=DATE}, 
+      #{whichDay,jdbcType=DATE}, #{userId,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="sys.spvisor.core.entity.process.TDeliveryPipeProcess" >
+    insert into t_delivery_pipe_process
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="typeId != null" >
+        type_id,
+      </if>
+      <if test="proId != null" >
+        pro_id,
+      </if>
+      <if test="productName != null" >
+        product_name,
+      </if>
+      <if test="productNorm != null" >
+        product_norm,
+      </if>
+      <if test="pipeArriveJuan != null" >
+        pipe_arrive_juan,
+      </if>
+      <if test="pipeArriveDun != null" >
+        pipe_arrive_dun,
+      </if>
+      <if test="pipeRollingDrawing != null" >
+        pipe_rolling_drawing,
+      </if>
+      <if test="formingWelding != null" >
+        forming_welding,
+      </if>
+      <if test="nonDesCheck != null" >
+        non_des_check,
+      </if>
+      <if test="waterPressExperoment != null" >
+        water_press_experoment,
+      </if>
+      <if test="demotion != null" >
+        demotion,
+      </if>
+      <if test="finishingWarehousingZhi != null" >
+        finishing_warehousing_zhi,
+      </if>
+      <if test="finishingWarehousingMi != null" >
+        finishing_warehousing_mi,
+      </if>
+      <if test="finishingWarehousingDun != null" >
+        finishing_warehousing_dun,
+      </if>
+      <if test="tufuZhi != null" >
+        tufu_zhi,
+      </if>
+      <if test="tufuMi != null" >
+        tufu_mi,
+      </if>
+      <if test="tufuDun != null" >
+        tufu_dun,
+      </if>
+      <if test="pipeRukuZhi != null" >
+        pipe_ruku_zhi,
+      </if>
+      <if test="pipeRukuMi != null" >
+        pipe_ruku_mi,
+      </if>
+      <if test="pipeRukuDun != null" >
+        pipe_ruku_dun,
+      </if>
+      <if test="pipeLiufang != null" >
+        pipe_liufang,
+      </if>
+      <if test="pipeFalaingZhi != null" >
+        pipe_falaing_zhi,
+      </if>
+      <if test="pipeFalaingMi != null" >
+        pipe_falaing_mi,
+      </if>
+      <if test="pipeFalaingDun != null" >
+        pipe_falaing_dun,
+      </if>
+      <if test="completeRate != null" >
+        complete_rate,
+      </if>
+      <if test="planDate != null" >
+        plan_date,
+      </if>
+      <if test="promiseDate != null" >
+        promise_date,
+      </if>
+      <if test="submitDate != null" >
+        submit_date,
+      </if>
+      <if test="whichDay != null" >
+        which_day,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="typeId != null" >
+        #{typeId,jdbcType=INTEGER},
+      </if>
+      <if test="proId != null" >
+        #{proId,jdbcType=INTEGER},
+      </if>
+      <if test="productName != null" >
+        #{productName,jdbcType=CHAR},
+      </if>
+      <if test="productNorm != null" >
+        #{productNorm,jdbcType=VARCHAR},
+      </if>
+      <if test="pipeArriveJuan != null" >
+        #{pipeArriveJuan,jdbcType=DOUBLE},
+      </if>
+      <if test="pipeArriveDun != null" >
+        #{pipeArriveDun,jdbcType=DOUBLE},
+      </if>
+      <if test="pipeRollingDrawing != null" >
+        #{pipeRollingDrawing,jdbcType=INTEGER},
+      </if>
+      <if test="formingWelding != null" >
+        #{formingWelding,jdbcType=INTEGER},
+      </if>
+      <if test="nonDesCheck != null" >
+        #{nonDesCheck,jdbcType=INTEGER},
+      </if>
+      <if test="waterPressExperoment != null" >
+        #{waterPressExperoment,jdbcType=INTEGER},
+      </if>
+      <if test="demotion != null" >
+        #{demotion,jdbcType=INTEGER},
+      </if>
+      <if test="finishingWarehousingZhi != null" >
+        #{finishingWarehousingZhi,jdbcType=INTEGER},
+      </if>
+      <if test="finishingWarehousingMi != null" >
+        #{finishingWarehousingMi,jdbcType=DOUBLE},
+      </if>
+      <if test="finishingWarehousingDun != null" >
+        #{finishingWarehousingDun,jdbcType=DOUBLE},
+      </if>
+      <if test="tufuZhi != null" >
+        #{tufuZhi,jdbcType=INTEGER},
+      </if>
+      <if test="tufuMi != null" >
+        #{tufuMi,jdbcType=DOUBLE},
+      </if>
+      <if test="tufuDun != null" >
+        #{tufuDun,jdbcType=DOUBLE},
+      </if>
+      <if test="pipeRukuZhi != null" >
+        #{pipeRukuZhi,jdbcType=INTEGER},
+      </if>
+      <if test="pipeRukuMi != null" >
+        #{pipeRukuMi,jdbcType=DOUBLE},
+      </if>
+      <if test="pipeRukuDun != null" >
+        #{pipeRukuDun,jdbcType=DOUBLE},
+      </if>
+      <if test="pipeLiufang != null" >
+        #{pipeLiufang,jdbcType=INTEGER},
+      </if>
+      <if test="pipeFalaingZhi != null" >
+        #{pipeFalaingZhi,jdbcType=INTEGER},
+      </if>
+      <if test="pipeFalaingMi != null" >
+        #{pipeFalaingMi,jdbcType=DOUBLE},
+      </if>
+      <if test="pipeFalaingDun != null" >
+        #{pipeFalaingDun,jdbcType=DOUBLE},
+      </if>
+      <if test="completeRate != null" >
+        #{completeRate,jdbcType=DOUBLE},
+      </if>
+      <if test="planDate != null" >
+        #{planDate,jdbcType=DATE},
+      </if>
+      <if test="promiseDate != null" >
+        #{promiseDate,jdbcType=DATE},
+      </if>
+      <if test="submitDate != null" >
+        #{submitDate,jdbcType=DATE},
+      </if>
+      <if test="whichDay != null" >
+        #{whichDay,jdbcType=DATE},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="sys.spvisor.core.entity.process.TDeliveryPipeProcessExample" resultType="java.lang.Integer" >
+    select count(*) from t_delivery_pipe_process
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update t_delivery_pipe_process
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.typeId != null" >
+        type_id = #{record.typeId,jdbcType=INTEGER},
+      </if>
+      <if test="record.proId != null" >
+        pro_id = #{record.proId,jdbcType=INTEGER},
+      </if>
+      <if test="record.productName != null" >
+        product_name = #{record.productName,jdbcType=CHAR},
+      </if>
+      <if test="record.productNorm != null" >
+        product_norm = #{record.productNorm,jdbcType=VARCHAR},
+      </if>
+      <if test="record.pipeArriveJuan != null" >
+        pipe_arrive_juan = #{record.pipeArriveJuan,jdbcType=DOUBLE},
+      </if>
+      <if test="record.pipeArriveDun != null" >
+        pipe_arrive_dun = #{record.pipeArriveDun,jdbcType=DOUBLE},
+      </if>
+      <if test="record.pipeRollingDrawing != null" >
+        pipe_rolling_drawing = #{record.pipeRollingDrawing,jdbcType=INTEGER},
+      </if>
+      <if test="record.formingWelding != null" >
+        forming_welding = #{record.formingWelding,jdbcType=INTEGER},
+      </if>
+      <if test="record.nonDesCheck != null" >
+        non_des_check = #{record.nonDesCheck,jdbcType=INTEGER},
+      </if>
+      <if test="record.waterPressExperoment != null" >
+        water_press_experoment = #{record.waterPressExperoment,jdbcType=INTEGER},
+      </if>
+      <if test="record.demotion != null" >
+        demotion = #{record.demotion,jdbcType=INTEGER},
+      </if>
+      <if test="record.finishingWarehousingZhi != null" >
+        finishing_warehousing_zhi = #{record.finishingWarehousingZhi,jdbcType=INTEGER},
+      </if>
+      <if test="record.finishingWarehousingMi != null" >
+        finishing_warehousing_mi = #{record.finishingWarehousingMi,jdbcType=DOUBLE},
+      </if>
+      <if test="record.finishingWarehousingDun != null" >
+        finishing_warehousing_dun = #{record.finishingWarehousingDun,jdbcType=DOUBLE},
+      </if>
+      <if test="record.tufuZhi != null" >
+        tufu_zhi = #{record.tufuZhi,jdbcType=INTEGER},
+      </if>
+      <if test="record.tufuMi != null" >
+        tufu_mi = #{record.tufuMi,jdbcType=DOUBLE},
+      </if>
+      <if test="record.tufuDun != null" >
+        tufu_dun = #{record.tufuDun,jdbcType=DOUBLE},
+      </if>
+      <if test="record.pipeRukuZhi != null" >
+        pipe_ruku_zhi = #{record.pipeRukuZhi,jdbcType=INTEGER},
+      </if>
+      <if test="record.pipeRukuMi != null" >
+        pipe_ruku_mi = #{record.pipeRukuMi,jdbcType=DOUBLE},
+      </if>
+      <if test="record.pipeRukuDun != null" >
+        pipe_ruku_dun = #{record.pipeRukuDun,jdbcType=DOUBLE},
+      </if>
+      <if test="record.pipeLiufang != null" >
+        pipe_liufang = #{record.pipeLiufang,jdbcType=INTEGER},
+      </if>
+      <if test="record.pipeFalaingZhi != null" >
+        pipe_falaing_zhi = #{record.pipeFalaingZhi,jdbcType=INTEGER},
+      </if>
+      <if test="record.pipeFalaingMi != null" >
+        pipe_falaing_mi = #{record.pipeFalaingMi,jdbcType=DOUBLE},
+      </if>
+      <if test="record.pipeFalaingDun != null" >
+        pipe_falaing_dun = #{record.pipeFalaingDun,jdbcType=DOUBLE},
+      </if>
+      <if test="record.completeRate != null" >
+        complete_rate = #{record.completeRate,jdbcType=DOUBLE},
+      </if>
+      <if test="record.planDate != null" >
+        plan_date = #{record.planDate,jdbcType=DATE},
+      </if>
+      <if test="record.promiseDate != null" >
+        promise_date = #{record.promiseDate,jdbcType=DATE},
+      </if>
+      <if test="record.submitDate != null" >
+        submit_date = #{record.submitDate,jdbcType=DATE},
+      </if>
+      <if test="record.whichDay != null" >
+        which_day = #{record.whichDay,jdbcType=DATE},
+      </if>
+      <if test="record.userId != null" >
+        user_id = #{record.userId,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update t_delivery_pipe_process
+    set id = #{record.id,jdbcType=INTEGER},
+      type_id = #{record.typeId,jdbcType=INTEGER},
+      pro_id = #{record.proId,jdbcType=INTEGER},
+      product_name = #{record.productName,jdbcType=CHAR},
+      product_norm = #{record.productNorm,jdbcType=VARCHAR},
+      pipe_arrive_juan = #{record.pipeArriveJuan,jdbcType=DOUBLE},
+      pipe_arrive_dun = #{record.pipeArriveDun,jdbcType=DOUBLE},
+      pipe_rolling_drawing = #{record.pipeRollingDrawing,jdbcType=INTEGER},
+      forming_welding = #{record.formingWelding,jdbcType=INTEGER},
+      non_des_check = #{record.nonDesCheck,jdbcType=INTEGER},
+      water_press_experoment = #{record.waterPressExperoment,jdbcType=INTEGER},
+      demotion = #{record.demotion,jdbcType=INTEGER},
+      finishing_warehousing_zhi = #{record.finishingWarehousingZhi,jdbcType=INTEGER},
+      finishing_warehousing_mi = #{record.finishingWarehousingMi,jdbcType=DOUBLE},
+      finishing_warehousing_dun = #{record.finishingWarehousingDun,jdbcType=DOUBLE},
+      tufu_zhi = #{record.tufuZhi,jdbcType=INTEGER},
+      tufu_mi = #{record.tufuMi,jdbcType=DOUBLE},
+      tufu_dun = #{record.tufuDun,jdbcType=DOUBLE},
+      pipe_ruku_zhi = #{record.pipeRukuZhi,jdbcType=INTEGER},
+      pipe_ruku_mi = #{record.pipeRukuMi,jdbcType=DOUBLE},
+      pipe_ruku_dun = #{record.pipeRukuDun,jdbcType=DOUBLE},
+      pipe_liufang = #{record.pipeLiufang,jdbcType=INTEGER},
+      pipe_falaing_zhi = #{record.pipeFalaingZhi,jdbcType=INTEGER},
+      pipe_falaing_mi = #{record.pipeFalaingMi,jdbcType=DOUBLE},
+      pipe_falaing_dun = #{record.pipeFalaingDun,jdbcType=DOUBLE},
+      complete_rate = #{record.completeRate,jdbcType=DOUBLE},
+      plan_date = #{record.planDate,jdbcType=DATE},
+      promise_date = #{record.promiseDate,jdbcType=DATE},
+      submit_date = #{record.submitDate,jdbcType=DATE},
+      which_day = #{record.whichDay,jdbcType=DATE},
+      user_id = #{record.userId,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="sys.spvisor.core.entity.process.TDeliveryPipeProcess" >
+    update t_delivery_pipe_process
+    <set >
+      <if test="typeId != null" >
+        type_id = #{typeId,jdbcType=INTEGER},
+      </if>
+      <if test="proId != null" >
+        pro_id = #{proId,jdbcType=INTEGER},
+      </if>
+      <if test="productName != null" >
+        product_name = #{productName,jdbcType=CHAR},
+      </if>
+      <if test="productNorm != null" >
+        product_norm = #{productNorm,jdbcType=VARCHAR},
+      </if>
+      <if test="pipeArriveJuan != null" >
+        pipe_arrive_juan = #{pipeArriveJuan,jdbcType=DOUBLE},
+      </if>
+      <if test="pipeArriveDun != null" >
+        pipe_arrive_dun = #{pipeArriveDun,jdbcType=DOUBLE},
+      </if>
+      <if test="pipeRollingDrawing != null" >
+        pipe_rolling_drawing = #{pipeRollingDrawing,jdbcType=INTEGER},
+      </if>
+      <if test="formingWelding != null" >
+        forming_welding = #{formingWelding,jdbcType=INTEGER},
+      </if>
+      <if test="nonDesCheck != null" >
+        non_des_check = #{nonDesCheck,jdbcType=INTEGER},
+      </if>
+      <if test="waterPressExperoment != null" >
+        water_press_experoment = #{waterPressExperoment,jdbcType=INTEGER},
+      </if>
+      <if test="demotion != null" >
+        demotion = #{demotion,jdbcType=INTEGER},
+      </if>
+      <if test="finishingWarehousingZhi != null" >
+        finishing_warehousing_zhi = #{finishingWarehousingZhi,jdbcType=INTEGER},
+      </if>
+      <if test="finishingWarehousingMi != null" >
+        finishing_warehousing_mi = #{finishingWarehousingMi,jdbcType=DOUBLE},
+      </if>
+      <if test="finishingWarehousingDun != null" >
+        finishing_warehousing_dun = #{finishingWarehousingDun,jdbcType=DOUBLE},
+      </if>
+      <if test="tufuZhi != null" >
+        tufu_zhi = #{tufuZhi,jdbcType=INTEGER},
+      </if>
+      <if test="tufuMi != null" >
+        tufu_mi = #{tufuMi,jdbcType=DOUBLE},
+      </if>
+      <if test="tufuDun != null" >
+        tufu_dun = #{tufuDun,jdbcType=DOUBLE},
+      </if>
+      <if test="pipeRukuZhi != null" >
+        pipe_ruku_zhi = #{pipeRukuZhi,jdbcType=INTEGER},
+      </if>
+      <if test="pipeRukuMi != null" >
+        pipe_ruku_mi = #{pipeRukuMi,jdbcType=DOUBLE},
+      </if>
+      <if test="pipeRukuDun != null" >
+        pipe_ruku_dun = #{pipeRukuDun,jdbcType=DOUBLE},
+      </if>
+      <if test="pipeLiufang != null" >
+        pipe_liufang = #{pipeLiufang,jdbcType=INTEGER},
+      </if>
+      <if test="pipeFalaingZhi != null" >
+        pipe_falaing_zhi = #{pipeFalaingZhi,jdbcType=INTEGER},
+      </if>
+      <if test="pipeFalaingMi != null" >
+        pipe_falaing_mi = #{pipeFalaingMi,jdbcType=DOUBLE},
+      </if>
+      <if test="pipeFalaingDun != null" >
+        pipe_falaing_dun = #{pipeFalaingDun,jdbcType=DOUBLE},
+      </if>
+      <if test="completeRate != null" >
+        complete_rate = #{completeRate,jdbcType=DOUBLE},
+      </if>
+      <if test="planDate != null" >
+        plan_date = #{planDate,jdbcType=DATE},
+      </if>
+      <if test="promiseDate != null" >
+        promise_date = #{promiseDate,jdbcType=DATE},
+      </if>
+      <if test="submitDate != null" >
+        submit_date = #{submitDate,jdbcType=DATE},
+      </if>
+      <if test="whichDay != null" >
+        which_day = #{whichDay,jdbcType=DATE},
+      </if>
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="sys.spvisor.core.entity.process.TDeliveryPipeProcess" >
+    update t_delivery_pipe_process
+    set type_id = #{typeId,jdbcType=INTEGER},
+      pro_id = #{proId,jdbcType=INTEGER},
+      product_name = #{productName,jdbcType=CHAR},
+      product_norm = #{productNorm,jdbcType=VARCHAR},
+      pipe_arrive_juan = #{pipeArriveJuan,jdbcType=DOUBLE},
+      pipe_arrive_dun = #{pipeArriveDun,jdbcType=DOUBLE},
+      pipe_rolling_drawing = #{pipeRollingDrawing,jdbcType=INTEGER},
+      forming_welding = #{formingWelding,jdbcType=INTEGER},
+      non_des_check = #{nonDesCheck,jdbcType=INTEGER},
+      water_press_experoment = #{waterPressExperoment,jdbcType=INTEGER},
+      demotion = #{demotion,jdbcType=INTEGER},
+      finishing_warehousing_zhi = #{finishingWarehousingZhi,jdbcType=INTEGER},
+      finishing_warehousing_mi = #{finishingWarehousingMi,jdbcType=DOUBLE},
+      finishing_warehousing_dun = #{finishingWarehousingDun,jdbcType=DOUBLE},
+      tufu_zhi = #{tufuZhi,jdbcType=INTEGER},
+      tufu_mi = #{tufuMi,jdbcType=DOUBLE},
+      tufu_dun = #{tufuDun,jdbcType=DOUBLE},
+      pipe_ruku_zhi = #{pipeRukuZhi,jdbcType=INTEGER},
+      pipe_ruku_mi = #{pipeRukuMi,jdbcType=DOUBLE},
+      pipe_ruku_dun = #{pipeRukuDun,jdbcType=DOUBLE},
+      pipe_liufang = #{pipeLiufang,jdbcType=INTEGER},
+      pipe_falaing_zhi = #{pipeFalaingZhi,jdbcType=INTEGER},
+      pipe_falaing_mi = #{pipeFalaingMi,jdbcType=DOUBLE},
+      pipe_falaing_dun = #{pipeFalaingDun,jdbcType=DOUBLE},
+      complete_rate = #{completeRate,jdbcType=DOUBLE},
+      plan_date = #{planDate,jdbcType=DATE},
+      promise_date = #{promiseDate,jdbcType=DATE},
+      submit_date = #{submitDate,jdbcType=DATE},
+      which_day = #{whichDay,jdbcType=DATE},
+      user_id = #{userId,jdbcType=INTEGER}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="accumulateScheduleByproId" resultMap="BaseResultMap" parameterType="int">
+    select type_id,sum(COALESCE(pipe_arrive_juan,0)) as pipe_arrive_juan,sum(COALESCE(pipe_arrive_dun,0)) as pipe_arrive_dun,sum(COALESCE(pipe_rolling_drawing,0)) as pipe_rolling_drawing, 
+    sum(COALESCE(forming_welding,0)) as forming_welding,sum(COALESCE(non_des_check,0)) as non_des_check,sum(COALESCE(water_press_experoment,0)) as water_press_experoment,sum(COALESCE(demotion,0)) as demotion,
+    sum(COALESCE(finishing_warehousing_zhi,0)) as finishing_warehousing_zhi,sum(COALESCE(finishing_warehousing_mi,0)) as finishing_warehousing_mi,sum(COALESCE(finishing_warehousing_dun,0)) as finishing_warehousing_dun,
+    sum(COALESCE(tufu_zhi,0)) as tufu_zhi,sum(COALESCE(tufu_mi,0)) as tufu_mi,sum(COALESCE(tufu_dun,0)) as tufu_dun,sum(COALESCE(pipe_ruku_zhi,0)) as pipe_ruku_zhi,sum(COALESCE(pipe_ruku_mi,0)) as pipe_ruku_mi,
+    sum(COALESCE(pipe_ruku_dun,0)) as pipe_ruku_dun,sum(COALESCE(pipe_liufang,0)) as pipe_liufang,sum(COALESCE(pipe_falaing_zhi,0)) as pipe_falaing_zhi,sum(COALESCE(pipe_falaing_mi,0)) as pipe_falaing_mi,sum(COALESCE(pipe_falaing_dun,0)) as pipe_falaing_dun,
+    sum(COALESCE(complete_rate,0)) as complete_rate
+    from t_delivery_pipe_process
+    where pro_id = #{projectId}
+    group by type_id
+  </select>
+  
+  <select id="weeklyScheduleByproId" resultMap="BaseResultMap" parameterType="map">
+    select type_id,sum(COALESCE(pipe_arrive_juan,0)) as pipe_arrive_juan,sum(COALESCE(pipe_arrive_dun,0)) as pipe_arrive_dun,sum(COALESCE(pipe_rolling_drawing,0)) as pipe_rolling_drawing, 
+    sum(COALESCE(forming_welding,0)) as forming_welding,sum(COALESCE(non_des_check,0)) as non_des_check,sum(COALESCE(water_press_experoment,0)) as water_press_experoment,sum(COALESCE(demotion,0)) as demotion,
+    sum(COALESCE(finishing_warehousing_zhi,0)) as finishing_warehousing_zhi,sum(COALESCE(finishing_warehousing_mi,0)) as finishing_warehousing_mi,sum(COALESCE(finishing_warehousing_dun,0)) as finishing_warehousing_dun,
+    sum(COALESCE(tufu_zhi,0)) as tufu_zhi,sum(COALESCE(tufu_mi,0)) as tufu_mi,sum(COALESCE(tufu_dun,0)) as tufu_dun,sum(COALESCE(pipe_ruku_zhi,0)) as pipe_ruku_zhi,sum(COALESCE(pipe_ruku_mi,0)) as pipe_ruku_mi,
+    sum(COALESCE(pipe_ruku_dun,0)) as pipe_ruku_dun,sum(COALESCE(pipe_liufang,0)) as pipe_liufang,sum(COALESCE(pipe_falaing_zhi,0)) as pipe_falaing_zhi,sum(COALESCE(pipe_falaing_mi,0)) as pipe_falaing_mi,sum(COALESCE(pipe_falaing_dun,0)) as pipe_falaing_dun,
+    sum(COALESCE(complete_rate,0)) as complete_rate
+    from t_delivery_pipe_process
+    where pro_id = #{projectId} and which_day between #{d0} and #{d1} 
+    group by type_id
+  </select>
+</mapper>

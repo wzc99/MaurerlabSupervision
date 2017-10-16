@@ -1,0 +1,727 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>填写进度</title>
+	
+<link rel="stylesheet" type="text/css" href="../../themes/general.css"  />
+<link rel="stylesheet" type="text/css" href="../../themes/icon.css" 			/>
+<link rel="stylesheet" type="text/css" href="../../themes/jquery-ui.css" 		/>
+<link rel="stylesheet" type="text/css" href="../../themes/default/easyui.css" 	/>
+	<script type="text/javascript" src="../../scripts/jquery-1.8.0.min.js"></script>
+	<script type="text/javascript" src="../../scripts/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="../../scripts/locale/easyui-lang-zh_CN.js"></script>
+	<script type="text/javascript" src="../../scripts/src/jquery.parser.js"></script>
+	<script type="text/javascript" src="../../scripts/general.js"></script>
+	<script type="text/javascript" src="../../scripts/sessionExpriation.js"></script>
+<style type="text/css">	
+.inbe{
+	border: 1px solid #95B8E7;
+	border-radius: 5px 5px 5px 5px;
+	height: 25px;
+}
+#tableWork td{
+	padding-left:0;
+	padding-right:0;
+}
+</style>
+<script type="text/javascript">
+    var typenum;
+	$(function() {
+		//项目的id作为隐藏值保存在表单中
+		var projectId = $.getUrlParam('projectId');
+	
+		//第二个表单，填写进度的表单提交
+		$('#new_form').form({
+			url : '../../schedule/addScheduleTable.ajax?projectId='+projectId,
+			onSubmit : function() {						
+				if ($(this).form('validate')) {
+					return true;//验证是否为空
+				} else {
+					return false;
+				}
+			},
+			success : function(data) {
+				var obj = $.parseJSON(data);//将json字符串转换为object对象
+				if(obj.success){
+					$.messager.alert('提示', obj.message, 'info', function(){
+						 //刷新项目详述页面
+						href="./project/view.html?proId="+projectId;
+						var content = '<iframe scrolling="auto" frameborder="0"  src="'+href+'" style="width:100%;height:100%;"></iframe>';  
+					    var tt = parent.$('#tabs');  	   
+					    if (tt.tabs('exists', "项目详述")){  
+					    	tt.tabs('select', "项目详述");  
+					        var tab =parent.$('#tabs').tabs('getSelected'); 
+					        parent.$('#tabs').tabs('update', {
+					        	tab: tab,
+					        	options: {
+					        		content:content
+					        	}
+					        });
+					    }
+					  //关闭当前页面
+					 	parent.$('#tabs').tabs('close','新增进度');
+					});
+				} else {
+					$.messager.alert('错误', obj.message, 'error');
+				}
+			}
+		});
+		//第一个表单，选择进度节点的表单提交
+		$('#new_form1').form({
+			url : '../../schedule/saveNode.ajax?projectId='+projectId,
+			onSubmit : function() {	
+			    recordNodeId();
+			},
+			success : function(data) {
+				var obj = $.parseJSON(data);//将json字符串转换为object对象
+				if(obj.success){//提交成功时两个表格隐藏
+					$.messager.alert('提示', obj.message, 'info', function(){
+						 //刷新项目详述页面
+						href="./project/view.html?proId="+projectId;
+						var content = '<iframe scrolling="auto" frameborder="0"  src="'+href+'" style="width:100%;height:100%;"></iframe>';  
+					    var tt = parent.$('#tabs');  	   
+					    if (tt.tabs('exists', "项目详述")){  
+					    	tt.tabs('select', "项目详述");  
+					        var tab =parent.$('#tabs').tabs('getSelected'); 
+					        parent.$('#tabs').tabs('update', {
+					        	tab: tab,
+					        	options: {
+					        		content:content
+					        	}
+					        });
+					    }
+					  //关闭当前页面
+					 	parent.$('#tabs').tabs('close','新增进度');
+					});
+				} else {
+					$.messager.alert('错误', obj.message, 'error');
+				}
+			}
+		});
+		//ajax判断是否是第一次填写，第一次填写需要选择进度节点，
+		$.ajax({//获取项目名称
+			url : '../../project/getProjectName.ajax',
+			type : 'post',
+			dataType : 'text',
+			cache: false,
+			data : {
+				projectId : projectId,
+			},
+			error: function(XMLHttpRequest, textStatus, errorThrown) {	                    
+	        },
+			success : function(data) {
+				$('#projectName').text(unescape(decodeURI(data)));
+			}
+		}); 
+		
+		$.ajax({
+			url : '../../schedule/getNodeAndTable.ajax',
+			type : 'post',
+			dataType : 'JSON',
+			cache: false,
+			data : {
+				projectId : projectId 
+			},
+			error: function(XMLHttpRequest, textStatus, errorThrown) {	                   
+	        },
+			success : function(data) {
+				init_choose(data);//动态生成节点表
+				init_node(data);//动态生成进度表
+				if(data.node==null){
+					$('#aa').accordion('select', '选择进度节点');
+				}
+				else{
+					var length = data.node.length;
+					var i;
+					for(i=0;i<length;i++){
+						if(node[i] == null){//只要有一个子类没选节点就打开选择进度节点菜单
+							$('#aa').accordion('select', '选择进度节点');
+							break;
+						}
+					}
+				   if(i==length){//所有子类均已选择过节点，打开进度表菜单
+					   $('#aa').accordion('select', '进度表');
+				   }
+				}
+			}
+		});
+		
+		//ajax如果不是第一次填写需要返回节点信息
+		
+		//事件绑定，点击提交就提交表单
+		$('#btn_submit').bind('click', function() {
+			$("#new_form").submit();
+		});
+		//绑定
+		$('#btn_submitNode').bind('click', function() {
+			$("#new_form1").submit();
+		});
+		
+		
+		 
+		//委托日期 使用databox 主要是判断注册日期是否大于现在的日期
+		$('#promiseDate').datebox({
+			required:true
+			});
+		//委托日期 使用databox 主要是判断注册日期是否大于现在的日期
+		$('#planDate').datebox({
+			required:true
+		});
+		//测试
+		/*var bigClassName = "泵";//大类名
+		var subLen = 5;//大类中有多少个子类
+		for(var j =0;j<subLen;j++){//对于每一个子类动态生成一行
+			var subName = "bend";//子类名称
+			var subNameCh = "弯管";//中文
+			var subId = 2;//子类的Id
+		}*/
+		/*var index = 3;//表示有多少个表格
+		for(i=0;i<index;i++){
+			var id="ss"+i;
+			var table=$('<table class="table_view3"   id="'+id+'">');
+		    table.prependTo($("#new_form"));
+		    $str='';
+		    $str+='<tr>';
+		    $str+='<td class="td_new_subtitle" colspan="2" ><strong>填写进度</strong></td>';//datalist[i].subClassName表示产品名称
+		    $str+='</tr>';
+		    var tem = "#"+id;
+		    $(tem).append($str);
+		    var subClassName = "产品名称";
+		    $str='';
+		    $str+='<tr>';
+		    $str+='<td class="td_view_name" width="250px">产品名称</td>';
+		    $str+='<td class="td_view_value" width="250px">'+subClassName+'</td>';//datalist[i].subClassName表示产品名称
+		    $str+='</tr>';
+		    $str+='<tr>';
+		    $str+='<td class="td_view_name" >产品规格</td>';
+		    $str+='<td class="td_view_value" ><input  class="easyui-validatebox input_180" type="text" name="" /></td>';//填写产品规格
+		    $str+='</tr>';
+		    $(tem).append($str);
+		    var index2 =5;//表示有多少个节点
+		    for(var j=0;j<index2;j++){
+		    	var name = "热处理";//节点名称
+				var str = "支,米";
+				var danwei = str.split(",")//判断有几个单位
+				$str='';
+				$str+='<tr>';
+			    $str+='<td class="td_new_name">'+name+'</td>';
+			    if(danwei.length==1){
+			    	 $str+='<td class="td_new_value"><input  class="easyui-validatebox input_60" type="text" name="" />'+danwei[0]+'</td>';
+			    }
+			    else if(danwei.length==2){
+			    	 $str+='<td class="td_new_value"><input  class="easyui-validatebox input_60" type="text" name="" />'+danwei[0]+'&nbsp;&nbsp;<input  class="easyui-validatebox input_60" type="text" name="" />'+danwei[1]+'</td>';
+			    }
+			    else{
+			    	 $str+='<td class="td_new_value"><input  class="easyui-validatebox input_60" type="text" name="" />'+danwei[0]+'&nbsp;&nbsp;<input  class="easyui-validatebox input_60" type="text" name="" />'+danwei[1]+'&nbsp;&nbsp;<input  class="easyui-validatebox input_60" type="text" name="" />&nbsp;'+danwei[2]+'</td>';
+			    }
+				$str+='</tr>';
+				$(tem).append($str);
+		    }
+		    $str='';
+		    $str+='<tr>';
+		    $str+='<td class="td_new_name">本日完成比例</td>';
+		    $str+='<td class="td_new_value"><input  class="easyui-validatebox" type="text" name="" /></td>';
+		    $str+='</tr>';
+		    $str+='<tr>';
+		    $str+='<td class="td_new_name">计划完成日期</td>';
+		    $str+='<td class="td_new_value"><input  class="easyui-datebox " type="text" name="" /></td>';//填写产品规格
+		    $str+='</tr>';
+		    $str+='<tr>';
+		    $str+='<td class="td_new_name">约定完成日期</td>';
+		    $str+='<td class="td_new_value"><input  class="easyui-datebox " type="text" name="" /></td>';//填写产品规格
+		    $str+='</tr>';
+		    $(tem).append($str);
+		    $('.easyui-datebox').datebox({
+				required:true
+				});
+		}*/
+		
+});
+//选择节点的函数
+function init_choose(data){
+	node = data.node;//保存了已选好的节点
+	type = data.type;//保存了哪些子类
+	
+	if(type==null){$("#chooseNode").append('请先选择子类');return;}		
+	var length = type.length;
+	typenum = length;
+	for(var i=0;i<length;i++){
+		var bigTypeId = type[i].bigTypeId;
+		//var bigClassName = data[i].bigTypeName;//大类名
+		//var subLen = data[i].subClass.length;//大类中有多少个子类
+		//for(var j =0;j<subLen;j++){//对于每一个子类动态生成一行
+			var subId = type[i].typeMappingId;//映射Id
+			var subName = type[i].smallTypeName;//二级子类名称
+			var subSubName = type[i].threeLevelName==null?'':type[i].threeLevelName;//三级子类名称
+			
+			if(bigTypeId == 1){//如果是输送管
+				$str='';
+				$str+='<tr>';
+			    $str+='<td align="center">输送管<span class="red" style="display: none;" id="x1">*</span></td>';//<input type="hidden" name="bigClassName" value="'+bigClassName+'" />
+			    $str+='<input type="hidden" name="list['+i+'].typeId" value="'+subId+'" /><input type="hidden" name="list['+i+'].nodeidstr" id="nodeidstr'+i+'"/><td align="center">'+subName+'</td><td align="center">'+subSubName+'</td>';
+			    $str+='<td class="td_new_value" align="center"><input type="checkbox"  name="node'+i+'" id="delivery1'+i+'" value="1"/>到料&nbsp;<input type="checkbox"  name="node'+i+'" id="delivery2'+i+'" value="2"/>轧/拔制&nbsp;<input type="checkbox"  name="node'+i+'" id="delivery3'+i+'" value="3"/>成型焊接&nbsp;<input type="checkbox"  name="node'+i+'" id="delivery4'+i+'" value="4"/>无损检测&nbsp;<input type="checkbox"  name="node'+i+'" id="delivery5'+i+'" value="5"/>水压试验&nbsp;<input type="checkbox"  name="node'+i+'" id="delivery6'+i+'" value="6"/>降级&nbsp;<input type="checkbox"  name="node'+i+'" id="delivery7'+i+'"  value="7" checked="checked" DISABLED/>成品入库&nbsp;<input type="checkbox"  name="node'+i+'" id="delivery8'+i+'" value="8" />涂覆&nbsp;<input type="checkbox"  name="node'+i+'" id="delivery9'+i+'"  value="9" />防腐管入库&nbsp;<input type="checkbox" id="delivery10'+i+'" name="node'+i+'"  value="10" />防腐管留放&nbsp;<input type="checkbox"  name="node'+i+'" id="delivery11'+i+'" value="11" checked="checked" DISABLED/>发运&nbsp;</td>';//<input type="checkbox"  name="node'+i+'" id="delivery12'+i+'" value="12"  checked="checked" DISABLED/>本日完成比例&nbsp;<input type="checkbox"  name="node'+i+'" id="delivery13'+i+'" value="13"  checked="checked" DISABLED/>计划完成日期&nbsp;<input type="checkbox"  name="node'+i+'" id="delivery14'+i+'" value="14"  checked="checked" DISABLED/>约定完成日期&nbsp;</td>';
+			    $str+='</tr>';
+				$("#chooseNode").append($str);
+				 $("input[id^='delivery8']").change(function(){ 
+					 var that = $(this).attr('id');
+					 var curnum=that.substr(9);
+					 var a = "#delivery9"+curnum;
+					 var b = "#delivery10"+curnum;
+					 if($(this).attr("checked")){  
+						 $(a).attr("checked",true);
+						 $(b).attr("checked",true);
+					   }     
+					 else{
+						 $(a).attr("checked",false);
+						 $(b).attr("checked",false);
+					 }
+				 }); 
+				 $("[id^='delivery9']").change(function(){ 
+					 var that = $(this).attr('id');
+					 var curnum=that.substr(9);
+					 var a = "#delivery8"+curnum;
+					 var b = "#delivery10"+curnum;
+					 if($(this).attr("checked")){  
+						 $(a).attr("checked",true);
+						 $(b).attr("checked",true);
+					   }     
+					 else{
+						 $(a).attr("checked",false);
+						 $(b).attr("checked",false);
+					 }
+				 }); $("[id^='delivery10']").change(function(){ 
+					 var that = $(this).attr('id');
+					 var curnum=that.substr(10);
+					 var a = "#delivery9"+curnum;
+					 var b = "#delivery8"+curnum;
+					 if($(this).attr("checked")){  
+						 $(a).attr("checked",true);
+						 $(b).attr("checked",true);
+					   }     
+					 else{
+						 $(a).attr("checked",false);
+						 $(b).attr("checked",false);
+					 }
+				 });
+				 if(node != null && node[i] != null){
+					var strs= new Array(); 
+					strs=node[i].nodeidstr.split(",");
+					for(s in strs){
+						$("#delivery"+strs[s]+i).attr("checked",true);
+					}
+				 }
+				 else
+					 $("#x1").show();
+			}
+			else if(bigTypeId == 2){//弯管
+				$str='';
+				$str+='<tr>';
+			    $str+='<td align="center">弯管<span class="red" style="display: none;" id="x2">*</span></td>';//<input type="hidden" name="bigClassName" value="'+bigClassName+'" />
+			    //$str+='<td align="center"><input type="hidden" name="subName" value="'+subName+'" /><input type="hidden" name="subID" value="'+subId+'" />'+subNameCh+'</td>';
+			    $str+='<input type="hidden" name="list['+i+'].typeId" value="'+subId+'" /><input type="hidden" name="list['+i+'].nodeidstr" id="nodeidstr'+i+'"/><td align="center">'+subName+'</td><td align="center">'+subSubName+'</td>';
+			    $str+='<td class="td_new_value" align="center"><input type="checkbox"  name="node'+i+'"  value="1" id="bend1'+i+'" checked="checked" DISABLED/>母管到料&nbsp;<input type="checkbox"  name="node'+i+'"  value="2" id="bend2'+i+'" checked="checked" DISABLED/>成型&nbsp;<input type="checkbox"  name="node'+i+'" id="bend3'+i+'" value="3" />热处理&nbsp;<input type="checkbox"  name="node'+i+'" id="bend4'+i+'" value="4" />无损检测&nbsp;<input type="checkbox"  name="node'+i+'"  value="5" id="bend5'+i+'" checked="checked" DISABLED/>成品入库&nbsp;<input type="checkbox" id="bend6'+i+'" name="node'+i+'"  value="6" />涂覆&nbsp;<input type="checkbox"  name="node'+i+'"  value="7" id="bend7'+i+'" />防腐管入库&nbsp;<input type="checkbox"  name="node'+i+'" id="bend8'+i+'" value="8" />防腐管留放&nbsp;<input type="checkbox"  name="node'+i+'" id="bend9'+i+'"  value="9" checked="checked" DISABLED/>发运&nbsp;</td>';//<input type="checkbox"  name="node'+i+'"  value="10" id="bend10'+i+'" checked="checked" DISABLED/>本日完成比例&nbsp;<input type="checkbox"  name="node'+i+'"  value="11" id="bend11'+i+'" checked="checked" DISABLED/>计划完成日期&nbsp;<input type="checkbox"  name="node'+i+'"  value="12" id="bend12'+i+'" checked="checked" DISABLED/>约定完成日期&nbsp;</td>';
+			    $str+='</tr>';
+				$("#chooseNode").append($str);
+				 $("[id^='bend6']").change(function(){ 
+					 var that = $(this).attr('id');
+					 var curnum=that.substr(5);
+					 var a = "#bend7"+curnum;
+					 var b = "#bend8"+curnum;
+					 if($(this).attr("checked")){  
+						 $(a).attr("checked",true);
+						 $(b).attr("checked",true);
+					   }     
+					 else{
+						 $(a).attr("checked",false);
+						 $(b).attr("checked",false);
+					 }
+				 }); 
+				 $("[id^='bend7']").change(function(){ 
+					 var that = $(this).attr('id');
+					 var curnum=that.substr(5);
+					 var a = "#bend6"+curnum;
+					 var b = "#bend8"+curnum;
+					 if($(this).attr("checked")){  
+						 $(a).attr("checked",true);
+						 $(b).attr("checked",true);
+					   }     
+					 else{
+						 $(a).attr("checked",false);
+						 $(b).attr("checked",false);
+					 }
+				 });
+				 $("[id^='bend8']").change(function(){ 
+					 var that = $(this).attr('id');
+					 var curnum=that.substr(5);
+					 var a = "#bend7"+curnum;
+					 var b = "#bend6"+curnum;
+					 if($(this).attr("checked")){  
+						 $(a).attr("checked",true);
+						 $(b).attr("checked",true);
+					   }     
+					 else{
+						 $(a).attr("checked",false);
+						 $(b).attr("checked",false);
+					 }
+				 });
+				 if(node != null && node[i] != null){
+						var strs= new Array(); 
+						strs=node[i].nodeidstr.split(",");
+						for(s in strs){
+							$("#bend"+strs[s]+i).attr("checked",true);
+						}
+				}
+				 else
+					 $("#x2").show();
+			}
+			else if(bigTypeId == 3){//输送管或弯管
+				$str='';
+				$str+='<tr>';
+			    $str+='<td align="center">输送管或弯管防腐<span class="red" style="display: none;" id="x3">*</span></td>';//<input type="hidden" name="bigClassName" value="'+bigClassName+'" />
+			    //$str+='<td align="center"><input type="hidden" name="subName" value="'+subName+'" /><input type="hidden" name="subID" value="'+subId+'" />'+subNameCh+'</td>';
+			    $str+='<input type="hidden" name="list['+i+'].typeId" value="'+subId+'" /><input type="hidden" name="list['+i+'].nodeidstr" id="nodeidstr'+i+'"/><td align="center">'+subName+'</td><td align="center">'+subSubName+'</td>';
+			    $str+='<td class="td_new_value" align="center"><input type="checkbox"  name="node'+i+'" id="deliveryOrBend1'+i+'" value="1" />钢管接收&nbsp;<input type="checkbox"  name="node'+i+'" id="deliveryOrBend2'+i+'" value="2" />弯管接收&nbsp;<input type="checkbox"  name="node'+i+'" id="deliveryOrBend3'+i+'" value="3" checked="checked" DISABLED/>涂覆&nbsp;<input type="checkbox"  name="node'+i+'" id="deliveryOrBend4'+i+'" value="4" checked="checked" DISABLED/>防腐管入库&nbsp;<input type="checkbox"  name="node'+i+'" id="deliveryOrBend5'+i+'" value="5" checked="checked" DISABLED/>防腐管留放&nbsp;<input type="checkbox"  name="node'+i+'" id="deliveryOrBend6'+i+'" value="6" checked="checked" DISABLED/>发运&nbsp;</td>';//<input type="checkbox"  name="node'+i+'" id="deliveryOrBend7'+i+'" value="7" checked="checked" DISABLED />本日完成比例&nbsp;<input type="checkbox"  name="node'+i+'" id="deliveryOrBend8'+i+'" value="8" checked="checked" DISABLED/>计划完成日期&nbsp;<input type="checkbox"  name="node'+i+'" id="deliveryOrBend9'+i+'"  value="9" checked="checked" DISABLED/>约定完成日期&nbsp;</td>';
+			    $str+='</tr>';
+				$("#chooseNode").append($str);
+				if(node != null && node[i] != null){
+					var strs= new Array(); 
+					strs=node[i].nodeidstr.split(",");
+					for(s in strs){
+						$("#deliveryOrBend"+strs[s]+i).attr("checked",true);
+					}
+			    }
+				else
+					 $("#x3").show();
+			}
+			else if(bigTypeId == 4){//石油专用管oilPipe
+				$str='';
+				$str+='<tr>';
+			    $str+='<td align="center">石油专用管<span class="red" style="display: none;" id="x4">*</span></td>';
+			    //$str+='<td align="center"><input type="hidden" name="subName" value="'+subName+'" /><input type="hidden" name="subID" value="'+subId+'" />'+subNameCh+'</td>';
+			    $str+='<input type="hidden" name="list['+i+'].typeId" value="'+subId+'" /><input type="hidden" name="list['+i+'].nodeidstr" id="nodeidstr'+i+'"/><td align="center">'+subName+'</td><td align="center">'+subSubName+'</td>';
+			    $str+='<td class="td_new_value" align="center"><input type="checkbox"  name="node'+i+'" id="oilPipe1'+i+'" value="1" />钢管成型数量&nbsp;<input type="checkbox"  name="node'+i+'" id="oilPipe2'+i+'" value="2" />无损检测&nbsp;<input type="checkbox"  name="node'+i+'" id="oilPipe3'+i+'" value="3" />钢管尺寸检验&nbsp;<input type="checkbox"  name="node'+i+'" id="oilPipe4'+i+'" value="4" checked="checked" DISABLED/>螺纹加工&nbsp;<input type="checkbox"  name="node'+i+'" id="oilPipe5'+i+'" value="5" checked="checked" DISABLED/>水压、拧接、通径&nbsp;<input type="checkbox"  name="node'+i+'" id="oilPipe6'+i+'" value="6" checked="checked" DISABLED/>成品入库&nbsp;<input type="checkbox"  name="node'+i+'" id="oilPipe7'+i+'" value="7" checked="checked" DISABLED/>发运&nbsp;</td>';//<input type="checkbox"  name="node'+i+'" id="oilPipe8'+i+'" value="8" checked="checked" DISABLED />本日完成比例&nbsp;<input type="checkbox"  name="node'+i+'" id="oilPipe9'+i+'" value="9" checked="checked" DISABLED/>计划完成日期&nbsp;<input type="checkbox"  name="node'+i+'" id="oilPipe10'+i+'"  value="10" checked="checked" DISABLED/>约定完成日期&nbsp;</td>';
+			    $str+='</tr>';
+				$("#chooseNode").append($str);
+				if(node != null && node[i] != null){
+					var strs= new Array(); 
+					strs=node[i].nodeidstr.split(",");
+					for(s in strs){
+						$("#oilPipe"+strs[s]+i).attr("checked",true);
+					}
+			    }
+				else
+					 $("#x4").show();
+			}
+			else if(bigTypeId == 5){//管件、法兰fittings
+				$str='';
+				$str+='<tr>';
+			    $str+='<td align="center">管件、法兰<span class="red" style="display: none;" id="x5">*</span></td>';
+			    //$str+='<td align="center"><input type="hidden" name="subName" value="'+subName+'" /><input type="hidden" name="subID" value="'+subId+'" />'+subNameCh+'</td>';
+			    $str+='<input type="hidden" name="list['+i+'].typeId" value="'+subId+'" /><input type="hidden" name="list['+i+'].nodeidstr" id="nodeidstr'+i+'"/><td align="center">'+subName+'</td><td align="center">'+subSubName+'</td>';
+			    $str+='<td class="td_new_value" align="center"><input type="checkbox"  name="node'+i+'" id="fittings1'+i+'" value="1" />下料&nbsp;<input type="checkbox"  name="node'+i+'" id="fittings2'+i+'" value="2" />成型&nbsp;<input type="checkbox"  name="node'+i+'" id="fittings3'+i+'" value="3" />焊接&nbsp;<input type="checkbox"  name="node'+i+'" id="fittings4'+i+'" value="4" />热处理&nbsp;<input type="checkbox"  name="node'+i+'" id="fittings5'+i+'" value="5" />无损检测&nbsp;<input type="checkbox"  name="node'+i+'" id="fittings6'+i+'" value="6" checked="checked" DISABLED/>成品入库&nbsp;<input type="checkbox"  name="node'+i+'" id="fittings7'+i+'" value="7" checked="checked" DISABLED/>发运&nbsp;</td>';//<input type="checkbox"  name="node'+i+'" id="fittings8'+i+'" value="8" checked="checked" DISABLED />本日完成比例&nbsp;<input type="checkbox"  name="node'+i+'" id="fittings9'+i+'" value="9" checked="checked" DISABLED/>计划完成日期&nbsp;<input type="checkbox"  name="node'+i+'"  id="fittings10'+i+'" value="10" checked="checked" DISABLED/>约定完成日期&nbsp;</td>';
+			    $str+='</tr>';
+				$("#chooseNode").append($str);
+				if(node != null && node[i] != null){
+					var strs= new Array(); 
+					strs=node[i].nodeidstr.split(",");
+					for(s in strs){
+						$("#fittings"+strs[s]+i).attr("checked",true);
+					}
+			    }
+				else
+					 $("#x5").show();
+			}
+			else if(bigTypeId == 6){//阀门valve
+				$str='';
+				$str+='<tr>';
+			    $str+='<td align="center">阀门<span class="red" style="display: none;" id="x6">*</span></td>';
+			    //$str+='<td align="center"><input type="hidden" name="subName" value="'+subName+'" /><input type="hidden" name="subID" value="'+subId+'" />'+subNameCh+'</td>';
+			    $str+='<input type="hidden" name="list['+i+'].typeId" value="'+subId+'" /><input type="hidden" name="list['+i+'].nodeidstr" id="nodeidstr'+i+'"/><td align="center">'+subName+'</td><td align="center">'+subSubName+'</td>';
+			    $str+='<td class="td_new_value" align="center"><input type="checkbox"  name="node'+i+'" id="valve1'+i+'" value="1" />阀体到料&nbsp;<input type="checkbox" id="valve2'+i+'"  name="node'+i+'" id="valve2'+i+'" value="2" checked="checked" DISABLED/>阀体加工&nbsp;<input type="checkbox"  name="node'+i+'" id="valve3'+i+'" value="3" />阀体焊接&nbsp;<input type="checkbox"  name="node'+i+'" id="valve4'+i+'" value="4" />无损检测&nbsp;<input type="checkbox"  name="node'+i+'" id="valve5'+i+'" value="5" checked="checked" DISABLED/>总装&nbsp;<input type="checkbox"  name="node'+i+'" id="valve6'+i+'" value="6" checked="checked" DISABLED/>强度/密封试验&nbsp;<input type="checkbox"  name="node'+i+'"  value="7" id="valve7'+i+'" checked="checked" DISABLED/>油漆标识&nbsp;<input type="checkbox"  name="node'+i+'" id="valve8'+i+'" value="8" checked="checked" DISABLED />成品入库&nbsp;<input type="checkbox"  name="node'+i+'" id="valve9'+i+'" value="9" checked="checked" DISABLED/>发运&nbsp;</td>';//<input type="checkbox"  name="node'+i+'" id="valve10'+i+'"  value="10" checked="checked" DISABLED/>本日完成比例&nbsp;<input type="checkbox"  name="node'+i+'"  id="valve11'+i+'" value="11" checked="checked" DISABLED/>计划完成日期&nbsp;<input type="checkbox"  name="node'+i+'"  id="valve12'+i+'" value="12" checked="checked" DISABLED/>约定完成日期&nbsp;</td>';
+			    $str+='</tr>';
+				$("#chooseNode").append($str);
+				if(node != null && node[i] != null){
+					var strs= new Array(); 
+					strs=node[i].nodeidstr.split(",");
+					for(s in strs){
+						$("#valve"+strs[s]+i).attr("checked",true);
+					}
+			    }
+				else
+					 $("#x6").show();
+			}
+			else if(bigTypeId == 7){//设备
+				if(subId == 96){//设备（泵）pump
+					$str='';
+					$str+='<tr>';
+				    $str+='<td align="center">设备（泵）<span class="red" style="display: none;" id="x7">*</span></td>';
+				    //$str+='<td align="center"><input type="hidden" name="subName" value="'+subName+'" /><input type="hidden" name="subID" value="'+subId+'" />'+subNameCh+'</td>';
+				    $str+='<input type="hidden" name="list['+i+'].typeId" value="'+subId+'" /><input type="hidden" name="list['+i+'].nodeidstr" id="nodeidstr'+i+'"/><td align="center">'+subName+'</td><td align="center">'+subSubName+'</td>';
+				    $str+='<td class="td_new_value" align="center"><input type="checkbox" id="pump1'+i+'" name="node'+i+'"  value="1" />泵体加工检验&nbsp;<input type="checkbox"  name="node'+i+'" id="pump2'+i+'" value="2" />主轴加工检验&nbsp;<input type="checkbox"  name="node'+i+'" id="pump3'+i+'" value="3" />叶轮加工检验&nbsp;<input type="checkbox" id="pump4'+i+'" name="node'+i+'" value="4" />总装&nbsp;<input type="checkbox" id="pump5'+i+'" name="node'+i+'"  value="5" />性能测试&nbsp;<input type="checkbox"  name="node'+i+'" id="pump6'+i+'" value="6" />油漆标识&nbsp;<input type="checkbox"  name="node'+i+'" id="pump7'+i+'" value="7" />成品入库&nbsp;<input type="checkbox"  name="node'+i+'" id="pump8'+i+'" value="8" checked="checked" DISABLED />发运&nbsp;</td>';//<input type="checkbox"  name="node'+i+'" id="pump9'+i+'"  value="9" checked="checked" DISABLED/>本日完成比例&nbsp;<input type="checkbox"  name="node'+i+'" id="pump10'+i+'"  value="10" checked="checked" DISABLED/>计划完成日期&nbsp;<input type="checkbox"  name="node'+i+'" id="pump11'+i+'"  value="11" checked="checked" DISABLED/>约定完成日期&nbsp;</td>';
+				    $str+='</tr>';
+					$("#chooseNode").append($str);
+					if(node != null && node[i] != null){
+						var strs= new Array(); 
+						strs=node[i].nodeidstr.split(",");
+						for(s in strs){
+							$("#pump"+strs[s]+i).attr("checked",true);
+						}
+				    }
+					else
+						 $("#x7").show();
+				}
+				else{//（炉类等）equipment
+					$str='';
+					$str+='<tr>';
+				    $str+='<td align="center">设备（炉类等）<span class="red" style="display: none;" id="x8">*</span></td>';
+				    //$str+='<td align="center"><input type="hidden" name="subName" value="'+subName+'" /><input type="hidden" name="subID" value="'+subId+'" />'+subNameCh+'</td>';
+				    $str+='<input type="hidden" name="list['+i+'].typeId" value="'+subId+'" /><input type="hidden" name="list['+i+'].nodeidstr" id="nodeidstr'+i+'"/><td align="center">'+subName+'</td><td align="center">'+subSubName+'</td>';
+				    $str+='<td class="td_new_value" align="center"><input type="checkbox"  name="node'+i+'" id="equipment1'+i+'" value="1" />主材到料及复验&nbsp;<input type="checkbox"  name="node'+i+'" id="equipment2'+i+'" value="2" />壳体下料&nbsp;<input type="checkbox"  name="node'+i+'" id="equipment3'+i+'" value="3" />封头、盲板&nbsp;<input type="checkbox"  name="node'+i+'" id="equipment4'+i+'" value="4" />撬装底座组装焊接&nbsp;<input type="checkbox"  name="node'+i+'" id="equipment5'+i+'" value="5" />接管法兰等锻件&nbsp;<input type="checkbox"  name="node'+i+'" id="equipment6'+i+'" value="6" />壳体组装焊接&nbsp;<input type="checkbox"  name="node'+i+'" id="equipment7'+i+'" value="7" />接管组装焊接&nbsp;<input type="checkbox"  name="node'+i+'" id="equipment8'+i+'" value="8" />内件组装焊接&nbsp;<input type="checkbox"  name="node'+i+'" id="equipment9'+i+'" value="9" />预焊件、附件装焊&nbsp;<input type="checkbox"  name="node'+i+'" id="equipment10'+i+'"  value="10" />管线组装&nbsp;<input type="checkbox"  name="node'+i+'" id="equipment11'+i+'"  value="11" />无损检测&nbsp;<input type="checkbox"  name="node'+i+'" id="equipment12'+i+'"  value="12" />热处理&nbsp;<input type="checkbox"  name="node'+i+'" id="equipment13'+i+'" value="13"/>水压试验&nbsp;<input type="checkbox"  name="node'+i+'" id="equipment14'+i+'" value="14" />气压试验&nbsp;<input type="checkbox"  name="node'+i+'" id="equipment15'+i+'" value="15"  />筑炉&nbsp;<input type="checkbox"  name="node'+i+'" id="equipment16'+i+'" value="16"  />保温&nbsp;<input type="checkbox"  name="node'+i+'" id="equipment17'+i+'" value="17"  />调试试验&nbsp;<input type="checkbox"  name="node'+i+'" id="equipment18'+i+'" value="18" />油漆标识&nbsp;<input type="checkbox"  name="node'+i+'" id="equipment19'+i+'" value="19"  checked="checked" DISABLED/>发运&nbsp;</td>';//<input type="checkbox"  name="node'+i+'"  value="20" id="equipment20'+i+'" checked="checked" DISABLED/>本日完成比例&nbsp;<input type="checkbox"  name="node'+i+'" id="equipment21'+i+'" value="21"  checked="checked" DISABLED/>计划完成日期&nbsp;<input type="checkbox"  name="node'+i+'"  value="22" id="equipment22'+i+'" checked="checked" DISABLED/>约定完成日期&nbsp;<input type="checkbox"  name="node'+i+'"  value="23" id="equipment23'+i+'" checked="checked" DISABLED/>本日生产检验情况概述&nbsp;</td>';
+				    $str+='</tr>';
+					$("#chooseNode").append($str);
+					if(node != null && node[i] != null){
+						var strs= new Array(); 
+						strs=node[i].nodeidstr.split(",");
+						for(s in strs){
+							$("#equipment"+strs[s]+i).attr("checked",true);
+						}
+				    }
+					else
+						 $("#x8").show();
+				}
+			}
+			else if(bigTypeId == 8){//钻具drillingTools
+				$str='';
+				$str+='<tr>';
+			    $str+='<td align="center">钻具<span class="red" style="display: none;" id="x9">*</span></td>';
+			    //$str+='<td align="center"><input type="hidden" name="subName" value="'+subName+'" /><input type="hidden" name="subID" value="'+subId+'" />'+subNameCh+'</td>';
+			    $str+='<input type="hidden" name="list['+i+'].typeId" value="'+subId+'" /><input type="hidden" name="list['+i+'].nodeidstr" id="nodeidstr'+i+'"/><td align="center">'+subName+'</td><td align="center">'+subSubName+'</td>';
+			    $str+='<td class="td_new_value" align="center"><input type="checkbox" id="drillingTools1'+i+'" name="node'+i+'"  value="1" />到料&nbsp;<input type="checkbox"  name="node'+i+'" id="drillingTools2'+i+'" value="2" />管体调质&nbsp;<input type="checkbox"  name="node'+i+'" id="drillingTools3'+i+'" value="3" />钻孔车圆&nbsp;<input type="checkbox"  name="node'+i+'" id="drillingTools4'+i+'" value="4" />摩擦焊接&nbsp;<input type="checkbox"  name="node'+i+'" id="drillingTools5'+i+'" value="5" checked="checked" DISABLED/>无损检测&nbsp;<input type="checkbox"  name="node'+i+'" id="drillingTools6'+i+'" value="6" checked="checked" DISABLED/>螺纹加工&nbsp;<input type="checkbox"  name="node'+i+'" id="drillingTools7'+i+'" value="7" />钻铤螺旋加工&nbsp;<input type="checkbox"  name="node'+i+'" id="drillingTools8'+i+'" value="8" checked="checked" DISABLED />涂覆&nbsp;<input type="checkbox"  name="node'+i+'" id="drillingTools9'+i+'" value="9" checked="checked" DISABLED />成品入库&nbsp;<input type="checkbox"  name="node'+i+'" id="drillingTools10'+i+'" value="10" checked="checked" DISABLED />发运&nbsp;</td>';//<input type="checkbox"  name="node'+i+'" id="drillingTools11'+i+'"  value="11" checked="checked" DISABLED/>本日完成比例&nbsp;<input type="checkbox"  name="node'+i+'"  id="drillingTools12'+i+'" value="12" checked="checked" DISABLED/>计划完成日期&nbsp;<input type="checkbox"  name="node'+i+'"  id="drillingTools13'+i+'" value="13" checked="checked" DISABLED/>约定完成日期&nbsp;</td>';
+			    $str+='</tr>';
+				$("#chooseNode").append($str);
+				if(node != null && node[i] != null){
+					var strs= new Array(); 
+					strs=node[i].nodeidstr.split(",");
+					for(s in strs){
+						$("#drillingTools"+strs[s]+i).attr("checked",true);
+					}
+			    }
+				else
+					 $("#x9").show();
+			}
+			else if(bigTypeId == 9){//绝缘接头insulatedJoints
+				$str='';
+				$str+='<tr>';
+			    $str+='<td align="center">绝缘接头<span class="red" style="display: none;" id="x10">*</span></td>';
+			    //$str+='<td align="center"><input type="hidden" name="subName" value="'+subName+'" /><input type="hidden" name="subID" value="'+subId+'" />'+subNameCh+'</td>';
+			    $str+='<input type="hidden" name="list['+i+'].typeId" value="'+subId+'" /><input type="hidden" name="list['+i+'].nodeidstr" id="nodeidstr'+i+'"/><td align="center">'+subName+'</td><td align="center">'+subSubName+'</td>';
+			    $str+='<td class="td_new_value" align="center"><input type="checkbox" id="insulatedJoints1'+i+'" name="node'+i+'"  value="1" />原材料到料及复验&nbsp;<input type="checkbox" id="insulatedJoints2'+i+'" name="node'+i+'"  value="2" />左右法兰加工检验&nbsp;<input type="checkbox"  name="node'+i+'" id="insulatedJoints3'+i+'" value="3" />上下短管加工检验&nbsp;<input type="checkbox"  name="node'+i+'" id="insulatedJoints4'+i+'" value="4" />组装焊接&nbsp;<input type="checkbox"  name="node'+i+'" id="insulatedJoints5'+i+'" value="5" />焊缝检测&nbsp;<input type="checkbox"  name="node'+i+'" id="insulatedJoints6'+i+'" value="6" checked="checked" DISABLED/>水压试验&nbsp;<input type="checkbox"  name="node'+i+'" id="insulatedJoints7'+i+'" value="7" checked="checked" DISABLED/>水压加弯矩试验工&nbsp;<input type="checkbox"  name="node'+i+'" id="insulatedJoints8'+i+'" value="8"  />气密性试验&nbsp;<input type="checkbox"  name="node'+i+'" id="insulatedJoints9'+i+'" value="9"  />绝缘电阻及电绝缘强度试验&nbsp;<input type="checkbox"  name="node'+i+'" id="insulatedJoints10'+i+'" value="10" />防腐涂层&nbsp;<input type="checkbox"  name="node'+i+'" id="insulatedJoints11'+i+'"  value="11" checked="checked" DISABLED/>成品入库&nbsp;<input type="checkbox"  name="node'+i+'" id="insulatedJoints12'+i+'"  value="12" checked="checked" DISABLED/>发运&nbsp;</td>';//<input type="checkbox"  name="node'+i+'" id="insulatedJoints13'+i+'"  value="13" checked="checked" DISABLED/>本日完成比例&nbsp;<input type="checkbox"  name="node'+i+'" id="insulatedJoints14'+i+'"  value="14" checked="checked" DISABLED/>计划完成日期&nbsp;<input type="checkbox"  name="node'+i+'" id="insulatedJoints15'+i+'"  value="15" checked="checked" DISABLED/>约定完成日期&nbsp;</td>';
+			    $str+='</tr>';
+				$("#chooseNode").append($str);
+				if(node != null && node[i] != null){
+					var strs= new Array(); 
+					strs=node[i].nodeidstr.split(",");
+					for(s in strs){
+						$("#insulatedJoints"+strs[s]+i).attr("checked",true);
+					}
+			    }
+				else
+					 $("#x10").show();
+			}
+		//}
+	}
+}
+function recordNodeId(){
+	for(var i = 0; i < typenum; i++){
+		var nodeIds = document.getElementsByName("node"+i);
+		var nodeIdsVal 	= '';
+		for(var k = 0; k < nodeIds.length; k++){
+			var tempObject 	= 	nodeIds[k];
+			if(tempObject.checked){
+			   var currentId 	= 	tempObject.id;
+			   nodeIdsVal 	   += 	document.getElementById(currentId).value + ",";
+			}
+		}
+		if(nodeIdsVal.length > 0){
+			nodeIdsVal = nodeIdsVal.substring(0,nodeIdsVal.length-1);
+		} 
+		//alert(nodeIdsVal);
+		document.getElementById("nodeidstr"+i).value = nodeIdsVal; 
+	}
+}
+	
+
+function init_node(data){
+	var list = data.list;
+	//var scheduleTable = data.table;
+	if(list==null) {$("#new_form").append('请先选择进度节点');return;}
+	var t1=t2=t3=t4=t5=t6=t7=t8=t9=t10=0;
+	//var product = data.product;//保存了产品名称规格等
+	//alert(table);
+	var index = list.length;
+	if(index==0) {$("#new_form").append('请先填写物资清单');return;}
+	for(i=0;i<index;i++){
+		var id="ss"+i;
+		var table=$('<table class="table_view3" id="'+id+'">');
+	    table.appendTo($("#new_form"));
+	    $str='';
+	    $str+='<tr>';
+	    $str+='<td class="td_new_subtitle" colspan="2" ><strong>填写进度</strong></td>';//
+	    $str+='</tr>';
+	    var tem = "#"+id;
+	    $(tem).append($str);
+	    $str='';
+	    $str+='<tr>';
+	    $str+='<td class="td_view_name">产品名称</td>';
+	    $str+='<td class="td_view_value">'+list[i].goodsLists.goodName+'</td>';
+	    $str+='</tr>';
+	    $str+='<tr>';
+	    $str+='<td class="td_view_name">产品规格</td>';
+	    //$str+='<td class="td_view_value"><input  class="easyui-validatebox input_180" type="text" name="" /></td>';//填写产品规格
+	    $str+='<td class="td_view_value">'+list[i].goodsLists.goodSpecifications+'</td>';//填写产品规格
+	    $str+='</tr>';
+	    if(list[i].bigTypeId == 7 && list[i].goodsLists.goodId != 96){
+		    $str+='<tr>';
+		    $str+='<td class="td_view_name">产品编号</td>';
+		    $str+='<td class="td_view_value">'+list[i].goodsLists.productNum+'</td>';
+		    $str+='</tr>';
+	    }
+	    $(tem).append($str);
+		
+		if(list[i].scheduleTableList == null) continue;
+		var namePrefix;
+		if(list[i].bigTypeId == 1){
+			namePrefix = 'shuSongGuan['+t1+']';
+			t1++;
+		}
+		else if(list[i].bigTypeId == 2){
+			namePrefix = 'wanGuan['+t2+']';
+			t2++;
+		}
+		else if(list[i].bigTypeId == 3){
+			namePrefix = 'fangFu['+t3+']';
+			t3++;
+		}
+		else if(list[i].bigTypeId == 4){
+			namePrefix = 'shiYou['+t4+']';
+			t4++;
+		}
+		else if(list[i].bigTypeId == 5){
+			namePrefix = 'guanJian['+t5+']';
+			t5++;
+		}
+		else if(list[i].bigTypeId == 6){
+			namePrefix = 'faMen['+t6+']';
+			t6++;
+		}
+		else if(list[i].bigTypeId == 7){
+			if(list[i].goodsLists.goodId == 96){
+				namePrefix = 'sheBeiBeng['+t8+']';
+				t8++;
+			}
+			else{
+				namePrefix = 'sheBei['+t7+']';
+				t7++;
+			}
+			
+		}
+		else if(list[i].bigTypeId == 8){
+			namePrefix = 'zuanJu['+t9+']';
+			t9++;
+		}
+		else if(list[i].bigTypeId == 9){
+			namePrefix = 'jueYuan['+t10+']';
+			t10++;
+		}
+		$(tem).append('<tr style="display:none;"><td colspan="2"><input type="hidden" name="'+namePrefix+'.typeId" value="'+list[i].goodsLists.id+'" /></td></tr>');
+		
+	    
+	    var index2 = list[i].scheduleTableList.length;//表示有多少个节点
+	    for(var j=0;j<index2;j++){
+	    	var nameCh = list[i].scheduleTableList[j].nodeName;//节点中文名称
+	    	var nameHtml = list[i].scheduleTableList[j].name;//htmlname
+			var unit = list[i].scheduleTableList[j].unit;
+			//var danwei = str.split(",")//判断有几个单位
+			$str='';
+			$str+='<tr>';
+		    $str+='<td class="td_new_name">'+nameCh+'</td>';
+		    if(unit.length==1){
+		    	if(unit[0].length > 5)
+		    		$str+='<td class="td_new_value"><select class="easyui-combobox" name="'+namePrefix+'.'+nameHtml[0]+'"  editable="true" style="width: 140px"><option value="未开始">未开始</option><option value="正在进行">正在进行</option><option value="已完成">已完成</option></select>'+unit[0]+'</td>';
+		    	else
+		    	    $str+='<td class="td_new_value"><input  class="easyui-validatebox input_60" type="text" name="'+namePrefix+'.'+nameHtml[0]+'" />'+unit[0]+'</td>';
+		    }
+		    else if(unit.length==2){
+		    	 $str+='<td class="td_new_value"><input  class="easyui-validatebox input_60" type="text" name="'+namePrefix+'.'+nameHtml[0]+'" />'+unit[0]+'&nbsp;&nbsp;<input  class="easyui-validatebox input_60" type="text" name="'+namePrefix+'.'+nameHtml[1]+'" />'+unit[1]+'</td>';
+		    }
+		    else{
+		    	 $str+='<td class="td_new_value"><input  class="easyui-validatebox input_60" type="text" name="'+namePrefix+'.'+nameHtml[0]+'" />'+unit[0]+'&nbsp;&nbsp;<input  class="easyui-validatebox input_60" type="text" name="'+namePrefix+'.'+nameHtml[1]+'" />'+unit[1]+'&nbsp;&nbsp;<input  class="easyui-validatebox input_60" type="text" name="'+namePrefix+'.'+nameHtml[2]+'" />&nbsp;'+unit[2]+'</td>';
+		    }
+			$str+='</tr>';
+			$(tem).append($str);
+	    }
+	    $str='';
+/* 	    $str+='<tr>';
+	    $str+='<td class="td_new_name">本日完成比例</td>';
+	    $str+='<td class="td_new_value"><input  class="easyui-validatebox" type="text" name="" /></td>';
+	    $str+='</tr>'; */
+	    $str+='<tr>';
+	    $str+='<td class="td_new_name">计划完成日期</td>';
+	    var planDate = list[i].goodsLists.planDate==null?'':list[i].goodsLists.planDate;
+	    $str+='<td class="td_new_value">'+planDate+'</td>';//填写产品规格
+	    $str+='</tr>';
+	    $str+='<tr>';
+	    $str+='<td class="td_new_name">约定完成日期</td>';
+	    var promiseDate = list[i].goodsLists.promiseDate==null?'':list[i].goodsLists.promiseDate;
+	    $str+='<td class="td_new_value">'+promiseDate+'</td>';//填写产品规格
+	    $str+='</tr>';
+	    $(tem).append($str); 
+	    $("#new_form").append('</table>');
+	}
+	//alert(t1+' '+t2+' '+t3);
+	$('.easyui-datebox').datebox({
+		required:true
+	});
+	$("#writebtn").show();
+}
+	</script>
+</head>
+
+<body>
+	<span>子项目名称：</span><span id="projectName"></span>
+	<div id="aa" class="easyui-accordion" style="width:100%;height:100%;">
+    <div title="选择进度节点" data-options="iconCls:'icon-tip'" style="overflow:auto;padding:10px;">
+		<form id="new_form1" method="post" enctype="multipart/form-data">
+	        <!-- <input type="hidden" name="projectId"   		id="projectId" 	value="" /> -->
+	        <table class="table_new" id="chooseNode">
+		        <!-- <tr>
+			       <td class="td_new_subtitle" colspan="3" ><strong>选择进度节点</strong></td>
+		        </tr> -->
+	        </table>
+	
+	       <table class="table_new" id="choosebtn">
+		       <tr>
+			      <td align="center" width="100%"><a id="btn_submitNode" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok">确认提交</a></td>
+		       </tr>
+	       </table>
+       </form>
+    </div>
+    <div title="进度表" data-options="iconCls:'icon-list'" style="padding:10px;">
+		<form id="new_form" method="post" enctype="multipart/form-data">
+		    <table class="table_view3">
+		        <tr><td class="td_new_name">进度日期</td><td class="td_new_value"><input  class="easyui-datebox" type="text" name="whichDay" /></td></tr>
+		    </table>
+        </form>
+        <table class="table_new" id="writebtn" style="display: none;">
+		       <tr>
+			      <td align="center" width="100%"><a id="btn_submit" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok">确认提交</a></td>
+		       </tr>
+	    </table>
+    </div>
+    </div>
+
+	
+
+
+</body>
+</html>

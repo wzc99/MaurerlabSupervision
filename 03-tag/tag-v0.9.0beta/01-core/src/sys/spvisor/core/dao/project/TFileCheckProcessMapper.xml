@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="sys.spvisor.core.dao.project.TFileCheckProcessMapper" >
+  <resultMap id="BaseResultMap" type="sys.spvisor.core.entity.project.TFileCheckProcess" >
+    <id column="file_check_process_id" property="fileCheckProcessId" jdbcType="INTEGER" />
+    <result column="file_belong_to" property="fileBelongTo" jdbcType="VARCHAR" />
+    <result column="file_name" property="fileName" jdbcType="VARCHAR" />
+    <result column="file_current_status" property="fileCurrentStatus" jdbcType="INTEGER" />
+    <result column="file_operate_role" property="fileOperateRole" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    file_check_process_id, file_belong_to, file_name, file_current_status, file_operate_role
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="sys.spvisor.core.entity.project.TFileCheckProcessExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from t_file_check_process
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_file_check_process
+    where file_check_process_id = #{fileCheckProcessId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_file_check_process
+    where file_check_process_id = #{fileCheckProcessId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="sys.spvisor.core.entity.project.TFileCheckProcessExample" >
+    delete from t_file_check_process
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="sys.spvisor.core.entity.project.TFileCheckProcess" useGeneratedKeys="true" keyProperty="fileCheckProcessId" >
+    insert into t_file_check_process (file_belong_to, 
+      file_name, file_current_status, file_operate_role
+      )
+    values ( #{fileBelongTo,jdbcType=VARCHAR}, 
+      #{fileName,jdbcType=VARCHAR}, #{fileCurrentStatus,jdbcType=INTEGER}, #{fileOperateRole,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="sys.spvisor.core.entity.project.TFileCheckProcess" >
+    insert into t_file_check_process
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="fileCheckProcessId != null" >
+        file_check_process_id,
+      </if>
+      <if test="fileBelongTo != null" >
+        file_belong_to,
+      </if>
+      <if test="fileName != null" >
+        file_name,
+      </if>
+      <if test="fileCurrentStatus != null" >
+        file_current_status,
+      </if>
+      <if test="fileOperateRole != null" >
+        file_operate_role,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="fileCheckProcessId != null" >
+        #{fileCheckProcessId,jdbcType=INTEGER},
+      </if>
+      <if test="fileBelongTo != null" >
+        #{fileBelongTo,jdbcType=VARCHAR},
+      </if>
+      <if test="fileName != null" >
+        #{fileName,jdbcType=VARCHAR},
+      </if>
+      <if test="fileCurrentStatus != null" >
+        #{fileCurrentStatus,jdbcType=INTEGER},
+      </if>
+      <if test="fileOperateRole != null" >
+        #{fileOperateRole,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="sys.spvisor.core.entity.project.TFileCheckProcessExample" resultType="java.lang.Integer" >
+    select count(*) from t_file_check_process
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update t_file_check_process
+    <set >
+      <if test="record.fileCheckProcessId != null" >
+        file_check_process_id = #{record.fileCheckProcessId,jdbcType=INTEGER},
+      </if>
+      <if test="record.fileBelongTo != null" >
+        file_belong_to = #{record.fileBelongTo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.fileName != null" >
+        file_name = #{record.fileName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.fileCurrentStatus != null" >
+        file_current_status = #{record.fileCurrentStatus,jdbcType=INTEGER},
+      </if>
+      <if test="record.fileOperateRole != null" >
+        file_operate_role = #{record.fileOperateRole,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update t_file_check_process
+    set file_check_process_id = #{record.fileCheckProcessId,jdbcType=INTEGER},
+      file_belong_to = #{record.fileBelongTo,jdbcType=VARCHAR},
+      file_name = #{record.fileName,jdbcType=VARCHAR},
+      file_current_status = #{record.fileCurrentStatus,jdbcType=INTEGER},
+      file_operate_role = #{record.fileOperateRole,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="sys.spvisor.core.entity.project.TFileCheckProcess" >
+    update t_file_check_process
+    <set >
+      <if test="fileBelongTo != null" >
+        file_belong_to = #{fileBelongTo,jdbcType=VARCHAR},
+      </if>
+      <if test="fileName != null" >
+        file_name = #{fileName,jdbcType=VARCHAR},
+      </if>
+      <if test="fileCurrentStatus != null" >
+        file_current_status = #{fileCurrentStatus,jdbcType=INTEGER},
+      </if>
+      <if test="fileOperateRole != null" >
+        file_operate_role = #{fileOperateRole,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where file_check_process_id = #{fileCheckProcessId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="sys.spvisor.core.entity.project.TFileCheckProcess" >
+    update t_file_check_process
+    set file_belong_to = #{fileBelongTo,jdbcType=VARCHAR},
+      file_name = #{fileName,jdbcType=VARCHAR},
+      file_current_status = #{fileCurrentStatus,jdbcType=INTEGER},
+      file_operate_role = #{fileOperateRole,jdbcType=VARCHAR}
+    where file_check_process_id = #{fileCheckProcessId,jdbcType=INTEGER}
+  </update>
+</mapper>

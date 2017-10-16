@@ -1,0 +1,484 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="sys.spvisor.core.dao.process.TValveProcessMapper" >
+  <resultMap id="BaseResultMap" type="sys.spvisor.core.entity.process.TValveProcess" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="pro_id" property="proId" jdbcType="INTEGER" />
+    <result column="user_id" property="userId" jdbcType="INTEGER" />
+    <result column="valve_promise_date" property="valvePromiseDate" jdbcType="DATE" />
+    <result column="valve_sumbit_date" property="valveSumbitDate" jdbcType="DATE" />
+    <result column="valve_plan_date" property="valvePlanDate" jdbcType="DATE" />
+    <result column="valve_product_norm" property="valveProductNorm" jdbcType="VARCHAR" />
+    <result column="valve_body_arrive" property="valveBodyArrive" jdbcType="INTEGER" />
+    <result column="valve_body_process" property="valveBodyProcess" jdbcType="INTEGER" />
+    <result column="valve_final_assembly" property="valveFinalAssembly" jdbcType="INTEGER" />
+    <result column="valve_performance_test" property="valvePerformanceTest" jdbcType="INTEGER" />
+    <result column="valve_oil_paint" property="valveOilPaint" jdbcType="INTEGER" />
+    <result column="valve_send" property="valveSend" jdbcType="INTEGER" />
+    <result column="valve_body_weld" property="valveBodyWeld" jdbcType="INTEGER" />
+    <result column="non_des_check" property="nonDesCheck" jdbcType="INTEGER" />
+    <result column="strength_experiment" property="strengthExperiment" jdbcType="INTEGER" />
+    <result column="finishing_warehousing" property="finishingWarehousing" jdbcType="INTEGER" />
+    <result column="complete_rate" property="completeRate" jdbcType="DOUBLE" />
+    <result column="type_id" property="typeId" jdbcType="INTEGER" />
+    <result column="which_day" property="whichDay" jdbcType="DATE" />
+    <result column="valve_product_name" property="valveProductName" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, pro_id, user_id, valve_promise_date, valve_sumbit_date, valve_plan_date, valve_product_norm, 
+    valve_body_arrive, valve_body_process, valve_final_assembly, valve_performance_test, 
+    valve_oil_paint, valve_send, valve_body_weld, non_des_check, strength_experiment, 
+    finishing_warehousing, complete_rate, type_id, which_day, valve_product_name
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="sys.spvisor.core.entity.process.TValveProcessExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from t_valve_process
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_valve_process
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_valve_process
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="sys.spvisor.core.entity.process.TValveProcessExample" >
+    delete from t_valve_process
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="sys.spvisor.core.entity.process.TValveProcess" useGeneratedKeys="true" keyProperty="id">
+    insert into t_valve_process (pro_id, user_id, 
+      valve_promise_date, valve_sumbit_date, valve_plan_date, 
+      valve_product_norm, valve_body_arrive, valve_body_process, 
+      valve_final_assembly, valve_performance_test, 
+      valve_oil_paint, valve_send, valve_body_weld, 
+      non_des_check, strength_experiment, finishing_warehousing, 
+      complete_rate, type_id, which_day, 
+      valve_product_name)
+    values (#{proId,jdbcType=INTEGER}, #{userId,jdbcType=INTEGER}, 
+      #{valvePromiseDate,jdbcType=DATE}, #{valveSumbitDate,jdbcType=DATE}, #{valvePlanDate,jdbcType=DATE}, 
+      #{valveProductNorm,jdbcType=VARCHAR}, #{valveBodyArrive,jdbcType=INTEGER}, #{valveBodyProcess,jdbcType=INTEGER}, 
+      #{valveFinalAssembly,jdbcType=INTEGER}, #{valvePerformanceTest,jdbcType=INTEGER}, 
+      #{valveOilPaint,jdbcType=INTEGER}, #{valveSend,jdbcType=INTEGER}, #{valveBodyWeld,jdbcType=INTEGER}, 
+      #{nonDesCheck,jdbcType=INTEGER}, #{strengthExperiment,jdbcType=INTEGER}, #{finishingWarehousing,jdbcType=INTEGER}, 
+      #{completeRate,jdbcType=DOUBLE}, #{typeId,jdbcType=INTEGER}, #{whichDay,jdbcType=DATE}, 
+      #{valveProductName,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="sys.spvisor.core.entity.process.TValveProcess" >
+    insert into t_valve_process
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="proId != null" >
+        pro_id,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="valvePromiseDate != null" >
+        valve_promise_date,
+      </if>
+      <if test="valveSumbitDate != null" >
+        valve_sumbit_date,
+      </if>
+      <if test="valvePlanDate != null" >
+        valve_plan_date,
+      </if>
+      <if test="valveProductNorm != null" >
+        valve_product_norm,
+      </if>
+      <if test="valveBodyArrive != null" >
+        valve_body_arrive,
+      </if>
+      <if test="valveBodyProcess != null" >
+        valve_body_process,
+      </if>
+      <if test="valveFinalAssembly != null" >
+        valve_final_assembly,
+      </if>
+      <if test="valvePerformanceTest != null" >
+        valve_performance_test,
+      </if>
+      <if test="valveOilPaint != null" >
+        valve_oil_paint,
+      </if>
+      <if test="valveSend != null" >
+        valve_send,
+      </if>
+      <if test="valveBodyWeld != null" >
+        valve_body_weld,
+      </if>
+      <if test="nonDesCheck != null" >
+        non_des_check,
+      </if>
+      <if test="strengthExperiment != null" >
+        strength_experiment,
+      </if>
+      <if test="finishingWarehousing != null" >
+        finishing_warehousing,
+      </if>
+      <if test="completeRate != null" >
+        complete_rate,
+      </if>
+      <if test="typeId != null" >
+        type_id,
+      </if>
+      <if test="whichDay != null" >
+        which_day,
+      </if>
+      <if test="valveProductName != null" >
+        valve_product_name,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="proId != null" >
+        #{proId,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="valvePromiseDate != null" >
+        #{valvePromiseDate,jdbcType=DATE},
+      </if>
+      <if test="valveSumbitDate != null" >
+        #{valveSumbitDate,jdbcType=DATE},
+      </if>
+      <if test="valvePlanDate != null" >
+        #{valvePlanDate,jdbcType=DATE},
+      </if>
+      <if test="valveProductNorm != null" >
+        #{valveProductNorm,jdbcType=VARCHAR},
+      </if>
+      <if test="valveBodyArrive != null" >
+        #{valveBodyArrive,jdbcType=INTEGER},
+      </if>
+      <if test="valveBodyProcess != null" >
+        #{valveBodyProcess,jdbcType=INTEGER},
+      </if>
+      <if test="valveFinalAssembly != null" >
+        #{valveFinalAssembly,jdbcType=INTEGER},
+      </if>
+      <if test="valvePerformanceTest != null" >
+        #{valvePerformanceTest,jdbcType=INTEGER},
+      </if>
+      <if test="valveOilPaint != null" >
+        #{valveOilPaint,jdbcType=INTEGER},
+      </if>
+      <if test="valveSend != null" >
+        #{valveSend,jdbcType=INTEGER},
+      </if>
+      <if test="valveBodyWeld != null" >
+        #{valveBodyWeld,jdbcType=INTEGER},
+      </if>
+      <if test="nonDesCheck != null" >
+        #{nonDesCheck,jdbcType=INTEGER},
+      </if>
+      <if test="strengthExperiment != null" >
+        #{strengthExperiment,jdbcType=INTEGER},
+      </if>
+      <if test="finishingWarehousing != null" >
+        #{finishingWarehousing,jdbcType=INTEGER},
+      </if>
+      <if test="completeRate != null" >
+        #{completeRate,jdbcType=DOUBLE},
+      </if>
+      <if test="typeId != null" >
+        #{typeId,jdbcType=INTEGER},
+      </if>
+      <if test="whichDay != null" >
+        #{whichDay,jdbcType=DATE},
+      </if>
+      <if test="valveProductName != null" >
+        #{valveProductName,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="sys.spvisor.core.entity.process.TValveProcessExample" resultType="java.lang.Integer" >
+    select count(*) from t_valve_process
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update t_valve_process
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.proId != null" >
+        pro_id = #{record.proId,jdbcType=INTEGER},
+      </if>
+      <if test="record.userId != null" >
+        user_id = #{record.userId,jdbcType=INTEGER},
+      </if>
+      <if test="record.valvePromiseDate != null" >
+        valve_promise_date = #{record.valvePromiseDate,jdbcType=DATE},
+      </if>
+      <if test="record.valveSumbitDate != null" >
+        valve_sumbit_date = #{record.valveSumbitDate,jdbcType=DATE},
+      </if>
+      <if test="record.valvePlanDate != null" >
+        valve_plan_date = #{record.valvePlanDate,jdbcType=DATE},
+      </if>
+      <if test="record.valveProductNorm != null" >
+        valve_product_norm = #{record.valveProductNorm,jdbcType=VARCHAR},
+      </if>
+      <if test="record.valveBodyArrive != null" >
+        valve_body_arrive = #{record.valveBodyArrive,jdbcType=INTEGER},
+      </if>
+      <if test="record.valveBodyProcess != null" >
+        valve_body_process = #{record.valveBodyProcess,jdbcType=INTEGER},
+      </if>
+      <if test="record.valveFinalAssembly != null" >
+        valve_final_assembly = #{record.valveFinalAssembly,jdbcType=INTEGER},
+      </if>
+      <if test="record.valvePerformanceTest != null" >
+        valve_performance_test = #{record.valvePerformanceTest,jdbcType=INTEGER},
+      </if>
+      <if test="record.valveOilPaint != null" >
+        valve_oil_paint = #{record.valveOilPaint,jdbcType=INTEGER},
+      </if>
+      <if test="record.valveSend != null" >
+        valve_send = #{record.valveSend,jdbcType=INTEGER},
+      </if>
+      <if test="record.valveBodyWeld != null" >
+        valve_body_weld = #{record.valveBodyWeld,jdbcType=INTEGER},
+      </if>
+      <if test="record.nonDesCheck != null" >
+        non_des_check = #{record.nonDesCheck,jdbcType=INTEGER},
+      </if>
+      <if test="record.strengthExperiment != null" >
+        strength_experiment = #{record.strengthExperiment,jdbcType=INTEGER},
+      </if>
+      <if test="record.finishingWarehousing != null" >
+        finishing_warehousing = #{record.finishingWarehousing,jdbcType=INTEGER},
+      </if>
+      <if test="record.completeRate != null" >
+        complete_rate = #{record.completeRate,jdbcType=DOUBLE},
+      </if>
+      <if test="record.typeId != null" >
+        type_id = #{record.typeId,jdbcType=INTEGER},
+      </if>
+      <if test="record.whichDay != null" >
+        which_day = #{record.whichDay,jdbcType=DATE},
+      </if>
+      <if test="record.valveProductName != null" >
+        valve_product_name = #{record.valveProductName,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update t_valve_process
+    set id = #{record.id,jdbcType=INTEGER},
+      pro_id = #{record.proId,jdbcType=INTEGER},
+      user_id = #{record.userId,jdbcType=INTEGER},
+      valve_promise_date = #{record.valvePromiseDate,jdbcType=DATE},
+      valve_sumbit_date = #{record.valveSumbitDate,jdbcType=DATE},
+      valve_plan_date = #{record.valvePlanDate,jdbcType=DATE},
+      valve_product_norm = #{record.valveProductNorm,jdbcType=VARCHAR},
+      valve_body_arrive = #{record.valveBodyArrive,jdbcType=INTEGER},
+      valve_body_process = #{record.valveBodyProcess,jdbcType=INTEGER},
+      valve_final_assembly = #{record.valveFinalAssembly,jdbcType=INTEGER},
+      valve_performance_test = #{record.valvePerformanceTest,jdbcType=INTEGER},
+      valve_oil_paint = #{record.valveOilPaint,jdbcType=INTEGER},
+      valve_send = #{record.valveSend,jdbcType=INTEGER},
+      valve_body_weld = #{record.valveBodyWeld,jdbcType=INTEGER},
+      non_des_check = #{record.nonDesCheck,jdbcType=INTEGER},
+      strength_experiment = #{record.strengthExperiment,jdbcType=INTEGER},
+      finishing_warehousing = #{record.finishingWarehousing,jdbcType=INTEGER},
+      complete_rate = #{record.completeRate,jdbcType=DOUBLE},
+      type_id = #{record.typeId,jdbcType=INTEGER},
+      which_day = #{record.whichDay,jdbcType=DATE},
+      valve_product_name = #{record.valveProductName,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="sys.spvisor.core.entity.process.TValveProcess" >
+    update t_valve_process
+    <set >
+      <if test="proId != null" >
+        pro_id = #{proId,jdbcType=INTEGER},
+      </if>
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="valvePromiseDate != null" >
+        valve_promise_date = #{valvePromiseDate,jdbcType=DATE},
+      </if>
+      <if test="valveSumbitDate != null" >
+        valve_sumbit_date = #{valveSumbitDate,jdbcType=DATE},
+      </if>
+      <if test="valvePlanDate != null" >
+        valve_plan_date = #{valvePlanDate,jdbcType=DATE},
+      </if>
+      <if test="valveProductNorm != null" >
+        valve_product_norm = #{valveProductNorm,jdbcType=VARCHAR},
+      </if>
+      <if test="valveBodyArrive != null" >
+        valve_body_arrive = #{valveBodyArrive,jdbcType=INTEGER},
+      </if>
+      <if test="valveBodyProcess != null" >
+        valve_body_process = #{valveBodyProcess,jdbcType=INTEGER},
+      </if>
+      <if test="valveFinalAssembly != null" >
+        valve_final_assembly = #{valveFinalAssembly,jdbcType=INTEGER},
+      </if>
+      <if test="valvePerformanceTest != null" >
+        valve_performance_test = #{valvePerformanceTest,jdbcType=INTEGER},
+      </if>
+      <if test="valveOilPaint != null" >
+        valve_oil_paint = #{valveOilPaint,jdbcType=INTEGER},
+      </if>
+      <if test="valveSend != null" >
+        valve_send = #{valveSend,jdbcType=INTEGER},
+      </if>
+      <if test="valveBodyWeld != null" >
+        valve_body_weld = #{valveBodyWeld,jdbcType=INTEGER},
+      </if>
+      <if test="nonDesCheck != null" >
+        non_des_check = #{nonDesCheck,jdbcType=INTEGER},
+      </if>
+      <if test="strengthExperiment != null" >
+        strength_experiment = #{strengthExperiment,jdbcType=INTEGER},
+      </if>
+      <if test="finishingWarehousing != null" >
+        finishing_warehousing = #{finishingWarehousing,jdbcType=INTEGER},
+      </if>
+      <if test="completeRate != null" >
+        complete_rate = #{completeRate,jdbcType=DOUBLE},
+      </if>
+      <if test="typeId != null" >
+        type_id = #{typeId,jdbcType=INTEGER},
+      </if>
+      <if test="whichDay != null" >
+        which_day = #{whichDay,jdbcType=DATE},
+      </if>
+      <if test="valveProductName != null" >
+        valve_product_name = #{valveProductName,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="sys.spvisor.core.entity.process.TValveProcess" >
+    update t_valve_process
+    set pro_id = #{proId,jdbcType=INTEGER},
+      user_id = #{userId,jdbcType=INTEGER},
+      valve_promise_date = #{valvePromiseDate,jdbcType=DATE},
+      valve_sumbit_date = #{valveSumbitDate,jdbcType=DATE},
+      valve_plan_date = #{valvePlanDate,jdbcType=DATE},
+      valve_product_norm = #{valveProductNorm,jdbcType=VARCHAR},
+      valve_body_arrive = #{valveBodyArrive,jdbcType=INTEGER},
+      valve_body_process = #{valveBodyProcess,jdbcType=INTEGER},
+      valve_final_assembly = #{valveFinalAssembly,jdbcType=INTEGER},
+      valve_performance_test = #{valvePerformanceTest,jdbcType=INTEGER},
+      valve_oil_paint = #{valveOilPaint,jdbcType=INTEGER},
+      valve_send = #{valveSend,jdbcType=INTEGER},
+      valve_body_weld = #{valveBodyWeld,jdbcType=INTEGER},
+      non_des_check = #{nonDesCheck,jdbcType=INTEGER},
+      strength_experiment = #{strengthExperiment,jdbcType=INTEGER},
+      finishing_warehousing = #{finishingWarehousing,jdbcType=INTEGER},
+      complete_rate = #{completeRate,jdbcType=DOUBLE},
+      type_id = #{typeId,jdbcType=INTEGER},
+      which_day = #{whichDay,jdbcType=DATE},
+      valve_product_name = #{valveProductName,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+   <select id="accumulateScheduleByproId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select type_id,sum(COALESCE(valve_body_arrive,0)) as valve_body_arrive,sum(COALESCE(valve_body_process,0)) as valve_body_process,sum(COALESCE(valve_final_assembly,0)) as valve_final_assembly,sum(COALESCE(valve_performance_test,0)) as valve_performance_test,
+    sum(COALESCE(valve_oil_paint,0)) as valve_oil_paint,sum(COALESCE(valve_send,0)) as valve_send,sum(COALESCE(valve_body_weld,0)) as valve_body_weld,sum(COALESCE(non_des_check,0)) as non_des_check,
+    sum(COALESCE(strength_experiment,0)) as strength_experiment,sum(COALESCE(finishing_warehousing,0)) as finishing_warehousing,
+    sum(COALESCE(complete_rate,0)) as complete_rate
+    from t_valve_process
+    where pro_id = #{projectId,jdbcType=INTEGER}
+    group by type_id
+  </select>
+     <select id="weeklyScheduleByproId" resultMap="BaseResultMap" parameterType="map" >
+    select type_id,sum(COALESCE(valve_body_arrive,0)) as valve_body_arrive,sum(COALESCE(valve_body_process,0)) as valve_body_process,sum(COALESCE(valve_final_assembly,0)) as valve_final_assembly,sum(COALESCE(valve_performance_test,0)) as valve_performance_test,
+    sum(COALESCE(valve_oil_paint,0)) as valve_oil_paint,sum(COALESCE(valve_send,0)) as valve_send,sum(COALESCE(valve_body_weld,0)) as valve_body_weld,sum(COALESCE(non_des_check,0)) as non_des_check,
+    sum(COALESCE(strength_experiment,0)) as strength_experiment,sum(COALESCE(finishing_warehousing,0)) as finishing_warehousing,
+    sum(COALESCE(complete_rate,0)) as complete_rate
+    from t_valve_process
+    where pro_id = #{projectId,jdbcType=INTEGER} and which_day between #{d0} and #{d1}
+    group by type_id
+  </select>
+</mapper>
