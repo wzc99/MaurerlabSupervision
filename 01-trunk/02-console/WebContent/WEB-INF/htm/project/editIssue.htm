@@ -1,0 +1,321 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>问题处理</title>
+	
+<link rel="stylesheet" type="text/css" href="../../themes/general.css"  />
+<link rel="stylesheet" type="text/css" href="../../themes/icon.css" 			/>
+<link rel="stylesheet" type="text/css" href="../../themes/jquery-ui.css" 		/>
+<link rel="stylesheet" type="text/css" href="../../themes/default/easyui.css" 	/>
+<script type="text/javascript" src="../../scripts/jquery-1.8.0.min.js"></script>
+<script type="text/javascript" src="../../scripts/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../../scripts/src/jquery.parser.js"></script>
+<script type="text/javascript" src="../../scripts/locale/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript" src="../../scripts/sessionExpriation.js"></script>
+<script type="text/javascript" src="../../scripts/general.js"></script>
+
+<style type="text/css">	
+#findDate{
+	border: 1px solid #95B8E7;
+	border-radius: 5px 5px 5px 5px;
+	height: 25px;
+}
+#rectifyDate{
+		border: 1px solid #95B8E7;
+	border-radius: 5px 5px 5px 5px;
+	height: 25px;
+}
+</style>
+<script type="text/javascript">
+	//上传数据的删除
+	function delTr(tempTdId){//删除
+		var obj  = $("#" + tempTdId);
+		$(obj).parent().parent().remove();  
+	}
+	$(function() {
+		var projectId = $.getUrlParam('projectId');
+		//表单提交ajax
+		$('#new_form').form({
+			url : '../../question/addQuestion.ajax?proId=' + projectId,
+			onSubmit : function() {
+				dealDate();
+				recordFileName();
+				//验证对应图片之前的文字描述是否填写，如果没有填写，则验证失败
+				if(!setNess()) {
+					return false;
+				}
+				if ($(this).form('validate')) {
+					return true;
+				} else {
+					return false;
+				}
+			},
+			success : function(data) {
+				var obj = $.parseJSON(data);//将json字符串转换为object对象
+				if (obj.success) {
+					$.messager.alert('提示', obj.message, 'info', function(){
+						/* location.reload();//强迫浏览器刷新当前页面  */
+						 //刷新项目详述页面
+						 href="./project/view.html?proId="+projectId;
+						var content = '<iframe scrolling="auto" frameborder="0"  src="'+href+'" style="width:100%;height:100%;"></iframe>';  
+					    var tt = parent.$('#tabs');  	   
+					    if (tt.tabs('exists', "项目详述")){//如果tab已经存在,则选中该tab，并更新内容          
+					        tt.tabs('select', "项目详述");  
+					        var tab =parent.$('#tabs').tabs('getSelected'); 
+					        parent.$('#tabs').tabs('update', {
+					        	tab: tab,
+					        	options: {
+					        		content:content
+					        	}
+					        });
+					    }
+					    //关闭当前页面
+					 	parent.$('#tabs').tabs('close','问题处理');
+					});
+				} else {
+					$.messager.alert('错误', obj.message, 'error');
+				}
+			}
+		});
+		//显示项目名称的ajax
+		$.ajax({
+			url : '../../project/getProjectName.ajax',
+			type : 'post',
+			dataType : 'JSON',
+			cache: false,
+			data : {
+				projectId : projectId,
+			},
+			error: function(XMLHttpRequest, textStatus, errorThrown) {	                    
+	        },
+			success : function(data) {			
+				$('#projectName').text(data.projectName);//待修改，这里是在页面最开始填入项目名称的
+			}
+		});
+
+		//事件绑定，点击提交就提交表单
+		$('#btn_submit').bind('click', function() {
+			$("#new_form").submit();
+		});	
+		//发现问题的日期
+		$('#findDate').datebox({
+			onSelect: function(date){
+				var entrustDate = $('#findDate').datebox('getValue');
+				var endDate = $('#rectifyDate').datebox('getValue');
+				
+				if(Date.parse(endDate) - Date.parse(entrustDate)<=0){
+					$.messager.alert('错误', '解决日期必须晚于发现日期', 'error');
+					$('#findDate').datebox('setValue', '');	
+				} 
+			},
+			required:true
+		});
+
+		//结束日期 使用databox 主要是判断注册日期是否大于现在的日期
+		$('#rectifyDate').datebox({
+			onSelect: function(date){
+				var endDate = $('#rectifyDate').datebox('getValue');
+				var startDate = $('#findDate').datebox('getValue');
+				if (Date.parse(endDate) - Date.parse(startDate)<=0) {
+					$.messager.alert('错误', '结束日期必须晚于开始日期', 'error');
+					$('#rectifyDate').datebox('setValue', '');
+				}
+			}
+			
+		});	
+		var fileInfoIndex = 6;//从第6个开始
+		$("#addFileUpload").click(function(){
+			var tempDelFileInfoId = "fileInfoTab" + fileInfoIndex;
+		    $str='';
+	        $str+='<tr>';
+	        $str+='<td><input type="text" name="fileName" 				id="fileName'+fileInfoIndex+'" 		size="50"/></td>';
+	        $str+='<td><input type="file" name="fileUpload'+fileInfoIndex+'"	id="fileUpload'+fileInfoIndex+'"  /></td>';
+		    $str+='<td align="center"><a id="'+tempDelFileInfoId+'" 	href="javascript:delTr(\''+tempDelFileInfoId+'\')" >删除</a></td>';
+		    $str+='</tr>';
+		    
+		    $("#fileInfoTab").append($str);
+		    fileInfoIndex++;
+		});
+		
+		function myformatter(date){  
+		    var y = date.getFullYear();  
+		    var m = date.getMonth()+1;  
+		    var d = date.getDate();  
+		    return y+'-'+(m<10?('0'+m):m)+'-'+(d<10?('0'+d):d);  
+		}  
+		
+		 function dealDate() {
+			
+			 var rectifyDate=$("#rectifyDate").datebox("getValue"); 
+				if(rectifyDate == null || rectifyDate == '') {
+					 var curr_time = new Date(1900,0);   
+					 $("#rectifyDate").datebox("setValue",myformatter(curr_time));
+				}
+		 }
+		 function recordFileName(){//表单提交时验证 最后上传的那部分
+				var fileNames = document.getElementsByName("fileName");//取得标签名为filename的标签对象
+				var fileNameIndex 	= '';
+				var fileNameVal 	= '';
+				for(var k = 0; k < fileNames.length; k++){
+					var tempFileNameObject 	= 	fileNames[k];
+					var currentFileNameId 	= 	tempFileNameObject.id;
+					fileNameVal 			+= 	document.getElementById(currentFileNameId).value + "&";
+				}
+				//将所有的filename的值以&连接传入fileName_total
+				document.getElementById("fileName_total").value = fileNameVal;
+				
+				var picNames = document.getElementsByName("picName");
+				var picNameIndex 	= '';
+				var picNameVal 	= '';
+				for(var k = 0; k < picNames.length; k++){
+					var tempPicNameObject = picNames[k];
+					var currentPicNameId = tempPicNameObject.id;
+					picNameVal += document.getElementById(currentPicNameId).value + "&";
+				}
+				document.getElementById("picName_total").value = picNameVal;
+			}
+		 
+		function setNess() {
+			//上传图片，其对应的文件描述必须填写
+			var sum = 0;
+			 for(let i = 1; i < 5 ;i++) {
+				 $("#picUpload"+i).each(function(){ 
+					 if($(this).val()!="") { 
+						 if( !$("#picName"+i).val() || $("#picName"+i).val() == "此项为必填项！") {
+							 $("#picName"+i).css({
+								 "border":"1px solid red",
+								 "backgroundColor":"yellow"
+							 });
+							 $("#picName"+i).val("此项为必填项！");
+							 sum ++;
+						 }else {
+							 $("#picName"+i).css({
+								 "border":"1px solid black",
+								 "backgroundColor":"white"
+							 });
+						 }
+						
+					 }
+				}); 
+			 }
+			 if(sum != 0) {
+				 return false;
+			 }else {
+				 return true;
+			 }
+		}
+		
+	});	
+	
+	/* function setNessary(index) {
+		alert(index);
+		 if($("#picName"+index).val()) {
+			$("#picName"+index).attr("required", "true");
+		} 
+	} */
+	</script>
+</head>
+
+<body>
+<form id="new_form" method="post" enctype="multipart/form-data">
+	<input type="hidden" name="projectId"   		id="projectId" 	value="" />
+	<input type="hidden" name="fileNametotal" 	id="fileName_total" value="" />
+	<input type="hidden" name="picNameTotal" 		id="picName_total" 		value="" />
+	<span>子项目名称：</span><span id="projectName"></span>
+	<table class="table_new">
+		<tr>
+			<td class="td_new_subtitle" colspan="2" ><strong>发现问题</strong></td>
+		</tr>
+		<tr>
+			<td class="td_new_name">发现时间<span class="red">*</span></td>
+			<td class="td_new_value">
+				<input type="text" name="findTime" id="findDate" /></td>			
+		</tr>
+		<tr>
+			<td class="td_new_name">问题概述<span class="red">*</span></td>
+			<td class="td_new_value"><textarea name="quesDescription" id="productServiceDesc" style="height: 60px" cols="105" data-options="required:true,validType:'length[2,200]'" class="easyui-validatebox"></textarea></td>
+		</tr>
+		<tr>
+			<td class="td_new_name">不符合依据<span class="red">*</span></td>
+			<td class="td_new_value"><textarea name="quesNoSuitBasis" id="productServiceDesc" style="height: 60px" cols="105" data-options="required:true,validType:'length[2,200]'" class="easyui-validatebox"></textarea></td>
+		</tr>
+		<tr>
+			<td class="td_new_name">整改时间<span class="red">*</span></td>
+			<td class="td_new_value">
+				<input type="text" name="updateTime" id="rectifyDate" /></td>
+		</tr>
+		<tr>
+			<td class="td_new_name">整改过程概述<span class="red">*</span></td>
+			<td class="td_new_value"><textarea name="updateProcessDescription" id="productServiceDesc" style="height: 60px" cols="105" data-options="" class="easyui-validatebox"></textarea></td>
+		</tr>
+	</table>
+	</br>
+	<table class="table_new" id="picInfoTab">
+		
+		<tr>
+			<td align="center" width="80px"><strong>图片描述</strong></td>
+			<td align="center" width="60px"><strong>上传</strong></td>
+		</tr>
+		<tr>
+			<td><input type="text" 	id="picName1" 		name="picName" 	value="" 	size="50" /></td>
+			<td><input type="file" 	id="picUpload1" 	name="picUpload1" 	onchange="setNessary(1)" /></td>
+		</tr>
+		<tr>
+			<td><input type="text" 	id="picName2" 		name="picName" 	value="" 	size="50" /></td>
+			<td><input type="file" 	id="picUpload2" 	name="picUpload2" 	 onchange="setNessary(2)"/></td>
+		</tr>
+		<tr>
+			<td><input type="text" 	id="picName3" 		name="picName" 	value="" 	size="50" /></td>
+			<td><input type="file" 	id="picUpload3" 	name="picUpload3" 	onchange="setNessary(3)" /></td>
+		</tr>
+		<tr>
+			<td><input type="text" 	id="picName4" 		name="picName" 	value="" 	size="50" /></td>
+			<td><input type="file" 	id="picUpload4" 	name="picUpload4" 	onchange="setNessary(4)" /></td>
+		</tr>
+		
+	</table>
+	<br>
+	<table class="table_new" id="fileInfoTab">
+		
+		<tr>
+			<td align="center" width="80px"><strong>名称</strong></td>
+			<td align="center" width="60px"><strong>上传</strong></td>
+			<td align="center" width="40px"><a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addFileUpload"></a></td>
+		</tr>
+		<tr>
+			<td><input type="text" 	id="fileName1" 		name="fileName" 	value="暂停令" 	size="50" readonly/></td>
+			<td><input type="file" 	id="fileUpload1" 	name="fileUpload1" 	 /></td>
+			<td align="center">&nbsp;</td>
+		</tr>
+		<tr>
+			<td><input type="text" 	id="fileName2" 		name="fileName" 	value="监理备忘录" 	size="50" readonly/></td>
+			<td><input type="file" 	id="fileUpload2" 	name="fileUpload2" 	 /></td>
+			<td align="center">&nbsp;</td>
+		</tr>
+		<tr>
+			<td><input type="text" 	id="fileName3" 		name="fileName" 	value="工作联络函" size="50" readonly/></td>
+			<td><input type="file" 	id="fileUpload3" 	name="fileUpload3"  /></td>
+			<td align="center">&nbsp;</td>
+		</tr>
+		<tr>
+			<td><input type="text"  id="fileName4"	 	name="fileName" 	value="监理工程师通知单" 		size="50" 	readonly/></td>
+			<td><input type="file"  id="fileUpload4" 	name="fileUpload4" 	 /></td>
+			<td align="center">&nbsp;</td>
+		</tr>
+		<tr>
+			<td><input type="text" 	id="fileName5" 		name="fileName" 	value="专题汇报" 		size="50" 	readonly/></td>
+			<td><input type="file" 	id="fileUpload5" 	name="fileUpload5" 	 /></td>
+			<td align="center">&nbsp;</td>
+		</tr>
+	</table>
+	<br>
+	<table class="table_new">
+	<tr>
+		<td align="center" width="100%"><a id="btn_submit" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok">确认提交</a></td>
+	</tr>
+	</table>
+	
+</form>
+
+</body>
+</html>

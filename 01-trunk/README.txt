@@ -1,0 +1,1 @@
+console目录下包含前端相关文件，core目录包含后台相关文件，lib目录包含所有jar包，database/spvisor.backup为数据库文件

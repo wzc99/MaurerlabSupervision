@@ -1,0 +1,468 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="sys.spvisor.core.dao.process.TShebeiBengProcessMapper" >
+  <resultMap id="BaseResultMap" type="sys.spvisor.core.entity.process.TShebeiBengProcess" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="pro_id" property="proId" jdbcType="INTEGER" />
+    <result column="pump_product_name" property="pumpProductName" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="INTEGER" />
+    <result column="promise_date" property="promiseDate" jdbcType="DATE" />
+    <result column="sumbit_date" property="sumbitDate" jdbcType="DATE" />
+    <result column="plan_date" property="planDate" jdbcType="DATE" />
+    <result column="beng_product_specification" property="bengProductSpecification" jdbcType="VARCHAR" />
+    <result column="beng_order_num" property="bengOrderNum" jdbcType="DOUBLE" />
+    <result column="beng_body_process_check" property="bengBodyProcessCheck" jdbcType="INTEGER" />
+    <result column="beng_spindle_process_check" property="bengSpindleProcessCheck" jdbcType="INTEGER" />
+    <result column="beng_impeller_process_check" property="bengImpellerProcessCheck" jdbcType="INTEGER" />
+    <result column="beng_final_assembly" property="bengFinalAssembly" jdbcType="INTEGER" />
+    <result column="beng_performance_test" property="bengPerformanceTest" jdbcType="INTEGER" />
+    <result column="beng_paint" property="bengPaint" jdbcType="INTEGER" />
+    <result column="fayun" property="fayun" jdbcType="INTEGER" />
+    <result column="type_id" property="typeId" jdbcType="INTEGER" />
+    <result column="chengpinruku" property="chengpinruku" jdbcType="INTEGER" />
+    <result column="which_day" property="whichDay" jdbcType="DATE" />
+    <result column="complete_rate_today" property="completeRateToday" jdbcType="DOUBLE" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, pro_id, pump_product_name, user_id, promise_date, sumbit_date, plan_date, beng_product_specification, 
+    beng_order_num, beng_body_process_check, beng_spindle_process_check, beng_impeller_process_check, 
+    beng_final_assembly, beng_performance_test, beng_paint, fayun, type_id, chengpinruku, 
+    which_day, complete_rate_today
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="sys.spvisor.core.entity.process.TShebeiBengProcessExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from t_shebei_beng_process
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_shebei_beng_process
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_shebei_beng_process
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="sys.spvisor.core.entity.process.TShebeiBengProcessExample" >
+    delete from t_shebei_beng_process
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="sys.spvisor.core.entity.process.TShebeiBengProcess" useGeneratedKeys="true" keyProperty="id">
+    insert into t_shebei_beng_process (pro_id, pump_product_name, 
+      user_id, promise_date, sumbit_date, 
+      plan_date, beng_product_specification, beng_order_num, 
+      beng_body_process_check, beng_spindle_process_check, 
+      beng_impeller_process_check, beng_final_assembly, 
+      beng_performance_test, beng_paint, fayun, 
+      type_id, chengpinruku, which_day, 
+      complete_rate_today)
+    values (#{proId,jdbcType=INTEGER}, #{pumpProductName,jdbcType=VARCHAR}, 
+      #{userId,jdbcType=INTEGER}, #{promiseDate,jdbcType=DATE}, #{sumbitDate,jdbcType=DATE}, 
+      #{planDate,jdbcType=DATE}, #{bengProductSpecification,jdbcType=VARCHAR}, #{bengOrderNum,jdbcType=DOUBLE}, 
+      #{bengBodyProcessCheck,jdbcType=INTEGER}, #{bengSpindleProcessCheck,jdbcType=INTEGER}, 
+      #{bengImpellerProcessCheck,jdbcType=INTEGER}, #{bengFinalAssembly,jdbcType=INTEGER}, 
+      #{bengPerformanceTest,jdbcType=INTEGER}, #{bengPaint,jdbcType=INTEGER}, #{fayun,jdbcType=INTEGER}, 
+      #{typeId,jdbcType=INTEGER}, #{chengpinruku,jdbcType=INTEGER}, #{whichDay,jdbcType=DATE}, 
+      #{completeRateToday,jdbcType=DOUBLE})
+  </insert>
+  <insert id="insertSelective" parameterType="sys.spvisor.core.entity.process.TShebeiBengProcess" >
+    insert into t_shebei_beng_process
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="proId != null" >
+        pro_id,
+      </if>
+      <if test="pumpProductName != null" >
+        pump_product_name,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="promiseDate != null" >
+        promise_date,
+      </if>
+      <if test="sumbitDate != null" >
+        sumbit_date,
+      </if>
+      <if test="planDate != null" >
+        plan_date,
+      </if>
+      <if test="bengProductSpecification != null" >
+        beng_product_specification,
+      </if>
+      <if test="bengOrderNum != null" >
+        beng_order_num,
+      </if>
+      <if test="bengBodyProcessCheck != null" >
+        beng_body_process_check,
+      </if>
+      <if test="bengSpindleProcessCheck != null" >
+        beng_spindle_process_check,
+      </if>
+      <if test="bengImpellerProcessCheck != null" >
+        beng_impeller_process_check,
+      </if>
+      <if test="bengFinalAssembly != null" >
+        beng_final_assembly,
+      </if>
+      <if test="bengPerformanceTest != null" >
+        beng_performance_test,
+      </if>
+      <if test="bengPaint != null" >
+        beng_paint,
+      </if>
+      <if test="fayun != null" >
+        fayun,
+      </if>
+      <if test="typeId != null" >
+        type_id,
+      </if>
+      <if test="chengpinruku != null" >
+        chengpinruku,
+      </if>
+      <if test="whichDay != null" >
+        which_day,
+      </if>
+      <if test="completeRateToday != null" >
+        complete_rate_today,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="proId != null" >
+        #{proId,jdbcType=INTEGER},
+      </if>
+      <if test="pumpProductName != null" >
+        #{pumpProductName,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="promiseDate != null" >
+        #{promiseDate,jdbcType=DATE},
+      </if>
+      <if test="sumbitDate != null" >
+        #{sumbitDate,jdbcType=DATE},
+      </if>
+      <if test="planDate != null" >
+        #{planDate,jdbcType=DATE},
+      </if>
+      <if test="bengProductSpecification != null" >
+        #{bengProductSpecification,jdbcType=VARCHAR},
+      </if>
+      <if test="bengOrderNum != null" >
+        #{bengOrderNum,jdbcType=DOUBLE},
+      </if>
+      <if test="bengBodyProcessCheck != null" >
+        #{bengBodyProcessCheck,jdbcType=INTEGER},
+      </if>
+      <if test="bengSpindleProcessCheck != null" >
+        #{bengSpindleProcessCheck,jdbcType=INTEGER},
+      </if>
+      <if test="bengImpellerProcessCheck != null" >
+        #{bengImpellerProcessCheck,jdbcType=INTEGER},
+      </if>
+      <if test="bengFinalAssembly != null" >
+        #{bengFinalAssembly,jdbcType=INTEGER},
+      </if>
+      <if test="bengPerformanceTest != null" >
+        #{bengPerformanceTest,jdbcType=INTEGER},
+      </if>
+      <if test="bengPaint != null" >
+        #{bengPaint,jdbcType=INTEGER},
+      </if>
+      <if test="fayun != null" >
+        #{fayun,jdbcType=INTEGER},
+      </if>
+      <if test="typeId != null" >
+        #{typeId,jdbcType=INTEGER},
+      </if>
+      <if test="chengpinruku != null" >
+        #{chengpinruku,jdbcType=INTEGER},
+      </if>
+      <if test="whichDay != null" >
+        #{whichDay,jdbcType=DATE},
+      </if>
+      <if test="completeRateToday != null" >
+        #{completeRateToday,jdbcType=DOUBLE},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="sys.spvisor.core.entity.process.TShebeiBengProcessExample" resultType="java.lang.Integer" >
+    select count(*) from t_shebei_beng_process
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update t_shebei_beng_process
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.proId != null" >
+        pro_id = #{record.proId,jdbcType=INTEGER},
+      </if>
+      <if test="record.pumpProductName != null" >
+        pump_product_name = #{record.pumpProductName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userId != null" >
+        user_id = #{record.userId,jdbcType=INTEGER},
+      </if>
+      <if test="record.promiseDate != null" >
+        promise_date = #{record.promiseDate,jdbcType=DATE},
+      </if>
+      <if test="record.sumbitDate != null" >
+        sumbit_date = #{record.sumbitDate,jdbcType=DATE},
+      </if>
+      <if test="record.planDate != null" >
+        plan_date = #{record.planDate,jdbcType=DATE},
+      </if>
+      <if test="record.bengProductSpecification != null" >
+        beng_product_specification = #{record.bengProductSpecification,jdbcType=VARCHAR},
+      </if>
+      <if test="record.bengOrderNum != null" >
+        beng_order_num = #{record.bengOrderNum,jdbcType=DOUBLE},
+      </if>
+      <if test="record.bengBodyProcessCheck != null" >
+        beng_body_process_check = #{record.bengBodyProcessCheck,jdbcType=INTEGER},
+      </if>
+      <if test="record.bengSpindleProcessCheck != null" >
+        beng_spindle_process_check = #{record.bengSpindleProcessCheck,jdbcType=INTEGER},
+      </if>
+      <if test="record.bengImpellerProcessCheck != null" >
+        beng_impeller_process_check = #{record.bengImpellerProcessCheck,jdbcType=INTEGER},
+      </if>
+      <if test="record.bengFinalAssembly != null" >
+        beng_final_assembly = #{record.bengFinalAssembly,jdbcType=INTEGER},
+      </if>
+      <if test="record.bengPerformanceTest != null" >
+        beng_performance_test = #{record.bengPerformanceTest,jdbcType=INTEGER},
+      </if>
+      <if test="record.bengPaint != null" >
+        beng_paint = #{record.bengPaint,jdbcType=INTEGER},
+      </if>
+      <if test="record.fayun != null" >
+        fayun = #{record.fayun,jdbcType=INTEGER},
+      </if>
+      <if test="record.typeId != null" >
+        type_id = #{record.typeId,jdbcType=INTEGER},
+      </if>
+      <if test="record.chengpinruku != null" >
+        chengpinruku = #{record.chengpinruku,jdbcType=INTEGER},
+      </if>
+      <if test="record.whichDay != null" >
+        which_day = #{record.whichDay,jdbcType=DATE},
+      </if>
+      <if test="record.completeRateToday != null" >
+        complete_rate_today = #{record.completeRateToday,jdbcType=DOUBLE},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update t_shebei_beng_process
+    set id = #{record.id,jdbcType=INTEGER},
+      pro_id = #{record.proId,jdbcType=INTEGER},
+      pump_product_name = #{record.pumpProductName,jdbcType=VARCHAR},
+      user_id = #{record.userId,jdbcType=INTEGER},
+      promise_date = #{record.promiseDate,jdbcType=DATE},
+      sumbit_date = #{record.sumbitDate,jdbcType=DATE},
+      plan_date = #{record.planDate,jdbcType=DATE},
+      beng_product_specification = #{record.bengProductSpecification,jdbcType=VARCHAR},
+      beng_order_num = #{record.bengOrderNum,jdbcType=DOUBLE},
+      beng_body_process_check = #{record.bengBodyProcessCheck,jdbcType=INTEGER},
+      beng_spindle_process_check = #{record.bengSpindleProcessCheck,jdbcType=INTEGER},
+      beng_impeller_process_check = #{record.bengImpellerProcessCheck,jdbcType=INTEGER},
+      beng_final_assembly = #{record.bengFinalAssembly,jdbcType=INTEGER},
+      beng_performance_test = #{record.bengPerformanceTest,jdbcType=INTEGER},
+      beng_paint = #{record.bengPaint,jdbcType=INTEGER},
+      fayun = #{record.fayun,jdbcType=INTEGER},
+      type_id = #{record.typeId,jdbcType=INTEGER},
+      chengpinruku = #{record.chengpinruku,jdbcType=INTEGER},
+      which_day = #{record.whichDay,jdbcType=DATE},
+      complete_rate_today = #{record.completeRateToday,jdbcType=DOUBLE}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="sys.spvisor.core.entity.process.TShebeiBengProcess" >
+    update t_shebei_beng_process
+    <set >
+      <if test="proId != null" >
+        pro_id = #{proId,jdbcType=INTEGER},
+      </if>
+      <if test="pumpProductName != null" >
+        pump_product_name = #{pumpProductName,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="promiseDate != null" >
+        promise_date = #{promiseDate,jdbcType=DATE},
+      </if>
+      <if test="sumbitDate != null" >
+        sumbit_date = #{sumbitDate,jdbcType=DATE},
+      </if>
+      <if test="planDate != null" >
+        plan_date = #{planDate,jdbcType=DATE},
+      </if>
+      <if test="bengProductSpecification != null" >
+        beng_product_specification = #{bengProductSpecification,jdbcType=VARCHAR},
+      </if>
+      <if test="bengOrderNum != null" >
+        beng_order_num = #{bengOrderNum,jdbcType=DOUBLE},
+      </if>
+      <if test="bengBodyProcessCheck != null" >
+        beng_body_process_check = #{bengBodyProcessCheck,jdbcType=INTEGER},
+      </if>
+      <if test="bengSpindleProcessCheck != null" >
+        beng_spindle_process_check = #{bengSpindleProcessCheck,jdbcType=INTEGER},
+      </if>
+      <if test="bengImpellerProcessCheck != null" >
+        beng_impeller_process_check = #{bengImpellerProcessCheck,jdbcType=INTEGER},
+      </if>
+      <if test="bengFinalAssembly != null" >
+        beng_final_assembly = #{bengFinalAssembly,jdbcType=INTEGER},
+      </if>
+      <if test="bengPerformanceTest != null" >
+        beng_performance_test = #{bengPerformanceTest,jdbcType=INTEGER},
+      </if>
+      <if test="bengPaint != null" >
+        beng_paint = #{bengPaint,jdbcType=INTEGER},
+      </if>
+      <if test="fayun != null" >
+        fayun = #{fayun,jdbcType=INTEGER},
+      </if>
+      <if test="typeId != null" >
+        type_id = #{typeId,jdbcType=INTEGER},
+      </if>
+      <if test="chengpinruku != null" >
+        chengpinruku = #{chengpinruku,jdbcType=INTEGER},
+      </if>
+      <if test="whichDay != null" >
+        which_day = #{whichDay,jdbcType=DATE},
+      </if>
+      <if test="completeRateToday != null" >
+        complete_rate_today = #{completeRateToday,jdbcType=DOUBLE},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="sys.spvisor.core.entity.process.TShebeiBengProcess" >
+    update t_shebei_beng_process
+    set pro_id = #{proId,jdbcType=INTEGER},
+      pump_product_name = #{pumpProductName,jdbcType=VARCHAR},
+      user_id = #{userId,jdbcType=INTEGER},
+      promise_date = #{promiseDate,jdbcType=DATE},
+      sumbit_date = #{sumbitDate,jdbcType=DATE},
+      plan_date = #{planDate,jdbcType=DATE},
+      beng_product_specification = #{bengProductSpecification,jdbcType=VARCHAR},
+      beng_order_num = #{bengOrderNum,jdbcType=DOUBLE},
+      beng_body_process_check = #{bengBodyProcessCheck,jdbcType=INTEGER},
+      beng_spindle_process_check = #{bengSpindleProcessCheck,jdbcType=INTEGER},
+      beng_impeller_process_check = #{bengImpellerProcessCheck,jdbcType=INTEGER},
+      beng_final_assembly = #{bengFinalAssembly,jdbcType=INTEGER},
+      beng_performance_test = #{bengPerformanceTest,jdbcType=INTEGER},
+      beng_paint = #{bengPaint,jdbcType=INTEGER},
+      fayun = #{fayun,jdbcType=INTEGER},
+      type_id = #{typeId,jdbcType=INTEGER},
+      chengpinruku = #{chengpinruku,jdbcType=INTEGER},
+      which_day = #{whichDay,jdbcType=DATE},
+      complete_rate_today = #{completeRateToday,jdbcType=DOUBLE}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="accumulateScheduleByproId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select type_id,sum(COALESCE(beng_body_process_check,0)) as beng_body_process_check,sum(COALESCE(beng_spindle_process_check,0)) as beng_spindle_process_check,sum(COALESCE(beng_impeller_process_check,0)) as beng_impeller_process_check,sum(COALESCE(beng_final_assembly,0)) as beng_final_assembly,
+    sum(COALESCE(beng_performance_test,0)) as beng_performance_test,sum(COALESCE(beng_paint,0)) as beng_paint,sum(COALESCE(fayun,0)) as fayun,sum(COALESCE(chengpinruku,0)) as chengpinruku,
+    sum(COALESCE(complete_rate_today,0)) as complete_rate_today
+    from t_shebei_beng_process
+    where pro_id = #{projectId,jdbcType=INTEGER}
+    group by type_id
+  </select>
+  
+  <select id="weeklyScheduleByproId" resultMap="BaseResultMap" parameterType="map" >
+    select type_id,sum(COALESCE(beng_body_process_check,0)) as beng_body_process_check,sum(COALESCE(beng_spindle_process_check,0)) as beng_spindle_process_check,sum(COALESCE(beng_impeller_process_check,0)) as beng_impeller_process_check,sum(COALESCE(beng_final_assembly,0)) as beng_final_assembly,
+    sum(COALESCE(beng_performance_test,0)) as beng_performance_test,sum(COALESCE(beng_paint,0)) as beng_paint,sum(COALESCE(fayun,0)) as fayun,sum(COALESCE(chengpinruku,0)) as chengpinruku,
+    sum(COALESCE(complete_rate_today,0)) as complete_rate_today
+    from t_shebei_beng_process
+    where pro_id = #{projectId,jdbcType=INTEGER} and which_day between #{d0} and #{d1}
+    group by type_id
+  </select>
+</mapper>

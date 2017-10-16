@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>未读消息列表</title>
+
+<link rel="stylesheet" type="text/css" href="../../themes/general.css"/>
+<link rel="stylesheet" type="text/css" href="../../themes/icon.css"/>
+<link rel="stylesheet" type="text/css" href="../../themes/default/easyui.css"/>
+<link rel="stylesheet" type="text/css" href="../../themes/jqueryTabs.css" />
+<link rel="stylesheet" type="text/css" href="../../themes/jquery-ui.css" />
+<link rel="stylesheet" type="text/css" href="../../themes/jquery-ui-1.9.2.custom.css" />
+
+<script type="text/javascript" src="../../scripts/jquery-1.8.0.min.js"></script>
+<script type="text/javascript" src="../../scripts/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../../scripts/src/jquery.parser.js"></script>
+<script type="text/javascript" src="../../scripts/locale/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript" src="../../scripts/general.js"></script>
+<script type="text/javascript" src="../../scripts/sessionExpriation.js"></script>
+<script type="text/javascript" src="../../scripts/jqUI/jquery-ui-1.9.2.custom.js"></script>
+<style type="text/css">
+	#query_form {
+		width:80%;
+		margin-left:10%;
+		margin-right:10%;
+		margin-top:70px;
+	}
+		#query_form {
+			width:80%;
+			margin-left:10%;
+			margin-right:10%;
+			margin-top:70px;
+		}
+		#myBack {
+			width: 100%;
+			height: 100%;
+			z-index:2;
+	    	background: #FFEFDB;
+	   		position: absolute;
+	    	top: 0px;
+		}
+		#close {
+			position: fixed;
+			top: 20px;
+			right: 20px;
+		}
+		#myBack button {
+			border-radius: 5px;
+			border: 1px solid #CAE1FF;
+			width: 100px;height: 30px;font-size: 20px;color:#473C8B;
+			background: #CAE1FF;
+			font-weight: bold;
+			cursor: pointer;
+		}
+		#viewMyMessage {
+		position: relative;
+		left: 15%;
+		top: 40px;
+		width: 70%;
+		background-color: white;
+		overflow: auto;
+		min-height: 500px;
+		max-height: 600px;
+		border: 1px solid #FFF;border-radius: 10px;
+	}
+	#viewMyMessage div {
+		border-bottom: 1px solid black;
+	}
+	#myBack span {
+		display: inline-block;
+		height: 50px;
+		line-height: 50px;
+	}
+	.explain {
+		width: 30%;
+		text-align: right;
+		color: black;
+		font-weight: bold;
+		font-size: 20px;
+		padding: 10px;
+	 }
+	 .exp_value {
+	 	width: 50%;
+	 	text-align: left;
+	 	font-weight: bold;
+		font-size: 20px;
+		color: green;
+	 }
+	 #already_read {
+	 	position: relative;
+	 	left: 20%;
+	 	width: 15%;
+	 	background: #CDB79E;
+	 }
+	 #ignore {
+	 	position: relative;
+	 	left: 40%;
+	 	width: 15%;
+	 	background: #CDB79E;
+	 }
+</style>
+
+<script type="text/javascript">
+
+window.onload = function() {
+	$("#myBack").hide();
+	$("#EditMessage").hide();
+	$('#query_result').datagrid({
+		pagination : true,
+		showFilterBar:false,
+		striped: true,
+		sortOrder:"asc",
+		remoteSort:false,
+			onDblClickRow: function(rowIndex, rowData){
+				do_view();
+			}
+	});
+	
+	var pg = $("#query_result").datagrid("getPager");
+	if (pg) {
+		$(pg).pagination({		
+			onBeforeRefresh : function() {
+				//alert('before refresh');
+			},
+			onRefresh : function(pageNumber, pageSize) {
+				do_submit(pageNumber, pageSize)
+			},
+			onChangePageSize : function() {
+				//alert('pagesize changed');
+			},
+			onSelectPage : function(pageNumber, pageSize) {
+				do_submit(pageNumber, pageSize);
+			}
+		});
+	}
+	do_submit(1,10);
+	function do_submit(pageNumber, pageSize) {
+		$('#query_form').form('submit', {
+			url : '../../message/getUnreadMessage.ajax',
+			onSubmit : function(param) {
+				param.paging = true;
+				param.limit = pageSize;
+				param.offset = pageNumber;
+				return $(this).form('validate');
+			},
+			success : function(data) {
+				var obj = $.parseJSON(data);
+				$('#query_result').datagrid('loadData', obj);
+			}
+		});
+	}
+	function do_view() {
+		window.row = $('#query_result').datagrid('getSelected');
+		$.ajax({
+			url : '../../message/getTMessageById.ajax',
+			type : 'get',
+			dataType : 'JSON',
+			data : {
+				msgId : row.msgId
+			},
+			success : function(data) {
+				$("#myBack").show();
+				$("#submitter").html(data.submitter);
+				$("#submit_time").html(data.msgSubmitTime);
+				$("#mes_title").html(data.msgTitle);
+				$("#mes_content").html(data.msgContent);
+				$("#mes_note").html(data.msgNote);
+			}
+		});
+	}
+	
+	$("#divBtnView").click(function() {
+		do_view();
+	});
+	$("#close").click(function(){
+		$("#myBack").hide();
+	});
+	/*$("#already_read").click(function() {
+		alert("hello");
+		//alert(row.msgId);
+	});*/
+	
+}
+	function recodeAlreadyRead() {
+		alert(window.row.msgId);
+		$.ajax({
+				url : '../../message/updateTextMessage.ajax',
+				type : 'get',
+				dataType : 'JSON',
+				data : {
+					msgId : window.row.msgId,
+					nodeType : 1
+				},
+				success : function(data) {
+					if(data.success) {
+						alert("已读成功");
+						$("#myBack").hide();
+						 href="./user/MessageList.htm";
+						var content = '<iframe scrolling="auto" frameborder="0"  src="'+href+'" style="width:100%;height:100%;"></iframe>';  
+					    var tt = parent.$('#tabs');  	   
+					    if (tt.tabs('exists', "未读消息")){//如果tab已经存在,则选中该tab，并更新内容          
+					        tt.tabs('select', "未读消息");  
+					        var tab =parent.$('#tabs').tabs('getSelected'); 
+					        parent.$('#tabs').tabs('update', {
+					        	tab: tab,
+					        	options: {
+					        		content:content
+					        	}
+					        });
+					}else {
+						alert("请重试");
+					}
+				}
+				}
+			});
+	}	
+	function IgnoreMessage() {
+		$.ajax({
+				url : '../../message/updateTextMessage.ajax',
+				type : 'get',
+				dataType : 'JSON',
+				data : {
+					msgId : window.row.msgId,
+					nodeType : -1
+				},
+				success : function(data) {
+					if(data.success) {
+						alert("忽略成功");
+						$("#myBack").hide();
+						 href="./user/MessageList.htm";
+						 alert(href);
+						var content = '<iframe scrolling="auto" frameborder="0"  src="'+href+'" style="width:100%;height:100%;"></iframe>';  
+					    var tt = parent.$('#tabs');  	   
+					    if (tt.tabs('exists', "未读消息")){//如果tab已经存在,则选中该tab，并更新内容          
+					        tt.tabs('select', "未读消息");  
+					        var tab =parent.$('#tabs').tabs('getSelected'); 
+					        parent.$('#tabs').tabs('update', {
+					        	tab: tab,
+					        	options: {
+					        		content:content
+					        	}
+					        });
+					}else {
+						alert("请重试");
+					}
+				}
+				}
+			});
+	}
+
+	</script>
+
+</head>
+<body>
+
+	<form id="query_form" method="post">
+		<div style="margin: 5px 0"></div>
+		<div style="margin: 10px 0;"></div>
+		<div style="margin: 0 5px">
+			<table class="easyui-datagrid" title="我的未读消息" id="query_result"
+				data-options="singleSelect:true,pagination:true,rownumbers:true,pageNumber:1,pageSize:10,pageList:[1,5,10]"
+				toolbar="#tb">
+				<thead>
+					<tr>
+						<th field="ck" checkbox="true"></th>
+						<th data-options="field:'msgId',width:40,hidden:true,align:'center',sortable:'true'">ID</th>
+						<th data-options="field:'submitter',width:160,hidden:false,align:'center',sortable:'true'">发送者</th>
+						<th data-options="field:'msgSubmitTime',width:160,hidden:false,align:'center',sortable:'true'">发送时间</th>
+						<!-- <th data-options="field:'msgType',width:160,hidden:false,align:'center',sortable:'true'">发送时间</th> -->
+						<th data-options="field:'msgTitle',width:160,hidden:false,align:'center',sortable:'true'">消息标题</th>
+						<th data-options="field:'msgContent',width:160,hidden:false,align:'center',sortable:'true'">消息内容</th>
+						<th data-options="field:'msgNote',width:160,hidden:false,align:'center',sortable:'true'">备注</th>
+					</tr>
+				</thead>
+			</table>
+
+			<div id="tb">
+				<div id="divBtnView" style="float:left">
+					<a href="#" class="easyui-linkbutton" iconCls="icon-view" plain="true" onclick="javascript:do_Itview()">查看</a>
+				</div>
+			</div>
+
+		</div>
+	</form>
+
+	<div id="myBack">
+			<button id="close">关闭</button>
+			<div id="viewMyMessage">
+				<div class="no1">
+					<span class="explain">发送消息者：</span>
+					<span class="exp_value" id="submitter"></span>
+				</div>
+				<div class="no1">
+					<span class="explain">发送时间：</span>
+					<span class="exp_value" id="submit_time"></span>
+				</div>
+				<div class="no1">
+					<span class="explain">消息标题：</span>
+					<span class="exp_value" id="mes_title"></span>
+				</div>
+				<div class="no1">
+					<span class="explain">消息内容：</span>
+					<span class="exp_value" id="mes_content"></span>
+				</div>
+				<div class="no1">
+					<span class="explain">备注：</span>
+					<span class="exp_value" id="mes_note"></span>
+				</div>
+				<div class="no1" style="height: 50px;line-height:50px;">
+					<button id="already_read" onclick="recodeAlreadyRead()">标为已读</button>
+					<button id="ignore" onclick="IgnoreMessage()">不在显示</button>
+				</div>
+			</div>
+		</div>
+		<!-- //这个是带文件的 -->
+		<div id="EditMessage" class="back">
+			<button id="close1">关闭</button>
+			<div id="viewMyMessage1">
+				<form id="myform"  method="post" enctype="multipart/form-data">
+					<input type="hidden" name="id" id="myId">
+					<div class="no1">
+						<span class="explain">发送消息者：</span>
+						<span class="exp_value" id="submitter1"></span>
+					</div>
+					<div class="no1">
+						<span class="explain">发送时间：</span>
+						<span class="exp_value" id="submit_time1"></span>
+					</div>
+					<div class="no1">
+						<span class="explain">消息标题：</span>
+						<span class="exp_value" id="mes_title1"></span>
+					</div>
+					<div class="no1">
+						<span class="explain">消息内容：</span>
+						<span class="exp_value" style="margin-top:20px;" id="mes_content1">
+						</span>
+					</div>
+					<div class="no1">
+						<span class="explain">审核状态</span>
+						<span class="exp_value" id="mes_status1"></span>
+					</div>
+					<div class="no1 myFile">
+						<span class="explain">文件名称：</span>
+						
+						<span class="exp_value"  id="file_name1"></span>
+						
+					</div>
+					</form>
+					
+					<div class="no1 myFile">
+						<span class="explain">操作文件：</span>
+						
+						<span class="exp_value" >
+							<a>下载</a>
+							&nbsp;
+							&nbsp;&nbsp;&nbsp;
+							<a>预览</a>
+						</span>
+					</div>
+					
+				<div class="no1" style="height: 50px;line-height:50px;">
+					<button id="already_read" onclick="recodeAlreadyRead()">标为已读</button>
+					<button id="ignore" onclick="IgnoreMessage()">不在显示</button>
+				</div>
+				
+			</div>
+		</div>
+</body>
