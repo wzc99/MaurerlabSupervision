@@ -2,3 +2,15 @@
 只有项目管理人员可以操作base中的codeline。
 
 在trunk目录下，console目录下包含前端相关文件，core目录包含后台相关文件，lib目录包含所有jar包，database/spvisor.backup为数据库文件，详情请看document目录。
+
+tag目录下为trunk baseline的标签，版本命名规范为：
+
+前缀-v+版本.基线.开发
+
+前缀：
+tag	表示临时标记
+br	表示分支
+rel	表示发布
+fix	表示热修复
+
+
