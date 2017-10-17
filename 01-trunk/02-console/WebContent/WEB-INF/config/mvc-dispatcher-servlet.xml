@@ -152,6 +152,12 @@
 			<mvc:exclude-mapping path="/user/getUserStatus.ajax"/>
 			<mvc:exclude-mapping path="/message/getUnreadMessageTotal.ajax"/>
 			<mvc:exclude-mapping path="/people/getPostStatus.ajax"/>
+			<mvc:exclude-mapping path="/examine/getExamineByMeList.ajax"/>
+			<mvc:exclude-mapping path="/htm/user/AllCheckList.htm"/>
+			
+			<mvc:exclude-mapping path="/examine/toDoExamine.ajax"/>
+			<mvc:exclude-mapping path="/examine/getExamineByMeById.ajax"/>
+			
 			
 			
 			<bean class="sys.spvisor.console.interceptor.PermissionCheckInterceptor" />
