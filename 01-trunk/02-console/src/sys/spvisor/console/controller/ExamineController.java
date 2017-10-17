@@ -23,7 +23,7 @@ import sys.spvisor.core.util.ReturnDatas;
 
 @Controller
 @RequestMapping("/examine")
-public class ExamineController extends BaseController{
+public class ExamineController extends BaseController {
 	@Autowired
 	private ExamineService exaService;
 
@@ -296,7 +296,7 @@ public class ExamineController extends BaseController{
 			HttpSession session, @Param("note") String note, HttpServletRequest req)
 			throws UnsupportedEncodingException {
 		ReturnDatas returnData = ReturnDatas.getSuccessReturnDatas();
-		note = URLDecoder.decode(note, "UTF-8");
+		note = note != null ? URLDecoder.decode(note, "UTF-8") : null;
 		try {
 			int result = exaService.ToDoExamine(processId, toNodeStatus, note);
 			if (result != Enumerations.ServiceReturnCode.操作成功.getCode()) {
