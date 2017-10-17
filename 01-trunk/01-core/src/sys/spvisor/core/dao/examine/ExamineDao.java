@@ -18,7 +18,7 @@ public class ExamineDao {
 	}
 	
 	public int insertAndReturnId(TExamine examine){
-		 getSqlSession().insert("sys.spvisor.core.dao.examine.TExamineMapper.insertAndReturnId", examine);
+		 getSqlSession().insert("sys.spvisor.core.dao.examine.TExamineMapper.insert", examine);
 		 return examine.getId();
 	}
 }

@@ -120,7 +120,7 @@
 			<include refid="Example_Where_Clause" />
 		</if>
 	</delete>
-	<insert id="insert" parameterType="sys.spvisor.core.entity.examine.TExamine">
+	<insert id="insert" parameterType="sys.spvisor.core.entity.examine.TExamine" useGeneratedKeys="true" keyProperty="id">
 		insert into t_examine (
 		submit_id, submit_time,
 		status, exa_type, exa_title,
