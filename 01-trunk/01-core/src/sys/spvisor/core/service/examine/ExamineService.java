@@ -639,13 +639,15 @@ public class ExamineService {
 					if (attendance.getStatusIdStatus() == 1) {
 						// 修改上一条记录 目标状态为0 不可用 状态id的状态为2 过期状态
 						attendance.setStatusIdStatus(2);
-						attendance.setToStatusId(0);
-						tAttendanceMapper.updateByPrimaryKeySelective(attendance);
 						// 插入一条新的记录 记录新的岗位状态
 						TAttendance insertAttendance = new TAttendance();
+						insertAttendance.setStatusId(attendance.getToStatusId());
+						attendance.setToStatusId(0);
+						tAttendanceMapper.updateByPrimaryKeySelective(attendance);
+						
 						insertAttendance.setProId(attendance.getProId());
 						insertAttendance.setStartTime(DatetimeUtil.getCurrentTimestamp());
-						insertAttendance.setStatusId(toNodeStatus);
+						
 						insertAttendance.setUserId(attendance.getUserId());
 						// 当前状态可用
 						insertAttendance.setStatusIdStatus(0);
