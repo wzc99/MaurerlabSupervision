@@ -51,12 +51,13 @@ public class UserCenterController extends BaseController {
 		try {
 			TUser user = userService.getUserById(userId);
 			TAttendance att = attService.getAttendance(userId.intValue());
-			if (att == null) {
-				return ReturnDatas.getErrorReturnDatas(Enumerations.ReturnCode.执行失败.getCode(), "获取岗位状态信息失败");
-			}
-			user.setUserLoginPassword("");
 
-			if (att.getStatusIdStatus() == 1) {
+			user.setUserLoginPassword("");
+			if (att == null) {
+				att = new TAttendance();
+				att.setId(0);
+				att.setStatusIdStatus(0);
+			} else if (att.getStatusIdStatus() == 1) {
 				user.setToStatusId(att.getToStatusId());
 			}
 			user.setStatusLinkId(att.getId());
