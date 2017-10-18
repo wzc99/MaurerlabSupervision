@@ -14,18 +14,18 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 //import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
+import sys.spvisor.core.util.WordUtil;
 import sys.file.common.AutoCreateFileName;
 import sys.spvisor.core.common.PermissionException;
 import sys.spvisor.core.dao.ana.TUserMapper;
@@ -49,6 +49,7 @@ import sys.spvisor.core.entity.project.TProjectPeopleExample;
 import sys.spvisor.core.entity.project.TSendCard;
 import sys.spvisor.core.entity.project.TSendCardExample;
 import sys.spvisor.core.service.message.TextMessageService;
+import sys.spvisor.core.util.DispatchWord;
 
 @Service
 public class DispatchService {
@@ -420,50 +421,91 @@ public class DispatchService {
   		}
   	}
 	
-	public void generate(File outFile,Integer projectId){
+	public void generate(Integer projectId,HttpServletRequest request, HttpServletResponse response,String filename){
 		Map<String,Object> dataMap=new HashMap<String,Object>();
 		getData(dataMap,projectId);
-		Configuration configuration = new Configuration();
+		/*Configuration configuration = new Configuration();
 		configuration.setDefaultEncoding("UTF-8");
-		Template t=null;
-		try {
-			//System.out.println(dispatchService.getClass().getResource("").getPath());
-			//System.out.println(getClass().getResource("/template/dispatchForm.ftl"));
-			configuration.setClassForTemplateLoading(getClass(), "/template/");
-			//configuration.setDirectoryForTemplateLoading(new File(request.getSession().getServletContext().getRealPath("/")+System.getProperty("file.separator")+"WEB-INF"+System.getProperty("file.separator")+"lib"+System.getProperty("file.separator")+"core.jar!"+System.getProperty("file.separator")+"template"));
-			List<TSendCard> s = getSendCardByProjectId(projectId);
-			//有派遣单
-			if(s.size() > 0){
-				TSendCard sc = s.get(0);
-				//有照片
-				if(tUserMapper.selectByPrimaryKey(sc.gettShenpiId()).getUserPic()!=null)
-					t = configuration.getTemplate("dispatchForm.ftl");
-				//没有照片
-				else
-					t = configuration.getTemplate("dispatchForm1.ftl");
+		//System.out.println(dispatchService.getClass().getResource("").getPath());
+		//System.out.println(getClass().getResource("/template/dispatchForm.ftl"));
+		//      configuration.setClassForTemplateLoading(getClass(), "/template/");
+		//configuration.setDirectoryForTemplateLoading(new File(request.getSession().getServletContext().getRealPath("/")+System.getProperty("file.separator")+"WEB-INF"+System.getProperty("file.separator")+"lib"+System.getProperty("file.separator")+"core.jar!"+System.getProperty("file.separator")+"template"));
+		List<TSendCard> s = getSendCardByProjectId(projectId);
+		//有派遣单
+		if(s.size() > 0){
+			TSendCard sc = s.get(0);
+			//有照片
+			if(tUserMapper.selectByPrimaryKey(sc.gettShenpiId()).getUserPic()!=null){
+				//          t = configuration.getTemplate("dispatchForm.ftl");
+			//没有照片
+			}else {
+				//           t = configuration.getTemplate("dispatchForm1.ftl");
 			}
-			//没有派遣单
-			else
-				t = configuration.getTemplate("dispatchForm1.ftl");
-				
-		} catch (IOException e) {
-			e.printStackTrace(); 
+		}
+		//没有派遣单
+		else {
+			//           t = configuration.getTemplate("dispatchForm1.ftl");
+		}*/
+		DispatchWord dispa = new DispatchWord();
+		try {
+			dispa.testTemplateWrite(request, response, dataMap,filename);
+		} catch (Exception e2) {
+			e2.printStackTrace();
 		}
 
-		Writer out = null;
+		/*Writer out = null;
 		try {
 			out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outFile)));
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
 		}           
 		try {
-			t.process(dataMap, out); //将填充数据填入模板文件并输出到目标文件   
+			//          t.process(dataMap, out); //将填充数据填入模板文件并输出到目标文件   
 			out.close();
-		} catch (TemplateException e) {
-			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
+		}*/
+		
+		//写图片
+		 Map<String, Object> mapAll = new HashMap<String, Object>();
+		 
+		 List<TSendCard> s = getSendCardByProjectId(projectId);
+		//有派遣单
+		if(s.size() > 0){
+			TSendCard sc = s.get(0);
+			//有照片
+			if(tUserMapper.selectByPrimaryKey(sc.gettShenpiId()).getUserSignature()!=null){
+				//          t = configuration.getTemplate("dispatchForm.ftl");
+				System.out.println("分割线-----");
+				String picPath = request.getSession().getServletContext().getRealPath(tUserMapper.selectByPrimaryKey(sc.gettShenpiId()).getUserSignature());
+				System.out.println(picPath);
+				mapAll.put(WordUtil.IMAGE_ + "image",picPath);
+				try {
+		            WordUtil a = new WordUtil();
+		            String dirPath = request.getSession().getServletContext().getRealPath("upload/"+filename);
+		            /*String from = request.getSession().getServletContext().getRealPath("files/templates/Template.docx");
+		            String dirPath = request.getSession().getServletContext().getRealPath("files/templates/test.docx");*/
+		            String to = request.getSession().getServletContext().getRealPath("upload/mubiao.docx");
+		            a.generateWordFromTemplate(dirPath,dirPath, mapAll);
+		            System.out.println(dirPath);
+		        } catch (FileNotFoundException e) {
+		            e.printStackTrace();
+		        } catch (IOException e) {
+		            e.printStackTrace();
+		        } catch (InvalidFormatException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			//没有照片
+			}else {
+				//           t = configuration.getTemplate("dispatchForm1.ftl");
+			}
 		}
+		//没有派遣单
+		else {
+			//           t = configuration.getTemplate("dispatchForm1.ftl");
+		}
+		  
 	}
 	
 	

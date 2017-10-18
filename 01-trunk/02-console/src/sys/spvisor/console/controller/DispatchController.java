@@ -337,16 +337,16 @@ public class DispatchController {
 	@RequestMapping("/generateDispatchForm.ajax")
 	public void generateDispatchForm(Integer projectId, HttpServletRequest request, HttpServletResponse response) throws IOException{
         //生成
-		String filename = "pqd"+(int)(Math.random()*10000+1)+".doc";
+		String filename = "pqd"+(int)(Math.random()*10000+1)+".docx";
 		File fileDir = new File(request.getSession().getServletContext().getRealPath("upload"));
 		
 		if (!fileDir.exists()) {
 			fileDir.mkdirs();
 		}
+		System.out.println(fileDir +"//"+ fileDir);
 		
-		File outFile = new File(fileDir,filename); //导出文件   
-		dispatchService.generate(outFile,projectId);
-		
+		dispatchService.generate(projectId,request,response,filename);
+		//File outFile = new File(fileDir,filename); //导出文件   
 		//下载
         //设置文件MIME类型  
         response.setContentType("multipart/form-data");  
@@ -355,6 +355,7 @@ public class DispatchController {
         //读取目标文件，通过response将目标文件写到客户端  
         //读取文件  
         String fullFileName = request.getSession().getServletContext().getRealPath("upload")+System.getProperty("file.separator")+filename;
+        System.out.println(fullFileName);
         InputStream in = new FileInputStream(fullFileName);  
         OutputStream resOut = response.getOutputStream();
           
@@ -367,8 +368,8 @@ public class DispatchController {
           
         in.close();  
         resOut.close();
-        if(outFile.exists())
-        	outFile.delete();
+        //if(outFile.exists())
+        	//outFile.delete();
 	}
 	
 }
