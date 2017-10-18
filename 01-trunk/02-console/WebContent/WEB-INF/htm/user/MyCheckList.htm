@@ -184,7 +184,7 @@ window.onload = function() {
 				$("#submit_status").html(formatStatus(data.data.status));
 				
 				//初始化编辑里面的数据
-				$("#myId").attr("value",data.data.id);
+				$("#exaId").attr("value",data.data.id);
 				$("#submitter1").attr("value",data.data.submitName);
 				$("#submit_time1").attr("value",formatTime(data.data.submitTime));
 				$("#mes_title1").attr("value",data.data.exaTitle);
@@ -696,7 +696,7 @@ window.onload = function() {
 			<button id="close1">关闭</button>
 			<div id="viewMyMessage1">
 				<form id="myform"  method="post" enctype="multipart/form-data">
-					<input type="hidden" name="id" id="myId">
+					<input type="hidden" name="id" id="exaId">
 					<div class="no1">
 						<span class="explain">发送消息者：</span>
 						<span class="exp_value">
