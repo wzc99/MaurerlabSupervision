@@ -2,14 +2,17 @@ package sys.spvisor.core.service.project;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -19,6 +22,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.util.Units;
+import org.apache.poi.xwpf.usermodel.Document;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFRun;
+import org.apache.poi.xwpf.usermodel.XWPFTable;
+import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 //import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -467,7 +476,7 @@ public class DispatchService {
 		}*/
 		
 		//写图片
-		 Map<String, Object> mapAll = new HashMap<String, Object>();
+		 //Map<String, Object> mapAll = new HashMap<String, Object>();
 		 
 		 List<TSendCard> s = getSendCardByProjectId(projectId);
 		//有派遣单
@@ -479,12 +488,12 @@ public class DispatchService {
 				System.out.println("分割线-----");
 				String picPath = request.getSession().getServletContext().getRealPath(tUserMapper.selectByPrimaryKey(sc.gettShenpiId()).getUserSignature());
 				System.out.println(picPath);
-				mapAll.put(WordUtil.IMAGE_ + "image",picPath);
-				try {
+				//mapAll.put(WordUtil.IMAGE_ + "image",picPath);
+				/*try {
 		            WordUtil a = new WordUtil();
 		            String dirPath = request.getSession().getServletContext().getRealPath("upload/"+filename);
-		            /*String from = request.getSession().getServletContext().getRealPath("files/templates/Template.docx");
-		            String dirPath = request.getSession().getServletContext().getRealPath("files/templates/test.docx");*/
+		            String from = request.getSession().getServletContext().getRealPath("files/templates/Template.docx");
+		            String dirPath = request.getSession().getServletContext().getRealPath("files/templates/test.docx");
 		            String to = request.getSession().getServletContext().getRealPath("upload/mubiao.docx");
 		            a.generateWordFromTemplate(dirPath,dirPath, mapAll);
 		            System.out.println(dirPath);
@@ -493,6 +502,42 @@ public class DispatchService {
 		        } catch (IOException e) {
 		            e.printStackTrace();
 		        } catch (InvalidFormatException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}*/
+				try {
+		        	InputStream is = null;
+					XWPFDocument document = null;
+					is = new FileInputStream(request.getSession().getServletContext().getRealPath("upload/"+filename));
+					document = new XWPFDocument(is);
+							//new XWPFDocument(POIXMLDocument.openPackage("D:\\Template.docx"));
+					Iterator<XWPFTable> itTable = document.getTablesIterator();
+					/*while (itTable.hasNext()) {*/
+			            XWPFTable table = itTable.next();
+			            
+			            XWPFTableRow row11 = table.getRow(16);
+			           InputStream ip1 = new FileInputStream(picPath);
+						XWPFRun picRun1 = row11.getCell(3).getParagraphArray(0).createRun();
+						try {
+							//picRun1.addPicture(ip1, Document.PICTURE_TYPE_PNG, "", Units.toEMU(230), Units.toEMU(170));
+							picRun1.addPicture(ip1, Document.PICTURE_TYPE_JPEG, "", Units.toEMU(100), Units.toEMU(40));
+						} catch (InvalidFormatException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						ip1.close();
+						//row11.getCell(1).setText("我的图片1");
+						FileOutputStream out;
+						String uuid = request.getSession().getServletContext().getRealPath("upload/"+filename);
+						out = new FileOutputStream(uuid);
+						
+						document.write(out);
+						document.close();
+						out.close();
+						is.close();
+						
+			       // }
+				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
