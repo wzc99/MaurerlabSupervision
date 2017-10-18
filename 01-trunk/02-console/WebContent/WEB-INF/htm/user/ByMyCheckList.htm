@@ -279,7 +279,7 @@ window.onload = function() {
 				dataType : 'JSON',
 				data : {
 					processId : window.row.processId,
-					toNodeStatus : 2,
+					toNodeStatus : 1,
 					note : encodeURI(note)
 				},
 				success : function(data) {
@@ -318,7 +318,7 @@ window.onload = function() {
 				dataType : 'JSON',
 				data : {
 					processId : window.row.processId,
-					toNodeStatus : 1,
+					toNodeStatus : 2,
 					note : note
 				},
 				success : function(data) {
