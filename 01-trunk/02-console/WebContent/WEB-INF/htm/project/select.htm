@@ -103,7 +103,8 @@ function do_view() {
 		$.messager.alert('Info', '请选择行', 'info');
 		return;
 	}
-	view(row.msgId);
+	alert(row[0].proId);
+	view(row[0].proId);
 }
 
 function do_delet() {
@@ -243,7 +244,7 @@ function init_view_by_permission() {
 		<th data-options="field:'proBigProjectName',width:120,align:'center'"	 >项目名称</th>
 		<th data-options="field:'projectName',width:120,align:'center'"		     >子项目名称</th>
 		<th data-options="field:'proEntrustTime',width:100,align:'right'"		>委托日期</th>
-		<th data-options="field:'proNum',width:120,sortable:'true',align:'right'">委托单号</th>
+		<th data-options="field:'proNum',width:120,align:'right'">委托单号</th>
 		<th data-options="field:'proConpeople',width:80,align:'right'"		     >业主联系人</th>
 		<th data-options="field:'proConntel',width:120,align:'right'"			 >联系电话</th>
 		<th data-options="field:'proGoods',width:120,align:'center'"			 >监造物资</th>

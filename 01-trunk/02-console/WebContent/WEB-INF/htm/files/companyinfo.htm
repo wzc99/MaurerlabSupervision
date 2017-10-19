@@ -101,6 +101,7 @@ $(function() {
 		$('#new_form').form({//提交表单的验证
 			url : '../../file/saveFile.ajax?fileTypeId='+fileTypeId,
 			onSubmit : function() {
+				
 				//验证对应图片之前的文字描述是否填写，如果没有填写，则验证失败
 				if(!setNess()) {
 					return false;
@@ -280,6 +281,16 @@ $(function() {
 		$('#ViewWindow').window('close');
 	}
 	 function setNess() {
+		 	//提交的时候必须填写第一项
+		 	if( !$("#fileContentIntroduction1").val() || $("#fileContentIntroduction1").val() == "此项为必填项！") {
+				 $("#fileContentIntroduction1").css({
+					 "border":"1px solid red",
+					 "backgroundColor":"yellow"
+				 });
+				 $("#fileContentIntroduction1").val("此项为必填项！");
+				 return false;
+				
+			 }
 			//上传图片，其对应的文件描述必须填写
 			var length = $('#fileInfoTab input[id^=fileName]').length + 1;
 			var sum = 0;

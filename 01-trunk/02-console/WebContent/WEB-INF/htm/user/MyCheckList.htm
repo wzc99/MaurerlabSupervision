@@ -293,7 +293,7 @@ window.onload = function() {
 			//var obj = $.parseJSON(data);//将json字符串转换为object对象
 			//alert(obj);
 			if(data.statusCode == 200){
-				$.messager.alert('提示', data.message, 'info', function(){
+				$.messager.alert('提示', "修改成功", 'info', function(){
 					 //刷新项目详述页面
 					 href="./user/MyCheckList.htm";
 					 alert(href);
@@ -696,7 +696,7 @@ window.onload = function() {
 			<button id="close1">关闭</button>
 			<div id="viewMyMessage1">
 				<form id="myform"  method="post" enctype="multipart/form-data">
-					<input type="hidden" name="id" id="exaId">
+					<input type="text" style="display: none" name="exaId" id="exaId">
 					<div class="no1">
 						<span class="explain">发送消息者：</span>
 						<span class="exp_value">

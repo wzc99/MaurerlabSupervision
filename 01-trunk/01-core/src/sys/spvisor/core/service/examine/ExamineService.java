@@ -525,6 +525,7 @@ public class ExamineService {
 				TExaProcessExample example = new TExaProcessExample();
 				TExaProcessExample.Criteria tpCriteria = example.createCriteria();
 				tpCriteria.andExamineIdEqualTo(exaId);
+				List<TExaProcess> tt = tExaProcessMapper.selectByExample(example);
 				TExaProcess ePTemp = tExaProcessMapper.selectByExample(example).get(0);
 
 				ExamineInit init = new ExamineInit();

@@ -338,6 +338,16 @@ $(function() {
 		$('#ViewWindow').window('close');
 	}
 	function setNess() {
+		//提交的时候必须填写第一项
+	 	if( !$("#fileContentIntroduction1").val() || $("#fileContentIntroduction1").val() == "此项为必填项！") {
+			 $("#fileContentIntroduction1").css({
+				 "border":"1px solid red",
+				 "backgroundColor":"yellow"
+			 });
+			 $("#fileContentIntroduction1").val("此项为必填项！");
+			 return false;
+			
+		 }
 		//上传图片，其对应的文件描述必须填写
 		var length = $('#fileInfoTab input[id^=fileName]').length + 1;
 		var sum = 0;
