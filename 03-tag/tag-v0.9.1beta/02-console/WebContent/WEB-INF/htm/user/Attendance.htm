@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>未读消息列表</title>
+
+
+<link rel="stylesheet" type="text/css" href="../../themes/icon.css"/>
+<link rel="stylesheet" type="text/css" href="../../themes/demo.css"/>
+<link rel="stylesheet" type="text/css" href="../../themes/default/easyui.css"/>
+
+<script type="text/javascript" src="../../scripts/jquery-1.8.0.min.js"></script>
+<script type="text/javascript" src="../../scripts/jquery.easyui.min.js"></script>
+<style type="text/css">
+
+		#myBack {
+			width: 100%;
+			height: 100%;
+			z-index:2;
+	    	background: #FFEFDB;
+	   		position: absolute;
+	    	top: 0px;
+		}
+	
+		#myBack button {
+			border-radius: 5px;
+			border: 1px solid #CAE1FF;
+			width: 100px;height: 30px;font-size: 20px;color:#473C8B;
+			background: #CAE1FF;
+			font-weight: bold;
+			cursor: pointer;
+		}
+		#viewMyMessage {
+		position: relative;
+		left: 10%;
+		top: 40px;
+		width: 80%;
+		background-color: white;
+		overflow: auto;
+		min-height: 500px;
+		max-height: 600px;
+		border: 1px solid #FFF;border-radius: 10px;
+	}
+	#viewMyMessage div {
+		border-bottom: 1px solid black;
+	}
+	#myBack span {
+		display: inline-block;
+		height: 50px;
+		line-height: 50px;
+	}
+	.explain {
+		width: 30%;
+		text-align: right;
+		color: black;
+		font-weight: bold;
+		font-size: 20px;
+		padding: 10px;
+	 }
+	 .exp_value {
+	 	width: 50%;
+	 	text-align: left;
+	 	font-weight: bold;
+		font-size: 20px;
+		color: green;
+	 }
+	 #already_read {
+	 	position: relative;
+	 	left: 20%;
+	 	width: 15%;
+	 	background: #CDB79E;
+	 }
+	 #ignore {
+	 	position: relative;
+	 	left: 40%;
+	 	width: 15%;
+	 	background: #CDB79E;
+	 } 
+</style>
+
+<script type="text/javascript">
+
+window.onload = function() {
+	$("#myBack").hide();
+
+	 $("#query_result1").datagrid({
+			pagination : true,
+			showFilterBar:false,
+			striped: true,
+			sortOrder:"asc",
+			remoteSort:false,
+				onDblClickRow: function(rowIndex, rowData){
+					//do_view(1);
+				}
+		});
+
+
+	var pg1 = $("#query_result1").datagrid("getPager");
+	if (pg1) {
+		$(pg1).pagination({		
+			onBeforeRefresh : function() {
+				//alert('before refresh');
+			},
+			onRefresh : function(pageNumber, pageSize) {
+				do_submit(pageNumber, pageSize)
+			},
+			onChangePageSize : function() {
+				//alert('pagesize changed');
+			},
+			onSelectPage : function(pageNumber, pageSize) {
+				do_submit(pageNumber, pageSize);
+			}
+		});
+	}
+
+	do_submit(1,10); 
+
+	/*  4:全部 0:审核中 1通过 2未通过 3撤销 tip:不包括不可见的审核 */
+	//index表示那个tab中的datagrid发生的事件
+	 function do_submit(pageNumber, pageSize) {
+		alert("hello");		
+		var targetForm = '#query_form1';
+		$(targetForm).form('submit', {
+			url : '../../user/center/getAttendanceById.ajax',
+			onSubmit : function(param) {
+				param.limit = pageSize;
+				param.index = pageNumber;
+				return $(this).form('validate');
+			},
+			success : function(data) {
+				var obj = $.parseJSON(data);
+				var myData = {};
+				myData.total = obj.page.totalCount;
+				myData.rows = obj.data;
+				$('#query_result1').datagrid('loadData', myData);
+			}
+		});
+	}
+	
+}
+
+	</script>
+
+</head>
+<body>
+	<div id="tt" class="easyui-tabs" style="width:80%;margin: 60px 5%;">
+	    <div title="全部" style="padding:20px;">
+			<form id="query_form1" method="post">
+				<div style="margin: 0 5px">
+					<table class="easyui-datagrid" title="" id="query_result1"
+						data-options="singleSelect:true,pagination:true,rownumbers:true,pageNumber:1,pageSize:10,pageList:[1,5,10]"
+						toolbar="#tb">
+						<thead>
+							<tr>
+								<th data-options="field:'time',width:300,hidden:false,align:'center',sortable:'true'">考勤时间段</th>
+								<th data-options="field:'attendance',width:300,hidden:false,align:'center',sortable:'true'" >岗位状态</th>
+								<th data-options="field:'node',width:300,hidden:false,align:'center'">备注</th>
+								
+							</tr>
+						</thead>
+					</table>
+		
+					
+		
+				</div>
+			</form>
+	    </div>
+
+	</div>
+
+	
+</body>

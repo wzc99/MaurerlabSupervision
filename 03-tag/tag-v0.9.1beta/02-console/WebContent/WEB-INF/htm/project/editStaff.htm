@@ -1,0 +1,868 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>人员派遣交底</title>
+	
+	<link rel="stylesheet" type="text/css" href="../../themes/general.css">
+	<link rel="stylesheet" type="text/css" href="../../themes/icon.css">
+	<link rel="stylesheet" type="text/css" href="../../themes/gray/easyui.css">
+    <link rel="stylesheet" type="text/css" href="../../themes/default/easyui.css">
+
+	<script type="text/javascript" src="../../scripts/jquery-1.8.0.min.js"></script>
+	<script type="text/javascript" src="../../scripts/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="../../scripts/locale/easyui-lang-zh_CN.js"></script>
+	<script type="text/javascript" src="../../scripts/src/jquery.parser.js"></script>
+	<script type="text/javascript" src="../../scripts/general.js"></script>
+	<script type="text/javascript" src="../../scripts/sessionExpriation.js"></script>
+
+	<style type="text/css">
+		.peopleChange:hover{background-color: #999;}
+	</style>
+	<script type="text/javascript">
+	var that;
+	var mob = null;
+	var projectId;
+	var proStartTime;
+	$(function() {
+		projectId = $.getUrlParam('projectId');
+		//$('#projectId').val(projectId);
+		$.ajax({//获取项目名称
+			url : '../../project/getProjectName.ajax',
+			type : 'post',
+			dataType : 'text',
+			cache: false,
+			data : {
+				projectId : projectId,
+			},
+			error: function(XMLHttpRequest, textStatus, errorThrown) {	                    
+	        },
+			success : function(data) {
+				$('#projectName').text(unescape(decodeURI(data)));
+			}
+		}); 
+		
+		$.ajax({//获取项目
+			url : '../../project/viewProject.ajax',
+			type : 'post',
+			dataType : 'JSON',
+			cache: false,
+			data : {
+				proId : projectId 
+			},
+			error: function(XMLHttpRequest, textStatus, errorThrown) {
+	            //alert(XMLHttpRequest.status);
+	        },
+			success : function(data) {
+				proStartTime=data.project.proStartTime;
+			}
+		});
+		
+/* 		$('#dispatch_people_form').form({
+			url : '../../dispatch/dispatchGroupLeaderAndMember.ajax?projectId='+projectId,
+			onSubmit : function() {				
+				recordProjectMember();				
+				//recordFileName();
+				if(checkIfRepeat()){
+					alert("人员有重复");
+					return false;
+				}
+				if ($(this).form('validate')) {
+					return true;//验证是否为空
+				} else {
+					return false;
+				}
+			},
+			success : function(data) {
+				var obj = $.parseJSON(data);//将json字符串转换为object对象
+				if (obj.success) {
+					$.messager.alert('提示', obj.message, 'info', function(){
+						location.reload();//强迫浏览器刷新当前页面
+					});
+				} else {
+					$.messager.alert('提示', obj.message, 'info');
+				}
+			}
+		}); */
+		
+		$('#file_sendcard_form').form({
+			url : '../../dispatch/submitFileAndSendcard.ajax?projectId='+projectId,
+			onSubmit : function() {				
+				recordFileName();
+				if ($(this).form('validate')) {
+					return true;//验证是否为空
+				} else {
+					return false;
+				}
+			},
+			success : function(data) {
+				var obj = $.parseJSON(data);//将json字符串转换为object对象
+				if (obj.success) {
+					$.messager.alert('提示', obj.message, 'info', function(){
+						//刷新项目详述页面
+						 href="./project/view.html?proId="+projectId;
+						var content = '<iframe scrolling="auto" frameborder="0"  src="'+href+'" style="width:100%;height:100%;"></iframe>';  
+					    var tt = parent.$('#tabs');  	   
+					    if (tt.tabs('exists', "项目详述")){  
+					        var tab =parent.$('#tabs').tabs('getTab','项目详述');
+					        parent.$('#tabs').tabs('update', {
+					        	tab: tab,
+					        	options: {
+					        		content:content
+					        	}
+					        });
+					    }
+						location.reload();//强迫浏览器刷新当前页面
+					});
+				} else {
+					$.messager.alert('提示', obj.message, 'info');
+				}
+			}
+		});
+
+	
+		$.ajax({//文件信息,从后台获取数据
+			url : '../../dispatch/getDispatchFileInfo.ajax',
+			type : 'post',
+			dataType : 'JSON',
+			cache: false,
+			data : {
+				proId : projectId 
+			},
+			error: function(XMLHttpRequest, textStatus, errorThrown) {
+	                   
+	        },
+			success : function(data) {
+					init_file(data);
+			}
+		});
+		$.ajax({//派遣单信息
+			url : '../../dispatch/getSendCardInfo.ajax',
+			type : 'post',
+			dataType : 'JSON',
+			cache: false,
+			data : {
+				projectId : projectId 
+			},
+			error: function(XMLHttpRequest, textStatus, errorThrown) {
+	                   
+	        },
+			success : function(data) {
+				init_dispatch_data(data);
+			}
+		});
+
+			
+		$('#btn_submit').bind('click', function() {
+			$("#file_sendcard_form").submit();
+		});
+		
+    
+    var getPeopleUrl = '../../dispatch/getPeopleByProjectId.ajax';
+	
+	$.ajax({
+		url : getPeopleUrl,
+		type : 'post',
+		dataType : 'JSON',
+		cache: false,
+		data : {
+			projectId : projectId 
+		},
+		error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert(XMLHttpRequest.status);
+        },
+		success : function(peopleData) {
+			//alert(peopleData.projectChief[0].ppUsername);
+			init_viewPeople(peopleData);
+		}
+	});
+
+	$( "#dialog" ).dialog({
+		title: '人员派遣',
+        closed:true,
+        modal:true,  
+     	autoOpen: true,
+      
+    });
+	$.ajax({//需要数据库的人员信息
+		url : '../../plan/selectByStationStatus.ajax',
+		type : 'post',
+		dataType : 'JSON',
+		cache: false,
+		error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert(XMLHttpRequest.status);
+        },
+		success : function(peopleData) {
+			addpeople(peopleData);
+		}
+	});
+
+	window.groupLeaderInfoIndex = 1;
+	window.memberInfoIndex = 1;
+    
+    $("#addGroupLeader").click(function(){
+		   var tempInfoId = "groupLeaderInfoTab" + groupLeaderInfoIndex;
+		   var tempChooseId = "groupLeaderChoose" + groupLeaderInfoIndex;
+		   var proStartTime = proStartTime==null?"":proStartTime;
+	       $str='';
+        $str+='<tr>';
+        //$str+='<td style="display:none;"><input type="hidden" name="peopleId" id="peopleId'+chiefInfoIndex+'" 		/></td>';
+        $str+='<td align="center"><input  type="hidden" readonly="true" name="peopleId" id="peopleId'+groupLeaderInfoIndex+'" 	/><input class="easyui-validatebox input_140" required="required"  onclick="func(\''+tempChooseId+'\')" type="text" readonly="true" name="peopleName" 	id="'+tempChooseId+'" 	/></td>';
+        $str+='<td align="center"><input  type="text" name="inProjectDate"  	id="inProjectDate'+tempChooseId+'" value="'+proStartTime+'" /></td>';
+        $str+='<td align="center"><input  type="text" name="outProjectDate" 			id="outProjectDate'+tempChooseId+'" 	/></td>';
+        //$str+='<td><select id="ifInProject'+chiefInfoIndex+'" name="ifInProject" data-options="panelHeight:\'auto\'" editable="false" class="input_140"><option  value=""></option><option  value="是">是</option><option  value="否">否</option></select></td>';
+        $str+='<td align="center" id="ifInProject'+groupLeaderInfoIndex+'"></td>';
+        $str+='<td align="center"><a href="javascript:choose_people(\''+tempInfoId+'\')" >选人</a>&nbsp;&nbsp<a id="'+tempInfoId+'" 	href="javascript:delTr(\''+tempInfoId+'\')" >删除</a></td>';
+	       $str+='</tr>';
+	    
+	       $("#groupLeader").append($str);
+	       
+	       add_validate(tempChooseId);
+	       
+	       groupLeaderInfoIndex++;
+	       
+	 });
+ 
+     $("#addMember").click(function(){
+		   var tempInfoId = "memberInfoTab" + memberInfoIndex;
+		   var tempChooseId = "memberChoose" + memberInfoIndex;
+		   var proStartTime = proStartTime==null?"":proStartTime;
+	       $str='';
+        $str+='<tr>';
+        //$str+='<td style="display:none;"><input type="hidden" name="peopleId" id="peopleId'+chiefInfoIndex+'" 		/></td>';
+        $str+='<td align="center"><input  type="hidden" readonly="true" name="peopleId" id="peopleId'+memberInfoIndex+'" 		/><input class="easyui-validatebox input_140" required="required"  onclick="func(\''+tempChooseId+'\')" type="text" readonly="true" name="peopleName" 	id="'+tempChooseId+'" /></td>';
+        $str+='<td align="center"><input  type="text" name="inProjectDate"  			id="inProjectDate'+tempChooseId+'" 	value="'+proStartTime+'" /></td>';
+        $str+='<td align="center"><input  type="text" name="outProjectDate" 			id="outProjectDate'+tempChooseId+'" 	/></td>';
+        //$str+='<td><select id="ifInProject'+chiefInfoIndex+'" name="ifInProject" data-options="panelHeight:\'auto\'" editable="false" class="input_140"><option  value=""></option><option  value="是">是</option><option  value="否">否</option></select></td>';
+        $str+='<td align="center" id="ifInProject'+memberInfoIndex+'"></td>';
+        $str+='<td align="center"><a href="javascript:choose_people(\''+tempInfoId+'\')" >选人</a>&nbsp;&nbsp<a id="'+tempInfoId+'" 	href="javascript:delTr(\''+tempInfoId+'\')" >删除</a></td>';
+	       $str+='</tr>';
+	    
+	       $("#member").append($str);
+	       
+	       add_validate(tempChooseId);
+	       
+	       memberInfoIndex++;
+	       
+	 });
+    
+    var post;
+    for(var i = 0; i < 2; i++){
+    	if(i==0)
+    	   post = "groupLeader";
+    	else if(i == 1)
+    		post = "member";
+
+    	    $('#'+post+'_form').form({
+    			url : '../../dispatch/saveProjectPeople.ajax?projectId='+projectId+'&post='+post,
+    			onSubmit : function() {						
+    				if ($(this).form('validate') ) {
+    					return true;
+    				} else {
+    					return false;
+    				}
+    			},
+    			success : function(data) {
+    				var obj = $.parseJSON(data);//将json字符串转换为object对象
+    				if (obj.success) {
+    					$.messager.alert('提示', obj.message, 'info', function(){
+    						//刷新项目详述页面
+   						    href="./project/view.html?proId="+projectId;
+   						    var content = '<iframe scrolling="auto" frameborder="0"  src="'+href+'" style="width:100%;height:100%;"></iframe>';  
+   					       var tt = parent.$('#tabs');  	   
+   					       if (tt.tabs('exists', "项目详述")){  
+   					           var tab =parent.$('#tabs').tabs('getTab','项目详述');
+   					           parent.$('#tabs').tabs('update', {
+   					        	   tab: tab,
+   					        	   options: {
+   					        		content:content
+   					        	   }
+   					           });
+   					        }
+    						location.reload();//强迫浏览器刷新当前页面
+    					});
+    				} else {
+    					$.messager.alert('提示', obj.message, 'info');
+    				}
+    			}
+    		});
+    }
+    
+    $('#saveGroupLeader').bind('click', function() {
+		$("#groupLeader_form").submit();
+	}); 
+    $('#saveMember').bind('click', function() {
+		$("#member_form").submit();
+	}); 
+	
+     function addpeople(peopleData){
+ 		if(peopleData != null && peopleData.length > 0){
+ 			for(var i = 0; i < peopleData.length; i++){
+ 				 $str='';
+ 		        $str+='<tr class="peopleChange">';
+ 		        $str+='<td align="center" width="50" class="id">' + peopleData[i].user.userId  + '</td>';
+ 				$str+='<td align="center" width="70" class="name">' + peopleData[i].user.userName  + '</td>';
+ 				if(peopleData[i].user.userWorkStatusId == 1) {
+ 					workStatus = "出差";
+ 				} else if(peopleData[i].user.userWorkStatusId == 2) {
+ 					workStatus = "办公室出勤";
+ 				}else if(peopleData[i].user.userWorkStatusId == 3) {
+ 					workStatus = "休假";
+ 				}else if(peopleData[i].user.userWorkStatusId == 4) {
+ 					workStatus = "请假";
+ 				}else if(peopleData[i].user.userWorkStatusId == 5) {
+ 					workStatus = "本人待岗";
+ 				}else if(peopleData[i].user.userWorkStatusId == 6) {
+ 					workStatus = "非本人待岗";
+ 				}else if(peopleData[i].user.userWorkStatusId == 7) {
+ 					workStatus = "离职";
+ 				}else if(peopleData[i].user.userWorkStatusId == 8) {
+ 					workStatus = "备用";
+ 				}
+ 				$str+='<td align="center" width="100">' + workStatus + '</td>';
+ 				if(peopleData[i].project == null || peopleData[i].project.projectName == null)
+ 					projectName = "";
+ 				else
+ 					projectName = peopleData[i].project.projectName;
+ 			    $str+='<td align="center" width="150">' + projectName  + '</td>';
+ 			    if(peopleData[i].user.mobile == null)
+ 			    	peopleData[i].user.mobile = "";
+ 				$str+='<td align="center" width="100" class="mobile">' + peopleData[i].user.mobile  + '</td>';
+ 				if(peopleData[i].user.userLocationDes == null)
+ 					peopleData[i].user.userLocationDes = "";
+ 				$str+='<td align="center" width="100">' + peopleData[i].user.userLocationDes + '</td>';
+ 			    $("#newPeople").append($str);
+ 			}
+ 		}
+ 		$(".peopleChange").click(function(){
+ 			var name = $(this).children('td.name').text();
+ 			var id = $(this).children('td.id').text();
+ 			var mobile = $(this).children('td.mobile').text();
+ 			$(that).val(id);
+ 			$(that).next().val(name);
+ 			if(mob != null)
+ 			   $(mob).text(mobile);
+ 			mob = null;
+ 			$("#dialog").dialog('close');
+ 		})
+ 	}
+});	
+
+	
+	function init_viewPeople(peopleData){
+		var post;
+		var list;
+		var postInfoTab;
+		if(peopleData != null){
+			post = "groupLeader";
+			list = peopleData.groupLeader;
+			listName = peopleData.groupLeaderName;
+			postInfoTab = "groupLeaderInfoTab";
+			if(list != null)
+			    init_viewPeopleByPost(postInfoTab,post,list,listName,groupLeaderInfoIndex);
+			
+			post = "member";
+			list = peopleData.member;
+			listName = peopleData.memberName;
+			postInfoTab = "memberInfoTab";
+			if(list != null)
+			    init_viewPeopleByPost(postInfoTab,post,list,listName,memberInfoIndex);
+
+		}
+	}
+	
+	function init_viewPeopleByPost(postInfoTab,postTab,list,listName,postInfoIndex){
+		var tempPostInfoId;
+		var status;
+		$str='';
+        $str+='<tr style="display:none;">';
+        $str+='<td align="center"><input  type="hidden" name="projectPeopleId" /><input  type="hidden"  name="peopleId" /><input  type="hidden"  name="peopleName" 	/></td>';
+        $str+='<td align="center"><input  type="hidden" name="inProjectDate" /></td>';
+        $str+='<td align="center"><input  type="hidden" name="outProjectDate"/></td>';
+        $str+='<td align="center"></td>';
+        $str+='<td align="center"></td>';
+	    $str+='</tr>';
+	    $("#"+postTab+"").append($str); 
+		for(var i = 0; i < list.length; i++){
+			tempPostInfoId = postInfoTab + postInfoIndex;
+			if(list[i].ppStatus == "O")
+				status = "在项目中";
+			else if(list[i].ppStatus == "C")
+				status = "已离开";
+/* 			else if(list[i].ppStatus == "Z")
+				status = "暂离"; */
+		
+			if(list[i].ppInProTime == null)
+				list[i].ppInProTime = "";
+			if(list[i].ppOutProTime == null)
+				list[i].ppOutProTime = "";
+			
+		$str='';
+        $str+='<tr>';
+        $str+='<td align="center"><input  type="hidden" readonly="true" name="projectPeopleId" id="projectPeopleId'+tempPostInfoId+'" 	value="'+list[i].projectPeopleId+'"	/><input  type="hidden" readonly="true" name="peopleId" id="peopleId'+postInfoIndex+'" 	value="'+list[i].ppUserId+'"	/><input class="easyui-validatebox input_140" data-options="required:true" type="text" readonly="true" name="peopleName" 	id="'+tempPostInfoId+'" value="'+listName[i]+'"		/></td>';
+        $str+='<td align="center"><input  type="text" name="inProjectDate"  	id="inProjectDate'+tempPostInfoId+'"  value="'+list[i].ppInProTime+'"  /></td>';
+        $str+='<td align="center"><input  type="text" name="outProjectDate" 	id="outProjectDate'+tempPostInfoId+'" value="'+list[i].ppOutProTime+'"	/></td>';
+        //$str+='<td><select id="ifInProject'+chiefInfoIndex+'" name="ifInProject" data-options="panelHeight:\'auto\'" editable="false" class="input_140"><option  value=""></option><option  value="是">是</option><option  value="否">否</option></select></td>';
+        $str+='<td align="center">'+status+'</td>';
+        $str+='<td align="center"><a id="'+tempPostInfoId+'" 	href="javascript:delExistTr(\'projectPeopleId'+tempPostInfoId+'\')" >删除</a></td>';
+	    $str+='</tr>';
+	    $("#"+postTab+"").append($str);
+	    
+	    add_validate(tempPostInfoId);
+	    
+	    postInfoIndex++;
+	    if(postTab == "projectChief")
+	        chiefInfoIndex++;
+	    else if(postTab == "projectManager")
+	    	managerInfoIndex++;
+	    else if(postTab == "groupLeader")
+	    	groupLeaderInfoIndex++;
+	    else 
+	    	memberInfoIndex++;
+		}
+	       
+	}
+	
+	
+	function add_validate(tempChooseId){
+    	$('#'+tempChooseId).validatebox({    
+    	    required: true,    
+    	});  
+       
+       $('#inProjectDate'+tempChooseId).datebox({
+    	   onSelect: function(date){
+    		  var beginDate = $('#inProjectDate'+tempChooseId).datebox('getValue');
+    		  var endDate = $('#outProjectDate'+tempChooseId).datebox('getValue');
+    		  if(Date.parse(endDate) - Date.parse(beginDate) <= 0){
+    			  $.messager.alert('提示', '进入日期必须早于离开日期', 'info');
+    			  $('#inProjectDate'+tempChooseId).datebox('setValue', '');	
+    		  }
+    	   },
+			required:true
+	   });  
+	       
+	   $('#outProjectDate'+tempChooseId).datebox({
+		   onSelect: function(date){
+		       if(date.getTime()>new Date().getTime()){
+		          $.messager.alert('提示', '离开日期不能超过当日', 'info');
+		          $('#outProjectDate'+tempChooseId).datebox('setValue', '');	
+		       }
+		       var beginDate = $('#inProjectDate'+tempChooseId).datebox('getValue');
+	    	   var endDate = $('#outProjectDate'+tempChooseId).datebox('getValue');
+		       if(Date.parse(endDate) - Date.parse(beginDate) <= 0){
+		    	   $.messager.alert('提示', '离开日期不能早于进入日期', 'info');
+	    		   $('#outProjectDate'+tempChooseId).datebox('setValue', '');	
+		       }
+    	   },
+		   required:false
+	   });   
+    }
+
+	
+	function delExistTr(tempTdId){
+		if(window.confirm("您确定要删除此人在项目中的记录吗？")){
+			var ppid = document.getElementById(tempTdId).value;
+			$.ajax({
+				url : '../../dispatch/deleteByProjectPeopleId.ajax?projectPeopleId='+ppid,
+				error: function(XMLHttpRequest, textStatus, errorThrown) {
+		                    alert(XMLHttpRequest.status);
+		        },
+				success : function(data) {
+					var obj = data;
+    				if (obj.success) {
+    					$.messager.alert('提示', obj.message, 'info', function(){
+    						//刷新项目详述页面
+   						    href="./project/view.html?proId="+projectId;
+   						    var content = '<iframe scrolling="auto" frameborder="0"  src="'+href+'" style="width:100%;height:100%;"></iframe>';  
+   					       var tt = parent.$('#tabs');  	   
+   					       if (tt.tabs('exists', "项目详述")){  
+   					           var tab =parent.$('#tabs').tabs('getTab','项目详述');
+   					           parent.$('#tabs').tabs('update', {
+   					        	   tab: tab,
+   					        	   options: {
+   					        		content:content
+   					        	   }
+   					           });
+   					        }
+    						location.reload();//强迫浏览器刷新当前页面
+    					});
+    				} else {
+    					$.messager.alert('提示', obj.message, 'info');
+    				}
+				}
+			});
+		}
+	}
+	
+	function delTr(tempTdId){
+		var obj  = $("#" + tempTdId);
+		$(obj).parent().parent().remove();  
+	}
+	
+	//从数据库选人
+	function choose_people(tempTdId){
+		var obj  = $("#" + tempTdId);
+		that = $(obj).parent().parent().children().children();
+		$("#dialog").dialog('open');
+	}
+	function func(tempTdId){
+		var obj  = $("#" + tempTdId);
+		that = $(obj).prev();
+		if(tempTdId=="chiefLeader"){
+			mob = $("#chiefTel");		
+		}
+		$("#dialog").dialog('open');
+	}
+
+
+	//人员信息汇总
+/* 	function recordProjectMember(){
+		var projectMember_total 	= '';
+		var projectMemberId_total 	= '';
+		var projectMemberCount = $("#projectMemberCount").val();
+		var counts = projectMemberCount.split(",");
+		if(counts != ""){
+			for(var i = 0; i < counts.length; i++){
+				var count = counts[i].substring(1, counts[i].length-1);
+				projectMember_total  += $("#projectMember"+count).val()==""?"#&":$("#projectMember"+count).val() + "&";
+				projectMemberId_total  += $("#projectMemberId"+count).val()==""?"#&":$("#projectMemberId"+count).val() + "&";
+			}
+		}
+		document.getElementById("projectMember_total").value 		= projectMember_total;
+		document.getElementById("projectMemberId_total").value 		= projectMemberId_total;
+		
+	} */
+	/* function checkIfRepeat(){
+		memberId_total = document.getElementById("projectMemberId_total").value;
+		var counts = memberId_total.split("&");
+		var max = 0;
+		if(counts != ""){
+			for(var i = 0; i < counts.length; i++){
+				if(counts[i] > max)
+					max = counts[i];
+			}
+			var array = new Array(max+1); 
+			for(var i = 0; i < counts.length; i++){
+				if(array[counts[i]] == 1){
+					return true;
+				}
+				else
+					array[counts[i]] = 1;
+			}
+		}
+		return false;
+		
+	} */
+
+	//表单提交时验证 最后上传的那部分
+	function recordFileName(){
+		var fileNames = document.getElementsByName("fileName");//取得标签名为filename的标签对象
+		//var fileNameIndex 	= '';
+		var fileNameVal 	= '';
+		for(var k = 0; k < fileNames.length; k++){			
+			var tempFileNameObject 	= 	fileNames[k];
+			var currentFileNameId 	= 	tempFileNameObject.id;
+			var fileNameTot = document.getElementById(currentFileNameId).value
+			if (fileNameTot.length != 0) {fileNameVal  += 	fileNameTot + "&";}		
+		}
+		//将所有的filename的值以&连接传入fileName_total
+		document.getElementById("fileName_total").value = fileNameVal;
+	}
+
+	//文件从后台的填写
+	function init_file(data){
+		    //文件部分
+			var list = data.tFileForm;
+			$('.origin').each(function(index,element){
+				if (list[index].fileFormFilename == null) {
+		    		$(this).text("未上传");
+		    	}
+		    	else{
+		    		$(this).text(list[index].fileFormFilename)
+		    	}
+			});
+	}
+/* 	function delTrWithName(tempTdId, hiddenId, k){//删除行
+		var obj  = $("#" + tempTdId);
+		$(obj).parent().parent().remove();  
+		var chargeDetailCount = $('#'+hiddenId);
+		var value = chargeDetailCount.val();
+		if(value.length == 3){
+			value = value.replace("#"+k+"#","");
+		}else{
+			value = value.replace(",#"+k+"#","");
+			value = value.replace("#"+k+"#,","");
+		}
+		$('#'+hiddenId).val(value);
+	} */
+	//派遣单默认数据的填写
+	function init_dispatch_data(data){
+		if(data == null){
+				$.messager.alert('Error', '该数据已经关闭', 'error');
+		}	
+		$("#projectName1").text(data.project.projectName);//项目名称
+		$("#projectClass").text(data.project.proType);//项目类别
+		$("#ownerCompany").text(data.project.proUnit);//业主单位				
+		$("#ownerTel").text(data.project.proConntel);//联系电话
+		$("#proNum").text(data.project.proNum);
+		$("#supervisorGoods").text(data.project.proGoods);//监造物资		
+		$("#entrustNum").text(data.project.proGoodsnum);//委托数量
+		$("#supervisorGist").text(data.project.proBasis);//监理依据
+		$("#manufacture").text(data.project.proFactory);//生产厂家
+		$("#telePhone").text(data.project.proFactoryconntel);//联系电话
+		$("#qualityPlan").text();//质量计划???
+		$("#reportMode").text(data.project.proReportway);//回报方式
+		$("#reportFrequency").text(data.project.proReportRate);//汇报频次
+		if(data.projectManager != null){
+		    $("#projectManager").text(data.projectManager.userName); //项目经理
+			$("#pMProfessionalQualification").text(data.projectManager.userProfessionalQualification);
+		    $("#projectManagerTel").text(data.projectManager.mobile); //联系方式
+		}
+		if(data.sendCard != null){
+			$("#projectDispatchID").text(data.sendCard.tSendNumStr);//派遣单编号???
+			$("#tSendQualityPlan").val(data.sendCard.tSendQualityPlan);//质量计划
+			$("#tSendGoTime").val(data.sendCard.tSendGoTime);//出发时间
+			$("#jobContent").val();//工作内容
+			$("#submissions").val();//结束后提交材料
+			$("#remarks").val();//备注
+			$("#tManagerLeader").val(data.sendCard.tManagerLeader);//主管领导
+			$("#tBianzhiId").val(data.sendCard.tBianzhiId);//编制人
+			$("#tShenpiId").val(data.sendCard.tShenpiId);//审批人
+			$("#chiefLeader").val(data.tManagerLeader.userName);
+			$("#chiefTel").text(data.tManagerLeader.mobile);
+			$("#compiler").val(data.tBianzhi.userName);
+			$("#approvers").val(data.tShenpi.userName);
+			
+		}		
+		
+		if(data.groupLeader != null){
+			$("#groupLeaderHSE").text(data.groupLeader.userName);//组长
+			$("#gLProfessionalQualification").text(data.groupLeader.userProfessionalQualification);
+			$("#groupLeaderHSETel").text(data.groupLeader.mobile);//联系方式
+		}
+		
+		$("#projectMember").text(data.members);//组员
+	}
+
+	</script>
+</head>
+
+<body>
+    <br/>
+    <span>子项目名称：</span><span id="projectName"></span>	
+	<table class="table_new" id="projectMemberTab">
+		<tr>
+			<td class="td_new_subtitle"><strong>人员派遣交底——人员派遣信息</strong></td>
+		</tr>
+	</table>
+	
+	<form id="groupLeader_form" method="post">
+	<table class="table_view" id="groupLeader" style="font-size: 14px; ">
+		<tr>
+			<td style="background: #F3F3F3;" colspan="5" ><strong>监理组长</strong></td>
+		</tr>
+		
+		<tr>
+		    <td  align="center" width="20%">姓名</td>
+		    <td  align="center" width="25%">进入项目日期</td>
+		    <td  align="center" width="25%">离开项目日期</td>
+		    <td  align="center" width="20%">是否在项目中</td>
+		    <td  align="center">
+		        <a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addGroupLeader"></a>
+			    <!--  <a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-menu-ADD_ROLE" id="choosePeople"></a> -->
+			    <a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-save" id="saveGroupLeader"></a>
+		    </td>
+	    </tr>
+	 </table>
+     </form>
+
+     <form id="member_form" method="post">
+	 <table class="table_view" id="member" style="font-size: 14px; ">
+		<tr>
+			<td style="background: #F3F3F3;" colspan="5" ><strong>监理员</strong></td>
+		</tr>
+		
+		<tr>
+		    <td  align="center" width="20%">姓名</td>
+		    <td  align="center" width="25%">进入项目日期</td>
+		    <td  align="center" width="25%">离开项目日期</td>
+		    <td  align="center" width="20%">是否在项目中</td>
+		    <td  align="center">
+		         <a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addMember"></a>
+			    <!--  <a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-menu-ADD_ROLE" id="choosePeople"></a> -->
+			    <a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-save" id="saveMember"></a>
+		    </td>
+	    </tr>
+	</table>
+  </form>
+    <table style="font-size: 14px; border-collapse: collapse; border: none; width: 98%; margin: 3px;" >
+		<tr>
+			<td align="right" >*注：进入项目日期默认为项目开始日期</td>
+		</tr>
+  </table>
+<br/>
+<br/>
+<form id="file_sendcard_form" method="post" enctype="multipart/form-data">
+    <!-- <input type="hidden" name="projectId"   		id="projectId" 	value="" /> -->
+    <input type="hidden" name="fileNameTotal" 	id="fileName_total" value="" />
+	<table class="table_new" id="fileInfoTab">
+		<tr>
+			<td class="td_new_subtitle" colspan="3" ><strong>人员派遣交底--文件上传</strong></td>
+		</tr>
+		<tr>
+			<td align="center" width="80px"><strong>名称</strong></td>
+			<td align="center" width="60px"><strong>上传</strong></td>
+			<td align="center" width="150px"><strong>已上传文件名</strong></td>
+		</tr>
+		<tr>
+			<td><input type="text" 	id="fileName1" 		name="fileName" 	value="技术交底会议纪要" 	size="50" readonly/></td>
+			<td><input type="file" 	id="fileUpload1" 	name="fileUpload1"  /></td>
+			<td align="center" ><span class="origin"></span></td>
+		</tr>		
+	</table>
+	</br>
+	<!--派遣单-->
+	<table class="table_new">
+		<tr>
+			<td class="td_new_subtitle" colspan="7" ><strong>派遣单</strong></td>
+		</tr>
+		<tr>
+			<td class="td_new_name">编号</td>
+			<td class="td_new_value" colspan="6"><span id="projectDispatchID"></span></td>		
+		</tr>
+		<tr>
+			<td class="td_new_name">项目名称</td>
+			<td class="td_new_value" colspan="2"><span id="projectName1"></span></td>							
+			<td class="td_new_name">监造级别</td>
+			<td class="td_new_value" colspan="3"><span id="projectClass"></span></td>			
+		</tr>
+		<tr>
+			<td class="td_new_name">业主单位</td>
+			<td class="td_new_value" colspan="2"><span id="ownerCompany"></span></td>
+			<td class="td_new_name">联系方式</td>
+			<td class="td_new_value" colspan="3"><span id="ownerTel"></span></td>
+		</tr>
+		<tr>
+			<td class="td_new_name">委托单号</td>
+			<td class="td_new_value" colspan="2"><span id="proNum"></span></td>
+			<td class="td_new_name">监造物资</td>
+			<td class="td_new_value" colspan="3"><span id="supervisorGoods"></span></td>
+		</tr>
+		<tr>
+			<td class="td_new_name">委托数量</td>
+			<td class="td_new_value" colspan="2"><span id="entrustNum"></span></td>
+			<td class="td_new_name">监理依据</td>
+			<td class="td_new_value" colspan="3"><span id="supervisorGist"></span></td>
+		</tr>
+		<tr>
+			<td class="td_new_name">生产厂家</td>
+			<td class="td_new_value" colspan="2"><span id="manufacture"></span></td>
+			<td class="td_new_name">厂家联系方式</td>
+			<td class="td_new_value" colspan="3"><span id="telePhone"></span></td>
+		</tr>
+		<tr>
+			<td class="td_new_name">质量计划</td>
+			<td class="td_new_value" colspan="6">
+			    <input class="easyui-validatebox input_360" type="text" data-options="required:true,validType:'length[2,200]'" id="tSendQualityPlan" name="tSendQualityPlan" />
+			</td>
+		</tr>
+		<tr>
+			<td class="td_new_name">携带技术资料</td>
+			<td class="td_new_value" colspan="6">
+				标准技术文件
+			</td>
+		</tr>
+		<tr>
+			<td class="td_new_name" rowspan="3">监理人员</td>
+			<td class="td_new_name">项目经理</td>
+			<td class="td_new_value" width="15%"><span id="projectManager"></span></td>
+			<td class="td_new_name">执业资质</td>
+			<td class="td_new_value" width="15%"><span id="pMProfessionalQualification"></span></td>
+			<td class="td_new_name">联系方式</td>
+			<td class="td_new_value"><span id="projectManagerTel"></span></td>
+		</tr>
+		<tr>
+			<td class="td_new_name">组长（HSE）</td>
+			<td class="td_new_value" width="15%"><span id="groupLeaderHSE"></span></td>
+			<td class="td_new_name">执业资质</td>
+			<td class="td_new_value"><span id="gLProfessionalQualification"></span></td>				
+			<td class="td_new_name">联系方式</td>
+			<td class="td_new_value"><span id="groupLeaderHSETel"></span></td>
+		</tr>
+		<tr>
+			<td class="td_new_name">组员（执业资质）</td>
+			<td class="td_new_value" colspan="5"><span id="projectMember"></span></td>				
+		</tr>
+		<tr>
+			<td class="td_new_name">出发时间</td>
+			<td class="td_new_value" colspan="6">
+				<input class="easyui-validatebox input_360" type="text" data-options="required:true,validType:'length[2,50]'" id="tSendGoTime" name="tSendGoTime" />
+			</td>
+		</tr>
+		<tr>
+			<td class="td_new_name">工作内容</td>
+			<td class="td_new_value" colspan="6">
+			<span id="jobContent">工厂质量体系审核、原材料检验、生产检验过程中产品外观质量、几何尺寸、水压试验、无损检验、力学性能试验、标识、包装和发运等工序的见证监督；</span>
+			</td>
+		</tr>
+		<tr>
+			<td class="td_new_name">汇报频次</td>
+			<td class="td_new_value" colspan="2" id="reportFrequency"></td>		
+			<td class="td_new_name">汇报方式</td>
+			<td class="td_new_value" colspan="3" id="reportMode"></td>		
+		</tr>
+		<tr>
+			<td class="td_new_name">主管领导</td>
+			<td class="td_new_value" colspan="2"><input  type="hidden" readonly="true" name="tManagerLeader" id="tManagerLeader" /><input class="easyui-validatebox input_140" required="required"  onclick="func('chiefLeader')" type="text" readonly="true" name="chiefLeader" 	id="chiefLeader" /></td>
+			<td class="td_new_name">联系电话</td>
+			<td class="td_new_value" colspan="3" id="chiefTel"></td>			
+		</tr>
+		<tr>
+			<td class="td_new_name">工作结束后需提交材料</td>
+			<td class="td_new_value" colspan="6">
+			<textarea name="" id="submissions" style="height: 60px" cols="105" readonly="true" class="easyui-validatebox">
+1、根据监理资料规范要求MR-ZJ-2017-01提交要求（□方案1  ■方案2  □方案3）提交；
+2、监造资料及监造总结报告在项目完成后一周内提交项目经理；
+3、项目经理在收到监造资料和监理总结报告后一周内提交资料室。				
+			</textarea>
+			</td>
+		</tr>
+		<tr>
+			<td class="td_new_name">备注</td>
+			<td class="td_new_value" colspan="6">
+			<textarea name="" id="remarks" style="height: 70px" cols="105" readonly="true" class="easyui-validatebox">
+1、日/周报命名：监理日/周（2017.××.××）-项目简称-生产单位名称+产品名称+（西安摩尔）；
+2、日报汇报时间：监理组长每天10:00前向项目经理发送前日日报，项目经理与次日12:00前发送业主；
+3、监理组长入厂3日内完成监理细则发项目经理，项目经理两日内审核完成发送尚汉青shq_working@163.com。
+			</textarea>
+			</td>
+		</tr>
+		<tr>
+			<td class="td_new_name">编制人</td>
+			<td class="td_new_value" colspan="2"><input  type="hidden" readonly="true" name="tBianzhiId" id="tBianzhiId" /><input class="easyui-validatebox input_140" required="required"  onclick="func('compiler')" type="text" readonly="true" name="compiler" 	id="compiler" /></td>
+			<td class="td_new_name">审批人</td>
+			<td class="td_new_value" colspan="3"><input  type="hidden" readonly="true" name="tShenpiId" id="tShenpiId" /><input class="easyui-validatebox input_140" required="required"  onclick="func('approvers')" type="text" readonly="true" name="approvers" 	id="approvers" /></td>
+		</tr>
+	</table>
+	<table class="table_new">
+		<tr>
+			<td align="center" width="100%"><a id="btn_submit" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok">确认提交</a></td>
+		</tr>
+	</table>
+</form>
+
+
+ <div id="dialog"  style="width:500px;height:280px;padding:10px 20px">
+	<table class="table_view2" id="newPeople">
+		<tr>
+			<td align="center" width="50px">序号</td>
+			<td align="center" width="70px">姓名</td>
+			<td align="center" width="100px">岗位状态</td>
+			<td align="center" width="150px">所在项目</td>
+			<td align="center" width="100px">联系电话</td>
+			<td align="center" width="100px">休假出差</td>
+		</tr>
+	</table>
+</div>
+
+</body>
+</html>

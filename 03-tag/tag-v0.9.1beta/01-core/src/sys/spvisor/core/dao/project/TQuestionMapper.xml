@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="sys.spvisor.core.dao.project.TQuestionMapper" >
+  <resultMap id="BaseResultMap" type="sys.spvisor.core.entity.project.TQuestion" >
+    <id column="qus_id" property="qusId" jdbcType="INTEGER" />
+    <result column="pro_id" property="proId" jdbcType="INTEGER" />
+    <result column="find_time" property="findTime" jdbcType="TIMESTAMP" />
+    <result column="ques_description" property="quesDescription" jdbcType="VARCHAR" />
+    <result column="ques_no_suit_basis" property="quesNoSuitBasis" jdbcType="VARCHAR" />
+    <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+    <result column="update_process_description" property="updateProcessDescription" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="INTEGER" />
+    <result column="post_time" property="postTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    qus_id, pro_id, find_time, ques_description, ques_no_suit_basis, update_time, update_process_description, 
+    user_id, post_time
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="sys.spvisor.core.entity.project.TQuestionExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from t_question
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_question
+    where qus_id = #{qusId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_question
+    where qus_id = #{qusId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="sys.spvisor.core.entity.project.TQuestionExample" >
+    delete from t_question
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="sys.spvisor.core.entity.project.TQuestion" useGeneratedKeys="true" keyProperty="qusId">
+    insert into t_question ( pro_id, find_time, 
+      ques_description, ques_no_suit_basis, update_time, 
+      update_process_description, user_id, post_time
+      )
+    values ( #{proId,jdbcType=INTEGER}, #{findTime,jdbcType=TIMESTAMP}, 
+      #{quesDescription,jdbcType=VARCHAR}, #{quesNoSuitBasis,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{updateProcessDescription,jdbcType=VARCHAR}, #{userId,jdbcType=INTEGER}, #{postTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="sys.spvisor.core.entity.project.TQuestion" >
+    insert into t_question
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="qusId != null" >
+        qus_id,
+      </if>
+      <if test="proId != null" >
+        pro_id,
+      </if>
+      <if test="findTime != null" >
+        find_time,
+      </if>
+      <if test="quesDescription != null" >
+        ques_description,
+      </if>
+      <if test="quesNoSuitBasis != null" >
+        ques_no_suit_basis,
+      </if>
+      <if test="updateTime != null" >
+        update_time,
+      </if>
+      <if test="updateProcessDescription != null" >
+        update_process_description,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="postTime != null" >
+        post_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="qusId != null" >
+        #{qusId,jdbcType=INTEGER},
+      </if>
+      <if test="proId != null" >
+        #{proId,jdbcType=INTEGER},
+      </if>
+      <if test="findTime != null" >
+        #{findTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="quesDescription != null" >
+        #{quesDescription,jdbcType=VARCHAR},
+      </if>
+      <if test="quesNoSuitBasis != null" >
+        #{quesNoSuitBasis,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateProcessDescription != null" >
+        #{updateProcessDescription,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="postTime != null" >
+        #{postTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="sys.spvisor.core.entity.project.TQuestionExample" resultType="java.lang.Integer" >
+    select count(*) from t_question
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update t_question
+    <set >
+      <if test="record.qusId != null" >
+        qus_id = #{record.qusId,jdbcType=INTEGER},
+      </if>
+      <if test="record.proId != null" >
+        pro_id = #{record.proId,jdbcType=INTEGER},
+      </if>
+      <if test="record.findTime != null" >
+        find_time = #{record.findTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.quesDescription != null" >
+        ques_description = #{record.quesDescription,jdbcType=VARCHAR},
+      </if>
+      <if test="record.quesNoSuitBasis != null" >
+        ques_no_suit_basis = #{record.quesNoSuitBasis,jdbcType=VARCHAR},
+      </if>
+      <if test="record.updateTime != null" >
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateProcessDescription != null" >
+        update_process_description = #{record.updateProcessDescription,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userId != null" >
+        user_id = #{record.userId,jdbcType=INTEGER},
+      </if>
+      <if test="record.postTime != null" >
+        post_time = #{record.postTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update t_question
+    set qus_id = #{record.qusId,jdbcType=INTEGER},
+      pro_id = #{record.proId,jdbcType=INTEGER},
+      find_time = #{record.findTime,jdbcType=TIMESTAMP},
+      ques_description = #{record.quesDescription,jdbcType=VARCHAR},
+      ques_no_suit_basis = #{record.quesNoSuitBasis,jdbcType=VARCHAR},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      update_process_description = #{record.updateProcessDescription,jdbcType=VARCHAR},
+      user_id = #{record.userId,jdbcType=INTEGER},
+      post_time = #{record.postTime,jdbcType=TIMESTAMP}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="sys.spvisor.core.entity.project.TQuestion" >
+    update t_question
+    <set >
+      <if test="proId != null" >
+        pro_id = #{proId,jdbcType=INTEGER},
+      </if>
+      <if test="findTime != null" >
+        find_time = #{findTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="quesDescription != null" >
+        ques_description = #{quesDescription,jdbcType=VARCHAR},
+      </if>
+      <if test="quesNoSuitBasis != null" >
+        ques_no_suit_basis = #{quesNoSuitBasis,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null" >
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateProcessDescription != null" >
+        update_process_description = #{updateProcessDescription,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="postTime != null" >
+        post_time = #{postTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where qus_id = #{qusId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="sys.spvisor.core.entity.project.TQuestion" >
+    update t_question
+    set pro_id = #{proId,jdbcType=INTEGER},
+      find_time = #{findTime,jdbcType=TIMESTAMP},
+      ques_description = #{quesDescription,jdbcType=VARCHAR},
+      ques_no_suit_basis = #{quesNoSuitBasis,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      update_process_description = #{updateProcessDescription,jdbcType=VARCHAR},
+      user_id = #{userId,jdbcType=INTEGER},
+      post_time = #{postTime,jdbcType=TIMESTAMP}
+    where qus_id = #{qusId,jdbcType=INTEGER}
+  </update>
+</mapper>

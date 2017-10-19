@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>选择进度</title>
+<link rel="stylesheet" type="text/css" href="../../themes/general.css"  />
+<link rel="stylesheet" type="text/css" href="../../themes/icon.css" 			/>
+<link rel="stylesheet" type="text/css" href="../../themes/jquery-ui.css" 		/>
+<link rel="stylesheet" type="text/css" href="../../themes/default/easyui.css" 	/>
+	<script type="text/javascript" src="../../scripts/jquery-1.8.0.min.js"></script>
+	<script type="text/javascript" src="../../scripts/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="../../scripts/locale/easyui-lang-zh_CN.js"></script>
+	<script type="text/javascript" src="../../scripts/src/jquery.parser.js"></script>
+	<script type="text/javascript" src="../../scripts/general.js"></script>
+	<script type="text/javascript" src="../../scripts/sessionExpriation.js"></script>
+<style type="text/css">
+	.table_view_1 {
+    border-collapse: collapse;
+    border: none;
+    width: 98%;
+    margin: 3px;
+    font-size: 14px; 
+    background: #F1F1F1;
+}
+.table_view_1 tr{
+	border: 1px solid #A8A8A8;
+}
+.table_view_1 td {
+	border-right: 1px solid #A8A8A8;
+	height: 23px;
+	padding: 3px;
+}
+</style>
+<script type="text/javascript">
+var projectId;
+var page;
+$(function(){
+	projectId = $.getUrlParam('projectId');
+	$("#proId").val(projectId);
+	
+	//$('#ViewWindow').window('open').window('refresh');
+	//$('.table_view').show();
+	//产品类型下拉框
+	$('#productType').combobox({
+			url : '../../schedule/getProductType.ajax?projectId='+projectId,
+			valueField : 'productName',
+			textField : 'productName',
+			panelHeight : 'auto',
+			editable : true,
+		});
+	//选择日期
+	$('.dateSelect').datebox({
+	
+	});
+	$('#aa').datebox({
+		
+	});
+	//双击得到的查询结果的某一行后调用view()函数
+	$('#query_result').datagrid({//easyui的函数，数据表格，也就是查看选中的那一行，跳转至view()函数
+		onDblClickRow: function(rowIndex, rowData){//绑定表格单击事件，当用户双击一行时触发，参数包括： rowIndex：被双击行的索引，从 0 开始。rowData：被双击行对应的记录。
+			view(rowData);
+		}
+
+	});
+
+	page = $('#query_result').datagrid('getPager');	
+	//点击查询按钮
+	$('#btn_query').bind('click', function(){
+		//点查询钮查询时总是以第一页开始 
+		$(page).pagination('select', 1);//主要是用来做分页的，选择一个新页面，从1开始计数
+      	});
+	//重置按钮
+	$('#btn_reset').bind('click', function(){  
+		$('#query_form').form('clear');
+		$("#proId").val(projectId);
+		$('#query_result').datagrid('loadData',{total:0,rows:[]});//加载本地数据，旧的行会被移除
+      	});
+
+	
+	$(page).pagination({  
+	 	onBeforeRefresh : function() {//刷新按钮点击之前触发，返回 false 就取消刷新动作。
+		},
+		onRefresh : function(pageNumber, pageSize) {//刷新之后触发。
+			do_submit(pageNumber, pageSize)
+		},
+		onChangePageSize : function() {//当用户改变页面尺寸时触发。
+		},
+		onSelectPage : function(pageNumber, pageSize) {//当用户选择新的页面时触发。回调函数包含两个参数：pageNumber：新的页码  pageSize：新的页面尺寸
+			do_submit(pageNumber, pageSize);
+		}
+	});
+ 
+	
+});
+	
+function do_submit(pageNumber,pageSize){//使用ajax来进行真正的查询
+	$('#query_form').form('submit',{
+		url:'../../schedule/queryProcess.ajax',
+		
+		onSubmit:function(param){
+			/* $('#planDate').val($('#planDate_').datebox('getValue'));
+			$('#whichDay').val($('#whichDay_').datebox('getValue'));
+			if(document.getElementById("whichDay").value=='')
+				$('#whichDay').val('null');
+		    if(document.getElementById("planDate").value=='')
+		    	$('#planDate').val('null');
+		    alert(document.getElementById("whichDay").value); */
+			param.paging = true;
+			param.offset = (pageNumber-1)*pageSize;
+			param.limit = pageSize;
+			return $(this).form('validate');
+		},
+		success:function(data){
+			var obj = $.parseJSON(data);
+			alert(obj.message);
+			var length = obj.rows.length;
+			for(var i=0;i<length;i++){
+				var rate = obj.rows[i].completeRateToday+"";
+				var reg = /\./;
+				if(rate.search(reg)!=-1){
+					if(rate.length > rate.search(reg)+2)
+						obj.rows[i].completeRateToday = rate.substring(0,rate.search(reg)+3);
+				}
+				
+			} 
+			$('#query_result').datagrid('loadData',obj)
+		}
+	});
+}
+//打开新页面查看		
+function view(row) {
+	//var showTable ="#"+row.idaaa;//每种的产品名称
+	//$(showTable).show();
+	$('#ViewWindow').window('open').window('refresh');
+	$('#query_form_View').form('load', row);
+	//测试
+	/*var name = "到料";//节点名称
+	var str = "支,米,吨";
+	var danwei = str.split(",")//判断有几个单位
+	var tep = "100,100,10"//存入的值
+	var value= tep.split(",");
+	$str='';
+	$str+='<tr>';
+    $str+='<td align="center"><strong>'+name+'<strong></td>';
+    if(danwei.length==1){
+    	 $str+='<td class="td_view_value"><input  class="easyui-validatebox input_60" type="text" name="" readonly = "true" value="'+value[0]+'"/>'+danwei[0]+'</td>';
+    }
+    else if(danwei.length==2){
+    	 $str+='<td class="td_view_value"><input  class="easyui-validatebox input_60" type="text" name="" readonly = "true"  value="'+value[0]+'"/>'+danwei[0]+'&nbsp;&nbsp;<input  class="easyui-validatebox input_60" type="text" name="" readonly = "true"  value="'+value[1]+'"/>'+danwei[1]+'</td>';
+    }
+    else{
+    	 $str+='<td class="td_view_value"><input  class="easyui-validatebox input_60" type="text" name="" readonly = "true"  value="'+value[0]+'"/>'+danwei[0]+'&nbsp;&nbsp;<input  class="easyui-validatebox input_60" type="text" name="" readonly = "true"  value="'+value[1]+'"/>'+danwei[1]+'&nbsp;&nbsp;<input  class="easyui-validatebox input_60" type="text" name="" readonly = "true"  value="'+value[2]+'"/>&nbsp;'+danwei[2]+'</td>';
+    }
+	$str+='</tr>';
+	$("#chanpin").append($str);*/
+	$.ajax({
+		url : '../../schedule/selectOneProcess.ajax',
+		type : 'post',
+		dataType : 'JSON',
+		cache: false,
+		data : {
+			bigTypeId: row.bigTypeId,
+			id: row.id
+		},
+		error: function(XMLHttpRequest, textStatus, errorThrown) {	                   
+        },
+		success : function(data) {
+			init_node(data,row.bigTypeId);
+		}
+	});
+		
+}
+
+function init_node(data,bigTypeId){
+	var namePrefix;
+	if(bigTypeId == 1)
+		namePrefix = 'shuSongGuan[0]';
+	else if(bigTypeId == 2)
+		namePrefix = 'wanGuan[0]';
+	else if(bigTypeId == 3)
+		namePrefix = 'fangFu[0]';
+	else if(bigTypeId == 4)
+		namePrefix = 'shiYou[0]';
+	else if(bigTypeId == 5)
+		namePrefix = 'guanJian[0]';
+	else if(bigTypeId == 6)
+		namePrefix = 'faMen[0]';
+	else if(bigTypeId == 7){
+		namePrefix = 'sheBei[0]';
+		$("#chanpin").append('<tr><td align="center"><strong>产品编号</strong></td><td><input class="easyui-validatebox input_140" type="text" data-options="editable:false" id="" name="productNorm" readonly = "true" value="'+document.getElementById("bianhao").value+'" /></td></tr>');
+	}
+	else if(bigTypeId == 8)
+		namePrefix = 'sheBeiBeng[0]';
+	else if(bigTypeId == 9)
+		namePrefix = 'zuanJu[0]';
+	else if(bigTypeId == 10)
+		namePrefix = 'jueYuan[0]';
+	
+	$("#chanpin").append('<tr style="display:none;"><td colspan="2"><input type="hidden" name="'+namePrefix+'.typeId" value="'+document.getElementById("hiddentypeId").value+'" /></td></tr>');
+	
+	var index = data.length;
+	for(i=0;i<index;i++){//
+		var name = data[i].nodeName;//节点名称
+		var nameHtml = data[i].name;//htmlname
+		var unit = data[i].unit;
+		var value = data[i].value//存入的值
+		$str='';
+		$str+='<tr>';
+	    $str+='<td align="center"><strong>'+name+'<strong></td>';
+	    if(unit.length==1){
+	    	if(unit[0].length > 5)
+	    		$str+='<td class="td_new_value"><select id="select_schedule" name="'+namePrefix+'.'+nameHtml[0]+'"  editable="true" style="width: 140px"><option value="未开始">未开始</option><option value="正在进行">正在进行</option><option value="已完成">已完成</option></select></td>';
+	    	else
+	    	    $str+='<td class="td_new_value"><input  class="easyui-validatebox input_60" type="text" name="'+namePrefix+'.'+nameHtml[0]+'" value="'+value[0]+'" />'+unit[0]+'</td>';
+	    }
+	    else if(unit.length==2){
+	    	 $str+='<td class="td_new_value"><input  class="easyui-validatebox input_60" type="text" name="'+namePrefix+'.'+nameHtml[0]+'" value="'+value[0]+'"/>'+unit[0]+'&nbsp;&nbsp;<input  class="easyui-validatebox input_60" type="text" name="'+namePrefix+'.'+nameHtml[1]+'" value="'+value[1]+'"/>'+unit[1]+'</td>';
+	    }
+	    else{
+	    	 $str+='<td class="td_new_value"><input  class="easyui-validatebox input_60" type="text" name="'+namePrefix+'.'+nameHtml[0]+'" value="'+value[0]+'"/>'+unit[0]+'&nbsp;&nbsp;<input  class="easyui-validatebox input_60" type="text" name="'+namePrefix+'.'+nameHtml[1]+'" value="'+value[1]+'"/>'+unit[1]+'&nbsp;&nbsp;<input  class="easyui-validatebox input_60" type="text" name="'+namePrefix+'.'+nameHtml[2]+'" value="'+value[2]+'"/>&nbsp;'+unit[2]+'</td>';
+	    }
+		$str+='</tr>';
+		$("#chanpin").append($str);
+		if(unit[0].length > 5)
+			$("#select_schedule option[value="+value[0]+"]").attr("selected", true);
+		
+	}
+}
+
+
+function do_view() {
+	var rows = $('#query_result').datagrid('getSelections');
+	if(rows == null){
+		$.messager.alert('Info', '请选择行', 'info');
+		return;
+	}
+	else if(rows.length > 1){
+		$.messager.alert('Info', '查看只能选择一行', 'info');
+		$('#query_result').datagrid('clearSelections');
+		return;
+	}
+	else{
+		var row = $('#query_result').datagrid('getSelected');
+	    view(row);
+	}
+}
+
+function do_delet() {
+	var rows = $('#query_result').datagrid('getSelections');
+	if(rows == null){
+		$.messager.alert('Info', '请选择行', 'info');
+		return;
+	}
+	var parm="";
+	$.each(rows, function (i, n) {
+		if (i == 0) {
+			parm = n.bigTypeId+"&"+n.id;
+		} else {
+			parm += "," + n.bigTypeId+"&"+n.id;
+		}
+	});
+	$.messager.confirm('提示', '是否删除选中数据?', function (r) {
+		if (!r) {return;}
+		//提交
+		$.post('../../schedule/deleteSchedule.ajax', {parm:parm}, function (data) {
+			var msg = $.parseJSON(data);
+			if (msg.success) {
+				$.messager.alert('提示', msg.message, 'info', function () {
+					//重新加载当前页
+					//$('#query_result').datagrid('load');
+					/* $('#query_form').form('submit',{
+						url:'../../project/queryProject.ajax',
+						success:function(data){
+							var obj = $.parseJSON(data);
+							$('#query_result').datagrid('loadData',obj);
+							$("#proStartTime").datebox("setValue",null);
+						}
+					}); */
+					$(page).pagination('select');
+				});
+			} 
+			else {
+				$.messager.alert('提示', msg.message, 'info');
+			}
+		});
+	});
+
+}
+
+
+//关闭查看信息窗口
+function ViewWindowClose() {
+/* 	$("input").attr("readonly",true);//修改完后将input设为不可编辑。按钮设置为不见
+	$('input.easyui-datebox').each(function () {
+        var me = this;
+        $(this).next('span').find('a.combo-arrow').addClass("textbox-icon-disabled");
+    }); 
+	$("#btn_submit").parent().css('display','none');*/
+	var t = document.getElementById("chanpin"); 
+	for(var j=t.rows.length-1;j>5;j--) 
+	{ 
+	   t.deleteRow(j); 
+	} 
+	$('#ViewWindow').window('close');
+
+
+}
+//这个是修改数据的，注意修改完数据要讲按钮的display修改，将readonly改为true
+/* function editWindowData(){
+	alert("数据可修改");
+	$("input").attr("readonly",false);
+	$('input.easyui-datebox').each(function () {
+        var me = this;
+        $(this).next('span').find('a.combo-arrow').removeClass("textbox-icon-disabled");
+    });
+	$("#btn_submit").parent().css('display','block');
+	
+} */
+//修改提交
+function EditData() {
+		$('#query_form_View').form('submit', {		
+			url : '../../schedule/addScheduleTable.ajax?projectId='+projectId, 
+			onSubmit : function(param) {
+				return true;
+			},
+			success : function(data) {
+				var obj = $.parseJSON(data);//将json字符串转换为object对象
+				if (obj.success) {
+/* 					$("input").attr("readonly",true);//修改完后将input设为不可编辑。按钮设置为不见
+					$('input.easyui-datebox').each(function () {
+				        var me = this;
+				        $(this).next('span').find('a.combo-arrow').addClass("textbox-icon-disabled");
+				    });
+					$("#btn_submit").parent().css('display','none'); */
+					$.messager.alert('提示', obj.message, 'info', function() {
+					//$('#query_result').datagrid({url : '../../schedule/queryProcess.ajax'});
+					
+					$(page).pagination('select');
+					ViewWindowClose()	
+					});
+				} else {
+					$.messager.alert('错误', obj.message, 'error');
+				}
+			}
+	});		
+}
+</script>
+
+</head>
+<body>
+<div style="margin: 5px 0"></div>
+<div style="margin: 0 5px">
+<form id="query_form" method="post">
+	<table class="table_view_1">
+	<tr>
+		<td class="td_view_name">产品名称</td>
+		<td class="td_view_value"><input type="hidden"  name="proId" id="proId"/><input class="easyui-validatebox input_140" type="text" id="productType" name="productName" /></td>
+		<td class="td_view_name">填写人</td>
+		<td class="td_view_value" ><input class="easyui-validatebox input_140" type="text" id="entrustCode" name="userName" /></td>
+	</tr>
+	<tr>
+		<td class="td_view_name">日期</td>
+		<td class="td_view_value"><input type="text" name="whichDay" id="whichDay" class="dateSelect" style="width: 140px" /></td>
+		<td class="td_view_name">计划完成日期</td>
+		<td class="td_view_value"><input type="text" name="planDate" id="planDate" class="dateSelect" style="width: 140px" /></td>
+	</tr>
+	<tr>
+		<td colspan="4" align="center" class="td_view_name">
+			<div align="center">
+				<a id="btn_query" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"	>查询</a>&nbsp;&nbsp;&nbsp;
+				<a id="btn_reset" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-reset" 	>重置</a>
+			</div>
+		</td>
+	</tr>
+	</table>
+</form>
+</div>
+
+<div style="margin: 10px 0;"></div>
+<div style="margin: 0 5px">
+	<table  title="查询结果" id="query_result"
+		data-options="pagination:true,rownumbers:true,pageNumber:1,pageSize:10,pageList:[1,5,10]"
+		toolbar="#tb">
+		<thead>
+			<tr>
+				<th field="ck" checkbox="true"></th>
+				<th data-options="field:'id',width:200,hidden:true,align:'center'"	          >ID</th>
+				<th data-options="field:'bigTypeId',width:200,hidden:true,align:'center'"	  >bigTypeID</th>
+				<th data-options="field:'typeId',width:200,hidden:true,align:'center'"	      >typeID</th>
+				<th data-options="field:'productName',width:200,align:'center'"			      >产品名称</th>
+				<th data-options="field:'productName2',width:200,align:'center'"		      >产品名称2</th>
+				<th data-options="field:'productNorm',width:150,align:'center'",sortable:true >产品规格</th>
+				<th data-options="field:'productNum',width:200,hidden:true,align:'center'"	  >产品编号</th>
+				<th data-options="field:'whichDay',width:100,align:'center'"				  >日期</th>
+				<th data-options="field:'completeRateToday',width:100,align:'center'"		  >本日完成比例(%)</th>
+				<th data-options="field:'planDate',width:100,align:'center'"				  >计划完成日期</th>
+				<th data-options="field:'promiseDate',width:100,align:'center'"			      >约定完成日期</th>
+				<th data-options="field:'userName',width:100,align:'center'"			   	  >填写人</th>
+			</tr>
+		</thead>
+	</table>
+
+	<div id="tb">
+		<div id="divBtnView" style="float:left ;display:inline;">
+			<a href="#" class="easyui-linkbutton" iconCls="icon-view" plain="true" onclick="javascript:do_view()">查看</a>
+		</div>
+		<div id="divBtnView" style="float:left ;display:inline;">
+		    <a href="#" class="easyui-linkbutton" iconCls="icon-cancel" plain="true" onclick="javascript:do_delet()">删除</a>
+	    </div>
+	</div>
+</div>
+
+	<!-- 查看信息窗口 -->
+	<div id="ViewWindow" class="easyui-window" title="查看进度信息"
+		data-options="collapsible:false,closable:false,minimizable:false,maximizable:false,modal:true,closed:true,iconCls:'icon-view'"
+		style="width:480px;height:400px;padding:10px;">
+		<div class="easyui-layout" data-options="fit:true">
+			<div data-options="region:'center'" style="padding:10px;">
+			<form id="query_form_View" method="post">
+				<table class="table_view" style="font-size: 12px; background: #F1F1F1;" id="chanpin">	
+					<tr>
+						<td align="center"><strong>日期</strong></td>
+						<td class="td_view_value">
+							<input  type="text"  class="easyui-datebox" id="newdate"  name="whichDay" readonly = "true"/>				
+						</td>
+					</tr>
+					<tr>
+						<td align="center"><strong>本日完成比例</strong></td>
+						<td class="td_view_value">
+							<input class="easyui-validatebox input_60" data-options="editable:false" type="text"   name="completeRateToday" readonly = "true"/>			
+						</td>
+					</tr>
+					<tr>
+						<td align="center"><strong>计划完成日期</strong></td>
+						<td class="td_view_value">
+							<input  type="text"  class="easyui-datebox" id="newdate"  name="planDate" readonly = "true"/>				
+						</td>
+					</tr>
+					<tr>
+						<td align="center"><strong>约定完成日期</strong></td>
+						<td class="td_view_value">
+							<input type="text" class="easyui-datebox" id="promisedate" name="promiseDate" readonly = "true"/>
+						</td>
+					</tr>
+					
+					<tr>
+						<td align="center" width="20%"><input type="hidden" name="id"/><input type="hidden" name="typeId" id="hiddentypeId"/><strong>产品名称</strong></td>
+						<td class="td_view_value"><input class="easyui-validatebox input_140" type="text" data-options="editable:false" id="" name="productName2" readonly = "true"/></td>
+					</tr>
+					<tr>
+						<td align="center" ><strong>产品规格</strong></td>
+						<td class="td_view_value"><input class="easyui-validatebox input_140" type="text" data-options="editable:false" id="" name="productNorm" readonly = "true"/><input type="hidden" id="bianhao" name="productNum"/></td>
+					</tr>
+				</table>
+
+				<div align="center" style="display: none"><a id="btn_submit" onclick="EditData()" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok">确认提交</a></div>
+			</form>
+			</div>
+			<div data-options="region:'south',border:false" style="text-align:right;padding:5px 0 0;">
+				<a class="easyui-linkbutton" data-options="iconCls:'icon-edit'" href="javascript:void(0)"
+					onclick="EditData()" style="width:80px">修改</a>
+				<a class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" href="javascript:void(0)"
+					onclick="ViewWindowClose()" style="width:80px">关闭</a>
+				
+			</div>
+		</div>
+	</div>
+</body>

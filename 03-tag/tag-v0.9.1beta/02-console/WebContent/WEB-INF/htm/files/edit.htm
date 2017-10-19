@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>edit.htm</title>
+	
+    <meta name="keywords" content="keyword1,keyword2,keyword3">
+    <meta name="description" content="this is my page">
+    <meta name="content-type" content="text/html; charset=UTF-8">
+    
+    <!--<link rel="stylesheet" type="text/css" href="./styles.css">-->
+    <link rel="stylesheet" type="text/css" href="../../themes/general.css">
+<link rel="stylesheet" type="text/css" href="../../themes/icon.css">
+<link rel="stylesheet" type="text/css" href="../../themes/default/easyui.css">
+<script type="text/javascript" src="../../scripts/jquery-1.8.0.min.js"></script>
+<script type="text/javascript" src="../../scripts/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../../scripts/src/jquery.parser.js"></script>
+<script type="text/javascript"
+	src="../../scripts/locale/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript" src="../../scripts/general.js"></script>
+<script type="text/javascript" src="../../scripts/sessionExpriation.js"></script>
+
+<script type="text/javascript">
+	$(function() {
+		
+		//发布日期
+		$('#EditreleaseDate').datebox({
+		onSelect: function(date){
+			
+		},
+		});
+		// 有效日期
+		$('#EditvalidDate').datebox({
+		onSelect: function(date){
+			
+		},
+		});
+		var fileId = $.getUrlParam('fileId');
+		var newfileId = fileId;
+		var urlValue = '../../file/getFileByFileId.ajax';
+		$.ajax({
+			url : urlValue,
+			type : 'get',
+			dataType : 'JSON',
+			cache: false,
+			data : {
+				fileId : fileId
+			},
+			success : function(data) {
+				init_view(data);
+			}
+		});
+		
+		
+		
+	});
+	
+	function EditFileData() {
+	
+	$('#query_form_Edit').form('submit',{
+    			url : '../../file/EditFileData.ajax',
+    			onSubmit : function() {						
+    			},
+    			success : function(data) {
+    				/* console.log(data); */
+    				
+    			var obj = $.parseJSON(data);//将json字符串转换为object对象
+				if(obj.success){
+					$.messager.alert('提示', obj.message, 'info', function(){
+					
+					});
+				} else {
+					$.messager.alert('错误', obj.message, 'error');
+				}
+    				/* if(data.success) {
+    					alert(data.message);
+    				}else {
+    					alert(data.message);
+    				} */
+    				//var obj = $.parseJSON(data);
+    				/* if (obj.statusCode == 200) {
+    					alert("更换个性签名成功！");
+    					location.reload();
+    					
+    				} else {
+    					alert("更换个性签名失败，请重试！");
+    				} */
+    			}
+    		});
+	
+	
+		
+		/* $.ajax({
+			url : '../../file/EditFileData.ajax',
+			type : 'post',
+			dataType : 'JSON',
+			data : {
+				fileId :encodeURI($("#EditfileId").val()),
+				fileName : encodeURI($("#EditfileName").val()),
+				releaseOrganization : encodeURI($("#EditreleaseOrganization").val()),
+				fileContentIntroduction : encodeURI($("#EditfileContent").val()),
+				validDate : encodeURI($("#EditvalidDate").val()),
+				releaseDate : encodeURI($("#EditreleaseDate").val()),
+			},
+			success : function(data) {
+				if (data.success) {
+					$.messager.alert('Info', '提交成功', 'info', function(){
+					
+						location.replace("edit.htm?fileId="+data.fileId); 
+					});
+
+				} else {
+					$.messager.alert('Error', '提交失败:' + obj.message, 'error');
+				}
+			}
+		}); */
+		
+	} 
+	function init_view(data) {
+		if(data == null){
+			$.messager.alert('Error', '该数据已经关闭', 'error');
+		}
+		
+		
+		/* if(data.status=="O"){data.status="正常"}else if(data.status=="C"){data.status="关闭"}else if(data.status=="L"){data.status="锁定"}else if(data.status=="E"){data.status="超过有效期"}; */
+		/* $("#EditfileId").text(fileId); */
+		/* alert(data.fileContentIntroduction);
+		alert(data.validDate); */
+		/* alert(data.fileId); */
+		$("#EditfileId").val(data.fileId);
+		$("#EditfileName").val(data.fileName);
+		/* $("#EditfileType option[value="+data.type+"]").attr("selected", true); */
+		$("#EditfileType").combobox('setValue',data.type);
+		/* $("#EditfileType").val(data.type); */
+		$("#EditfileContent").val(data.fileContentIntroduction);
+		$("#EditreleaseOrganization").val(data.releaseOrganization);
+		$("#EdituserName").text(data.userName);
+		$("#EditpostDate").text(formatTime(data.postDate));
+		$("#EditvalidDate").datebox("setValue", myformatter(data.validDate));
+		$("#EditreleaseDate").datebox("setValue", myformatter(data.releaseDate));
+		
+	}
+	
+	 function myformatter(date){  
+		  var unixTimestamp = new Date(date) ;
+		    var y = unixTimestamp.getFullYear();  
+		    var m = unixTimestamp.getMonth()+1;  
+		    var d = unixTimestamp.getDate();  
+		    return y+'-'+(m<10?('0'+m):m)+'-'+(d<10?('0'+d):d);  
+		}
+ 	function formatTime(date) {
+		var unixTimestamp = new Date(date) ;
+		commonTime = unixTimestamp.toLocaleString();
+		return commonTime;
+	}
+	Date.prototype.toLocaleString = function() {
+        return this.getFullYear() + "年" + (this.getMonth() + 1) + "月" + this.getDate() + "日 " ;
+  	};
+	
+</script>
+  </head>
+  
+  <body>
+   <form id="query_form_Edit" method="post"  enctype="multipart/form-data">
+   
+					<table class="table_view">
+						
+						<tr>	
+							<td class="td_view_name"  style = "text-align: center"  hidden="true">档案ID</td>
+							<td class="td_view_value" hidden="true"><input
+								class="easyui-validatebox input_140" type="text" data-options="editable:false"
+								id="EditfileId" name="fileId"  readonly = "true"/></td>
+						</tr>
+						<tr>	
+							<td class="td_view_name"  style = "text-align: center"  >文件类别</td>
+							<td class="td_view_value" >
+							<select id="EditfileType" class="easyui-combobox" name="type" style="width:140px;"  >
+   			 						<option value="1">公司资质</option>
+   			  						<option value="2">在用标准</option>
+   			  						<option value="3">工厂资料</option>
+   			  						<option value="4">项目资料</option>
+   			  						<option value="5">合同档案</option>
+   			  						<option value="6">技术文件</option>
+   			  						<option value="7">管理文件</option>
+   			  						<option value="8">人员资质</option>
+							</select></td>
+						</tr>
+
+						<tr>		
+							<td class="td_view_name"  style = "text-align: center"  >文件名称</td>
+							<td class="td_view_value" colspan=3><input
+								class="easyui-validatebox input_360" type="text" 
+								id="EditfileName" name="fileName"  /></td>
+						</tr>
+
+						 <tr>
+						 	<td class="td_view_name"  style = "text-align: center"  >上传人</td>
+							 <td class="td_view_value"><span id="EdituserName"  ></span></td> 
+							
+							
+							<td class="td_view_name"  style = "text-align: center" >上传日期</td>
+							<td class="td_view_value"><span id="EditpostDate"  ></span></td> 
+																	
+						</tr> 
+				
+						<tr>	
+							<td class="td_view_name"  style = "text-align: center" >发布日期</td>
+							<td class="td_view_value"><input
+								class="easyui-validatebox input_140" type="text" 
+								id="EditreleaseDate" name="releaseDate" /></td>
+							 <td class="td_view_name"  style = "text-align: center" >有效日期</td>
+							<td class="td_view_value"><input
+								class="easyui-validatebox input_140" type="text" 								id="EditvalidDate" name="validDate" /></td>
+						</tr> 
+						
+						
+						<tr>							
+							<td class="td_view_name"  style = "text-align: center" >发布机构</td>
+							<td class="td_view_value" colspan=3><input  type="text"
+								class="easyui-validatebox input_360" id="EditreleaseOrganization"
+								name="releaseOrganization"  /></td>
+						</tr>
+						<tr>							
+							<td class="td_view_name"  style = "text-align: center" >内容简介</td>
+							<td class="td_view_value" colspan=3><input  type="text"
+								class="easyui-validatebox input_360" id="EditfileContent"
+								name="fileContentIntroduction"  /></td>
+						</tr>
+						
+						<tr>
+							<td align="center" width="60px"><strong>重新上传文件</strong></td>
+							<td align="center"><input align="center" type="file" 	id="fileName1" 	name="fileNameOri"  /></td>
+						</tr>
+						
+								
+					</table>
+			<table class="table_new">
+	<tr>
+		<td align="center" width="100%"><a id="btn_submit" href="javascript:void(0)" onclick="EditFileData()" class="easyui-linkbutton" iconCls="icon-ok">确认提交</a></td>
+	</tr>
+	</table>
+		<!-- <a id="btn_submit" href="javascript:void(0)" onclick="EditFileData()" class="easyui-linkbutton" iconCls="icon-ok">确认提交</a>
+		</table> -->
+		</form>
+  </body>
+</html>

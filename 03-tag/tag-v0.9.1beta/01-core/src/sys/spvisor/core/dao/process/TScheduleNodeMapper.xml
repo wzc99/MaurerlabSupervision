@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="sys.spvisor.core.dao.process.TScheduleNodeMapper" >
+  <resultMap id="BaseResultMap" type="sys.spvisor.core.entity.process.TScheduleNode" >
+    <id column="node_id" property="nodeId" jdbcType="INTEGER" />
+    <result column="pro_id" property="proId" jdbcType="INTEGER" />
+    <result column="type_id" property="typeId" jdbcType="INTEGER" />
+    <result column="nodeidstr" property="nodeidstr" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    node_id, pro_id, type_id, nodeidstr
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="sys.spvisor.core.entity.process.TScheduleNodeExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from t_schedule_node
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_schedule_node
+    where node_id = #{nodeId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_schedule_node
+    where node_id = #{nodeId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="sys.spvisor.core.entity.process.TScheduleNodeExample" >
+    delete from t_schedule_node
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="sys.spvisor.core.entity.process.TScheduleNode" useGeneratedKeys="true" keyProperty="nodeId">
+    insert into t_schedule_node (pro_id, type_id, 
+      nodeidstr)
+    values (#{proId,jdbcType=INTEGER}, #{typeId,jdbcType=INTEGER}, 
+      #{nodeidstr,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="sys.spvisor.core.entity.process.TScheduleNode" >
+    insert into t_schedule_node
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="nodeId != null" >
+        node_id,
+      </if>
+      <if test="proId != null" >
+        pro_id,
+      </if>
+      <if test="typeId != null" >
+        type_id,
+      </if>
+      <if test="nodeidstr != null" >
+        nodeidstr,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="nodeId != null" >
+        #{nodeId,jdbcType=INTEGER},
+      </if>
+      <if test="proId != null" >
+        #{proId,jdbcType=INTEGER},
+      </if>
+      <if test="typeId != null" >
+        #{typeId,jdbcType=INTEGER},
+      </if>
+      <if test="nodeidstr != null" >
+        #{nodeidstr,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="sys.spvisor.core.entity.process.TScheduleNodeExample" resultType="java.lang.Integer" >
+    select count(*) from t_schedule_node
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update t_schedule_node
+    <set >
+      <if test="record.nodeId != null" >
+        node_id = #{record.nodeId,jdbcType=INTEGER},
+      </if>
+      <if test="record.proId != null" >
+        pro_id = #{record.proId,jdbcType=INTEGER},
+      </if>
+      <if test="record.typeId != null" >
+        type_id = #{record.typeId,jdbcType=INTEGER},
+      </if>
+      <if test="record.nodeidstr != null" >
+        nodeidstr = #{record.nodeidstr,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update t_schedule_node
+    set node_id = #{record.nodeId,jdbcType=INTEGER},
+      pro_id = #{record.proId,jdbcType=INTEGER},
+      type_id = #{record.typeId,jdbcType=INTEGER},
+      nodeidstr = #{record.nodeidstr,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="sys.spvisor.core.entity.process.TScheduleNode" >
+    update t_schedule_node
+    <set >
+      <if test="proId != null" >
+        pro_id = #{proId,jdbcType=INTEGER},
+      </if>
+      <if test="typeId != null" >
+        type_id = #{typeId,jdbcType=INTEGER},
+      </if>
+      <if test="nodeidstr != null" >
+        nodeidstr = #{nodeidstr,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where node_id = #{nodeId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="sys.spvisor.core.entity.process.TScheduleNode" >
+    update t_schedule_node
+    set pro_id = #{proId,jdbcType=INTEGER},
+      type_id = #{typeId,jdbcType=INTEGER},
+      nodeidstr = #{nodeidstr,jdbcType=VARCHAR}
+    where node_id = #{nodeId,jdbcType=INTEGER}
+  </update>
+</mapper>

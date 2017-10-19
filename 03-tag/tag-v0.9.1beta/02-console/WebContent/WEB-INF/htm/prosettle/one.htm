@@ -1,0 +1,211 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>jQuery EasyUI</title>
+    <link rel="stylesheet" type="text/css" href="../../themes/icon.css"/>
+<link rel="stylesheet" type="text/css" href="../../themes/demo.css"/>
+<link rel="stylesheet" type="text/css" href="../../themes/default/easyui.css"/>
+
+<script type="text/javascript" src="../../scripts/jquery-1.8.0.min.js"></script>
+<script type="text/javascript" src="../../scripts/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../../scripts/general.js"></script>
+    <script>
+    
+$(function() {
+	var total = 0;
+    var rows = null;
+		var bigProId = $.getUrlParam("bigProId");
+		alert(bigProId);
+		//
+		$.ajax({
+			url : '../../bigproject/getSmallProjectsByBigId.ajax',//待修改
+			type : 'get',
+			dataType : 'JSON',
+			cache: false,
+			async: false,
+			data : {
+				bigProId : bigProId
+			},
+			success : function(data) {
+				//alert(data.total);
+				//var obj = $.parseJSON(data);
+				//alert(obj.total);
+				total = data.total;
+				rows = data.rows;
+				//$('#query_result').datagrid('loadData',data);
+			}
+		});
+	
+		var users = {
+			total:total,
+			rows:rows
+		}
+        /* var users = {total:6,rows:[
+            {no:1,name:'用户1',addr:'山东济南',email:'user1@163.com',birthday:'1/1/1980'},
+            {no:2,name:'用户2',addr:'山东济南',email:'user2@163.com',birthday:'1/1/1980'},
+            {no:3,name:'用户3',addr:'山东济南',email:'user3@163.com',birthday:'1/1/1980'},
+            {no:4,name:'用户4',addr:'山东济南',email:'user4@163.com',birthday:'1/1/1980'},
+            {no:5,name:'用户5',addr:'山东济南',email:'user5@163.com',birthday:'1/1/1980'},
+            {no:6,name:'用户6',addr:'山东济南',email:'user6@163.com',birthday:'1/1/1980'}
+        ]}; */
+       
+            $('#tt').datagrid({
+                title:'Editable DataGrid',
+                iconCls:'icon-edit',
+                width:830,
+                height:400,
+                singleSelect:true,
+                columns:[[
+                    {field:'proId',title:'小项目编号',width:100},
+                    {field:'projectName',title:'小项目名称',width:150},
+                    {field:'proUnit',title:'业主单位',width:150},
+                    {field:'proEntrustTime',title:'委托日期',width:150},
+                    {field:'sumMoney',title:'结账金额',width:100,editor:'text',formatter:function(value,row,index) {
+                    	return formatNumber(value,2);
+                    }},
+                    {field:'caozuo',title:'操作',width:150,align:'center',
+                        formatter:function(value,row,index){
+                            if (row.editing){
+                            	//alert(value);
+                            	console.log(row);
+                            	//alert(index);
+                                var s = '<a href="#" onclick="saverow('+index +","+row.proId+','+ bigProId +')">保存</a> ';
+                                var c = '<a href="#" onclick="cancelrow('+index+')">取消</a>';
+                                return s+c;
+                            } else {
+                                var e = '<a href="#" onclick="editrow('+index+')">编辑</a> ';
+                                return e;
+                            }
+                        }
+                    }
+                ]],
+                
+                onBeforeEdit:function(index,row){
+                    row.editing = true;
+                    $('#tt').datagrid('refreshRow', index);
+                    editcount++;
+                },
+                onAfterEdit:function(index,row){
+                    row.editing = false;
+                    $('#tt').datagrid('refreshRow', index);
+                    editcount--;
+                },
+                onCancelEdit:function(index,row){
+                    row.editing = false;
+                    $('#tt').datagrid('refreshRow', index);
+                    editcount--;
+                }
+            }).datagrid('loadData',users).datagrid('acceptChanges');
+       
+        
+});
+        
+        var editcount = 0;
+        function editrow(index){
+            $('#tt').datagrid('beginEdit', index);
+        }
+        function deleterow(index){
+            $.messager.confirm('确认','是否真的删除?',function(r){
+                if (r){
+                    $('#tt').datagrid('deleteRow', index);
+                }
+            });
+        }
+        function saverow(index,proId,bigProId){
+     
+        	var ed = $('#tt').datagrid('getEditor', {index:index,field:'sumMoney'});
+        	//var SumMoney = $(ed.target).numberbox('getValue');
+        	var SumMoney = $(ed.target).val();
+        	//console.log(SumMoney);
+        	/* var ed1 = $('#tt').datagrid('getEditor', {index:index,field:'proId'});
+        	var SumMoney = $(ed1.target).numberbox('getValue'); */
+        	
+        	//console.log("value=" +value);
+        	$.ajax({
+				url : '../../bigproject/insertProjectMoney.ajax',//待修改
+				type : 'get',
+				dataType : 'JSON',
+				cache: false,
+				async: false,
+				data : {
+					proId :proId,
+					money : SumMoney,
+					bigProId : bigProId
+				},
+				success : function(data) {
+					alert(data.success);
+					if(data.success) {
+							href="./prosettle/one.htm?bigProId=" + bigProId;
+							alert(bigProId);
+							var content = '<iframe scrolling="auto" frameborder="0"  src="'+href+'" style="width:100%;height:100%;"></iframe>';  
+						    var tt = parent.$('#tabs');  	   
+						    if (tt.tabs('exists', "项目结算列表")){//如果tab已经存在,则选中该tab，并更新内容          
+						        tt.tabs('select', "项目结算列表");  
+						        var tab =parent.$('#tabs').tabs('getSelected'); 
+						        parent.$('#tabs').tabs('update', {
+						        	tab: tab,
+						        	options: {
+						        		content:content
+						        	}
+						        });
+						}else {
+							alert("请重试");
+						}
+					}else {
+						alert("");
+					}
+				}
+			});
+        	
+           
+        }
+        function cancelrow(index){
+        	alert(index);
+            $('#tt').datagrid('cancelEdit', index);
+            console.log(index);
+        }
+        function addrow(){
+            if (editcount > 0){
+                $.messager.alert('警告','当前还有'+editcount+'记录正在编辑，不能增加记录。');
+                return;
+            }
+            $('#tt').datagrid('appendRow',{
+                no:'',
+                name:'',
+                addr:'',
+                email:'',
+                birthday:''
+            });
+        }
+        function saveall(){
+            $('#tt').datagrid('acceptChanges');
+        }
+        function cancelall(){
+            $('#tt').datagrid('rejectChanges');
+        }
+        
+        /** 
+         * 格式化数字，小数点后是0不表示 
+         * @param value 
+         * @param fixed 小数位数 
+         */  
+        function formatNumber(value, fixed) {  
+            var number = Number(value);  
+            if (isNaN(number)) {  
+                return '';  
+            } else {  
+                if (fixed == 2) {  
+                    return number.toFixed(2) * 100 / 100;  
+                } else if (fixed == 6) {  
+                    return number.toFixed(6) * 1000000 / 1000000;  
+                }  
+            }  
+        }
+    </script>
+</head>
+<body>
+<h2>项目结算清单</h2>
+<table id="tt"></table>
+</body>
+</html>

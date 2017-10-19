@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="sys.spvisor.core.dao.project.TSendCardMapper" >
+  <resultMap id="BaseResultMap" type="sys.spvisor.core.entity.project.TSendCard" >
+    <id column="t_send_id" property="tSendId" jdbcType="INTEGER" />
+    <result column="t_send_num" property="tSendNum" jdbcType="INTEGER" />
+    <result column="t_send_project_id" property="tSendProjectId" jdbcType="INTEGER" />
+    <result column="t_send_quality_plan" property="tSendQualityPlan" jdbcType="VARCHAR" />
+    <result column="t_send_tech_folder" property="tSendTechFolder" jdbcType="VARCHAR" />
+    <result column="t_send_go_time" property="tSendGoTime" jdbcType="VARCHAR" />
+    <result column="t_manager_leader" property="tManagerLeader" jdbcType="INTEGER" />
+    <result column="t_bianzhi_id" property="tBianzhiId" jdbcType="INTEGER" />
+    <result column="t_shenpi_id" property="tShenpiId" jdbcType="INTEGER" />
+    <result column="t_submit_time" property="tSubmitTime" jdbcType="TIMESTAMP" />
+    <result column="t_send_num_str" property="tSendNumStr" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    t_send_id, t_send_num, t_send_project_id, t_send_quality_plan, t_send_tech_folder, 
+    t_send_go_time, t_manager_leader, t_bianzhi_id, t_shenpi_id, t_submit_time, t_send_num_str
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="sys.spvisor.core.entity.project.TSendCardExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from t_send_card
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_send_card
+    where t_send_id = #{tSendId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_send_card
+    where t_send_id = #{tSendId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="sys.spvisor.core.entity.project.TSendCardExample" >
+    delete from t_send_card
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="sys.spvisor.core.entity.project.TSendCard" useGeneratedKeys="true" keyProperty="tSendId">
+    insert into t_send_card (t_send_num, t_send_project_id, 
+      t_send_quality_plan, t_send_tech_folder, t_send_go_time, 
+      t_manager_leader, t_bianzhi_id, t_shenpi_id, 
+      t_submit_time, t_send_num_str)
+    values (#{tSendNum,jdbcType=INTEGER}, #{tSendProjectId,jdbcType=INTEGER}, 
+      #{tSendQualityPlan,jdbcType=VARCHAR}, #{tSendTechFolder,jdbcType=VARCHAR}, #{tSendGoTime,jdbcType=VARCHAR}, 
+      #{tManagerLeader,jdbcType=INTEGER}, #{tBianzhiId,jdbcType=INTEGER}, #{tShenpiId,jdbcType=INTEGER}, 
+      #{tSubmitTime,jdbcType=TIMESTAMP}, #{tSendNumStr,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="sys.spvisor.core.entity.project.TSendCard" >
+    insert into t_send_card
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="tSendId != null" >
+        t_send_id,
+      </if>
+      <if test="tSendNum != null" >
+        t_send_num,
+      </if>
+      <if test="tSendProjectId != null" >
+        t_send_project_id,
+      </if>
+      <if test="tSendQualityPlan != null" >
+        t_send_quality_plan,
+      </if>
+      <if test="tSendTechFolder != null" >
+        t_send_tech_folder,
+      </if>
+      <if test="tSendGoTime != null" >
+        t_send_go_time,
+      </if>
+      <if test="tManagerLeader != null" >
+        t_manager_leader,
+      </if>
+      <if test="tBianzhiId != null" >
+        t_bianzhi_id,
+      </if>
+      <if test="tShenpiId != null" >
+        t_shenpi_id,
+      </if>
+      <if test="tSubmitTime != null" >
+        t_submit_time,
+      </if>
+      <if test="tSendNumStr != null" >
+        t_send_num_str,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="tSendId != null" >
+        #{tSendId,jdbcType=INTEGER},
+      </if>
+      <if test="tSendNum != null" >
+        #{tSendNum,jdbcType=INTEGER},
+      </if>
+      <if test="tSendProjectId != null" >
+        #{tSendProjectId,jdbcType=INTEGER},
+      </if>
+      <if test="tSendQualityPlan != null" >
+        #{tSendQualityPlan,jdbcType=VARCHAR},
+      </if>
+      <if test="tSendTechFolder != null" >
+        #{tSendTechFolder,jdbcType=VARCHAR},
+      </if>
+      <if test="tSendGoTime != null" >
+        #{tSendGoTime,jdbcType=VARCHAR},
+      </if>
+      <if test="tManagerLeader != null" >
+        #{tManagerLeader,jdbcType=INTEGER},
+      </if>
+      <if test="tBianzhiId != null" >
+        #{tBianzhiId,jdbcType=INTEGER},
+      </if>
+      <if test="tShenpiId != null" >
+        #{tShenpiId,jdbcType=INTEGER},
+      </if>
+      <if test="tSubmitTime != null" >
+        #{tSubmitTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="tSendNumStr != null" >
+        #{tSendNumStr,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="sys.spvisor.core.entity.project.TSendCardExample" resultType="java.lang.Integer" >
+    select count(*) from t_send_card
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update t_send_card
+    <set >
+      <if test="record.tSendId != null" >
+        t_send_id = #{record.tSendId,jdbcType=INTEGER},
+      </if>
+      <if test="record.tSendNum != null" >
+        t_send_num = #{record.tSendNum,jdbcType=INTEGER},
+      </if>
+      <if test="record.tSendProjectId != null" >
+        t_send_project_id = #{record.tSendProjectId,jdbcType=INTEGER},
+      </if>
+      <if test="record.tSendQualityPlan != null" >
+        t_send_quality_plan = #{record.tSendQualityPlan,jdbcType=VARCHAR},
+      </if>
+      <if test="record.tSendTechFolder != null" >
+        t_send_tech_folder = #{record.tSendTechFolder,jdbcType=VARCHAR},
+      </if>
+      <if test="record.tSendGoTime != null" >
+        t_send_go_time = #{record.tSendGoTime,jdbcType=VARCHAR},
+      </if>
+      <if test="record.tManagerLeader != null" >
+        t_manager_leader = #{record.tManagerLeader,jdbcType=INTEGER},
+      </if>
+      <if test="record.tBianzhiId != null" >
+        t_bianzhi_id = #{record.tBianzhiId,jdbcType=INTEGER},
+      </if>
+      <if test="record.tShenpiId != null" >
+        t_shenpi_id = #{record.tShenpiId,jdbcType=INTEGER},
+      </if>
+      <if test="record.tSubmitTime != null" >
+        t_submit_time = #{record.tSubmitTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.tSendNumStr != null" >
+        t_send_num_str = #{record.tSendNumStr,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update t_send_card
+    set t_send_id = #{record.tSendId,jdbcType=INTEGER},
+      t_send_num = #{record.tSendNum,jdbcType=INTEGER},
+      t_send_project_id = #{record.tSendProjectId,jdbcType=INTEGER},
+      t_send_quality_plan = #{record.tSendQualityPlan,jdbcType=VARCHAR},
+      t_send_tech_folder = #{record.tSendTechFolder,jdbcType=VARCHAR},
+      t_send_go_time = #{record.tSendGoTime,jdbcType=VARCHAR},
+      t_manager_leader = #{record.tManagerLeader,jdbcType=INTEGER},
+      t_bianzhi_id = #{record.tBianzhiId,jdbcType=INTEGER},
+      t_shenpi_id = #{record.tShenpiId,jdbcType=INTEGER},
+      t_submit_time = #{record.tSubmitTime,jdbcType=TIMESTAMP},
+      t_send_num_str = #{record.tSendNumStr,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="sys.spvisor.core.entity.project.TSendCard" >
+    update t_send_card
+    <set >
+      <if test="tSendNum != null" >
+        t_send_num = #{tSendNum,jdbcType=INTEGER},
+      </if>
+      <if test="tSendProjectId != null" >
+        t_send_project_id = #{tSendProjectId,jdbcType=INTEGER},
+      </if>
+      <if test="tSendQualityPlan != null" >
+        t_send_quality_plan = #{tSendQualityPlan,jdbcType=VARCHAR},
+      </if>
+      <if test="tSendTechFolder != null" >
+        t_send_tech_folder = #{tSendTechFolder,jdbcType=VARCHAR},
+      </if>
+      <if test="tSendGoTime != null" >
+        t_send_go_time = #{tSendGoTime,jdbcType=VARCHAR},
+      </if>
+      <if test="tManagerLeader != null" >
+        t_manager_leader = #{tManagerLeader,jdbcType=INTEGER},
+      </if>
+      <if test="tBianzhiId != null" >
+        t_bianzhi_id = #{tBianzhiId,jdbcType=INTEGER},
+      </if>
+      <if test="tShenpiId != null" >
+        t_shenpi_id = #{tShenpiId,jdbcType=INTEGER},
+      </if>
+      <if test="tSubmitTime != null" >
+        t_submit_time = #{tSubmitTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="tSendNumStr != null" >
+        t_send_num_str = #{tSendNumStr,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where t_send_id = #{tSendId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="sys.spvisor.core.entity.project.TSendCard" >
+    update t_send_card
+    set t_send_num = #{tSendNum,jdbcType=INTEGER},
+      t_send_project_id = #{tSendProjectId,jdbcType=INTEGER},
+      t_send_quality_plan = #{tSendQualityPlan,jdbcType=VARCHAR},
+      t_send_tech_folder = #{tSendTechFolder,jdbcType=VARCHAR},
+      t_send_go_time = #{tSendGoTime,jdbcType=VARCHAR},
+      t_manager_leader = #{tManagerLeader,jdbcType=INTEGER},
+      t_bianzhi_id = #{tBianzhiId,jdbcType=INTEGER},
+      t_shenpi_id = #{tShenpiId,jdbcType=INTEGER},
+      t_submit_time = #{tSubmitTime,jdbcType=TIMESTAMP},
+      t_send_num_str = #{tSendNumStr,jdbcType=VARCHAR}
+    where t_send_id = #{tSendId,jdbcType=INTEGER}
+  </update>
+</mapper>

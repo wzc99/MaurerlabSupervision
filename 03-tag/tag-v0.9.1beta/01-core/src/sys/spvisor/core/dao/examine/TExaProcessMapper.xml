@@ -1,0 +1,353 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="sys.spvisor.core.dao.examine.TExaProcessMapper">
+	<resultMap id="BaseResultMap" type="sys.spvisor.core.entity.examine.TExaProcess">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="examine_id" property="examineId" jdbcType="INTEGER" />
+		<result column="exa_order" property="exaOrder" jdbcType="INTEGER" />
+		<result column="node_name" property="nodeName" jdbcType="VARCHAR" />
+		<result column="node_status" property="nodeStatus" jdbcType="INTEGER" />
+		<result column="pro_id" property="proId" jdbcType="INTEGER" />
+		<result column="checker" property="checker" jdbcType="INTEGER" />
+		<result column="check_time" property="checkTime" jdbcType="TIMESTAMP" />
+		<result column="note" property="note" jdbcType="VARCHAR" />
+		<result column="pro_node_status" property="proNodeStatus"
+			jdbcType="INTEGER" />
+		<result column="is_pro_type" property="isProType" jdbcType="INTEGER" />
+		<result column="is_last_node" property="isLastNode" jdbcType="BIT" />
+		<result column="coper_role" property="coperRole" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Example_Where_Clause">
+		<where>
+			<foreach collection="oredCriteria" item="criteria" separator="or">
+				<if test="criteria.valid">
+					<trim prefix="(" suffix=")" prefixOverrides="and">
+						<foreach collection="criteria.criteria" item="criterion">
+							<choose>
+								<when test="criterion.noValue">
+									and ${criterion.condition}
+								</when>
+								<when test="criterion.singleValue">
+									and ${criterion.condition} #{criterion.value}
+								</when>
+								<when test="criterion.betweenValue">
+									and ${criterion.condition} #{criterion.value} and
+									#{criterion.secondValue}
+								</when>
+								<when test="criterion.listValue">
+									and ${criterion.condition}
+									<foreach collection="criterion.value" item="listItem"
+										open="(" close=")" separator=",">
+										#{listItem}
+									</foreach>
+								</when>
+							</choose>
+						</foreach>
+					</trim>
+				</if>
+			</foreach>
+		</where>
+	</sql>
+	<sql id="Update_By_Example_Where_Clause">
+		<where>
+			<foreach collection="example.oredCriteria" item="criteria"
+				separator="or">
+				<if test="criteria.valid">
+					<trim prefix="(" suffix=")" prefixOverrides="and">
+						<foreach collection="criteria.criteria" item="criterion">
+							<choose>
+								<when test="criterion.noValue">
+									and ${criterion.condition}
+								</when>
+								<when test="criterion.singleValue">
+									and ${criterion.condition} #{criterion.value}
+								</when>
+								<when test="criterion.betweenValue">
+									and ${criterion.condition} #{criterion.value} and
+									#{criterion.secondValue}
+								</when>
+								<when test="criterion.listValue">
+									and ${criterion.condition}
+									<foreach collection="criterion.value" item="listItem"
+										open="(" close=")" separator=",">
+										#{listItem}
+									</foreach>
+								</when>
+							</choose>
+						</foreach>
+					</trim>
+				</if>
+			</foreach>
+		</where>
+	</sql>
+	<sql id="Base_Column_List">
+		id, examine_id, exa_order, node_name, node_status, pro_id, checker,
+		check_time, note,
+		pro_node_status, is_pro_type, is_last_node, coper_role
+	</sql>
+	<select id="selectByExample" resultMap="BaseResultMap"
+		parameterType="sys.spvisor.core.entity.examine.TExaProcessExample">
+		select
+		<if test="distinct">
+			distinct
+		</if>
+		<include refid="Base_Column_List" />
+		from t_exa_process
+		<if test="_parameter != null">
+			<include refid="Example_Where_Clause" />
+		</if>
+		<if test="orderByClause != null">
+			order by ${orderByClause}
+		</if>
+		<if test="limit != -1">
+			limit ${limit} offset ${offset}
+		</if>
+	</select>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from t_exa_process
+		where id = #{id,jdbcType=INTEGER}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from t_exa_process
+		where id = #{id,jdbcType=INTEGER}
+	</delete>
+	<delete id="deleteByExample" parameterType="sys.spvisor.core.entity.examine.TExaProcessExample">
+		delete from t_exa_process
+		<if test="_parameter != null">
+			<include refid="Example_Where_Clause" />
+		</if>
+	</delete>
+	<insert id="insert" parameterType="sys.spvisor.core.entity.examine.TExaProcess">
+		insert into t_exa_process (id, examine_id, exa_order,
+		node_name, node_status, pro_id,
+		checker, check_time, note,
+		pro_node_status, is_pro_type, is_last_node,
+		coper_role)
+		values (#{id,jdbcType=INTEGER}, #{examineId,jdbcType=INTEGER},
+		#{exaOrder,jdbcType=INTEGER},
+		#{nodeName,jdbcType=VARCHAR}, #{nodeStatus,jdbcType=INTEGER}, #{proId,jdbcType=INTEGER},
+		#{checker,jdbcType=INTEGER}, #{checkTime,jdbcType=TIMESTAMP},
+		#{note,jdbcType=VARCHAR},
+		#{proNodeStatus,jdbcType=INTEGER}, #{isProType,jdbcType=INTEGER}, #{isLastNode,jdbcType=BIT},
+		#{coperRole,jdbcType=INTEGER})
+	</insert>
+	<insert id="insertSelective" parameterType="sys.spvisor.core.entity.examine.TExaProcess">
+		insert into t_exa_process
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="examineId != null">
+				examine_id,
+			</if>
+			<if test="exaOrder != null">
+				exa_order,
+			</if>
+			<if test="nodeName != null">
+				node_name,
+			</if>
+			<if test="nodeStatus != null">
+				node_status,
+			</if>
+			<if test="proId != null">
+				pro_id,
+			</if>
+			<if test="checker != null">
+				checker,
+			</if>
+			<if test="checkTime != null">
+				check_time,
+			</if>
+			<if test="note != null">
+				note,
+			</if>
+			<if test="proNodeStatus != null">
+				pro_node_status,
+			</if>
+			<if test="isProType != null">
+				is_pro_type,
+			</if>
+			<if test="isLastNode != null">
+				is_last_node,
+			</if>
+			<if test="coperRole != null">
+				coper_role,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=INTEGER},
+			</if>
+			<if test="examineId != null">
+				#{examineId,jdbcType=INTEGER},
+			</if>
+			<if test="exaOrder != null">
+				#{exaOrder,jdbcType=INTEGER},
+			</if>
+			<if test="nodeName != null">
+				#{nodeName,jdbcType=VARCHAR},
+			</if>
+			<if test="nodeStatus != null">
+				#{nodeStatus,jdbcType=INTEGER},
+			</if>
+			<if test="proId != null">
+				#{proId,jdbcType=INTEGER},
+			</if>
+			<if test="checker != null">
+				#{checker,jdbcType=INTEGER},
+			</if>
+			<if test="checkTime != null">
+				#{checkTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="note != null">
+				#{note,jdbcType=VARCHAR},
+			</if>
+			<if test="proNodeStatus != null">
+				#{proNodeStatus,jdbcType=INTEGER},
+			</if>
+			<if test="isProType != null">
+				#{isProType,jdbcType=INTEGER},
+			</if>
+			<if test="isLastNode != null">
+				#{isLastNode,jdbcType=BIT},
+			</if>
+			<if test="coperRole != null">
+				#{coperRole,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+	<select id="countByExample" parameterType="sys.spvisor.core.entity.examine.TExaProcessExample"
+		resultType="java.lang.Integer">
+		select count(*) from t_exa_process
+		<if test="_parameter != null">
+			<include refid="Example_Where_Clause" />
+		</if>
+	</select>
+	<update id="updateByExampleSelective" parameterType="map">
+		update t_exa_process
+		<set>
+			<if test="record.id != null">
+				id = #{record.id,jdbcType=INTEGER},
+			</if>
+			<if test="record.examineId != null">
+				examine_id = #{record.examineId,jdbcType=INTEGER},
+			</if>
+			<if test="record.exaOrder != null">
+				exa_order = #{record.exaOrder,jdbcType=INTEGER},
+			</if>
+			<if test="record.nodeName != null">
+				node_name = #{record.nodeName,jdbcType=VARCHAR},
+			</if>
+			<if test="record.nodeStatus != null">
+				node_status = #{record.nodeStatus,jdbcType=INTEGER},
+			</if>
+			<if test="record.proId != null">
+				pro_id = #{record.proId,jdbcType=INTEGER},
+			</if>
+			<if test="record.checker != null">
+				checker = #{record.checker,jdbcType=INTEGER},
+			</if>
+			<if test="record.checkTime != null">
+				check_time = #{record.checkTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="record.note != null">
+				note = #{record.note,jdbcType=VARCHAR},
+			</if>
+			<if test="record.proNodeStatus != null">
+				pro_node_status = #{record.proNodeStatus,jdbcType=INTEGER},
+			</if>
+			<if test="record.isProType != null">
+				is_pro_type = #{record.isProType,jdbcType=INTEGER},
+			</if>
+			<if test="record.isLastNode != null">
+				is_last_node = #{record.isLastNode,jdbcType=BIT},
+			</if>
+			<if test="record.coperRole != null">
+				coper_role = #{record.coperRole,jdbcType=INTEGER},
+			</if>
+		</set>
+		<if test="_parameter != null">
+			<include refid="Update_By_Example_Where_Clause" />
+		</if>
+	</update>
+	<update id="updateByExample" parameterType="map">
+		update t_exa_process
+		set id = #{record.id,jdbcType=INTEGER},
+		examine_id = #{record.examineId,jdbcType=INTEGER},
+		exa_order = #{record.exaOrder,jdbcType=INTEGER},
+		node_name = #{record.nodeName,jdbcType=VARCHAR},
+		node_status = #{record.nodeStatus,jdbcType=INTEGER},
+		pro_id = #{record.proId,jdbcType=INTEGER},
+		checker = #{record.checker,jdbcType=INTEGER},
+		check_time = #{record.checkTime,jdbcType=TIMESTAMP},
+		note = #{record.note,jdbcType=VARCHAR},
+		pro_node_status = #{record.proNodeStatus,jdbcType=INTEGER},
+		is_pro_type = #{record.isProType,jdbcType=INTEGER},
+		is_last_node = #{record.isLastNode,jdbcType=BIT},
+		coper_role = #{record.coperRole,jdbcType=INTEGER}
+		<if test="_parameter != null">
+			<include refid="Update_By_Example_Where_Clause" />
+		</if>
+	</update>
+	<update id="updateByPrimaryKeySelective" parameterType="sys.spvisor.core.entity.examine.TExaProcess">
+		update t_exa_process
+		<set>
+			<if test="examineId != null">
+				examine_id = #{examineId,jdbcType=INTEGER},
+			</if>
+			<if test="exaOrder != null">
+				exa_order = #{exaOrder,jdbcType=INTEGER},
+			</if>
+			<if test="nodeName != null">
+				node_name = #{nodeName,jdbcType=VARCHAR},
+			</if>
+			<if test="nodeStatus != null">
+				node_status = #{nodeStatus,jdbcType=INTEGER},
+			</if>
+			<if test="proId != null">
+				pro_id = #{proId,jdbcType=INTEGER},
+			</if>
+			<if test="checker != null">
+				checker = #{checker,jdbcType=INTEGER},
+			</if>
+			<if test="checkTime != null">
+				check_time = #{checkTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="note != null">
+				note = #{note,jdbcType=VARCHAR},
+			</if>
+			<if test="proNodeStatus != null">
+				pro_node_status = #{proNodeStatus,jdbcType=INTEGER},
+			</if>
+			<if test="isProType != null">
+				is_pro_type = #{isProType,jdbcType=INTEGER},
+			</if>
+			<if test="isLastNode != null">
+				is_last_node = #{isLastNode,jdbcType=BIT},
+			</if>
+			<if test="coperRole != null">
+				coper_role = #{coperRole,jdbcType=INTEGER},
+			</if>
+		</set>
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="sys.spvisor.core.entity.examine.TExaProcess">
+		update t_exa_process
+		set examine_id = #{examineId,jdbcType=INTEGER},
+		exa_order = #{exaOrder,jdbcType=INTEGER},
+		node_name = #{nodeName,jdbcType=VARCHAR},
+		node_status = #{nodeStatus,jdbcType=INTEGER},
+		pro_id = #{proId,jdbcType=INTEGER},
+		checker = #{checker,jdbcType=INTEGER},
+		check_time = #{checkTime,jdbcType=TIMESTAMP},
+		note = #{note,jdbcType=VARCHAR},
+		pro_node_status = #{proNodeStatus,jdbcType=INTEGER},
+		is_pro_type = #{isProType,jdbcType=INTEGER},
+		is_last_node = #{isLastNode,jdbcType=BIT},
+		coper_role = #{coperRole,jdbcType=INTEGER}
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+</mapper>

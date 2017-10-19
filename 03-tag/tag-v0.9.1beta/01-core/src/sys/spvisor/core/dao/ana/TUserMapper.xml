@@ -1,0 +1,710 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="sys.spvisor.core.dao.ana.TUserMapper" >
+  <resultMap id="BaseResultMap" type="sys.spvisor.core.entity.ana.TUser" >
+    <id column="user_id" property="userId" jdbcType="INTEGER" />
+    <result column="user_login_name" property="userLoginName" jdbcType="VARCHAR" />
+    <result column="user_name" property="userName" jdbcType="VARCHAR" />
+    <result column="user_login_password" property="userLoginPassword" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="CHAR" />
+    <result column="pwd_err_cnt" property="pwdErrCnt" jdbcType="INTEGER" />
+    <result column="expiration_date" property="expirationDate" jdbcType="DATE" />
+    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+    <result column="email" property="email" jdbcType="VARCHAR" />
+    <result column="memo" property="memo" jdbcType="VARCHAR" />
+    <result column="create_datetime" property="createDatetime" jdbcType="TIMESTAMP" />
+    <result column="update_datetime" property="updateDatetime" jdbcType="TIMESTAMP" />
+    <result column="check_status" property="checkStatus" jdbcType="VARCHAR" />
+    <result column="user_unit" property="userUnit" jdbcType="VARCHAR" />
+    <result column="user_sex" property="userSex" jdbcType="CHAR" />
+    <result column="user_identity_card" property="userIdentityCard" jdbcType="VARCHAR" />
+    <result column="user_work_status_id" property="userWorkStatusId" jdbcType="INTEGER" />
+    <result column="user_location_des" property="userLocationDes" jdbcType="VARCHAR" />
+    <result column="user_latest_work_time" property="userLatestWorkTime" jdbcType="DATE" />
+    <result column="user_birthdate" property="userBirthdate" jdbcType="DATE" />
+    <result column="user_education" property="userEducation" jdbcType="VARCHAR" />
+    <result column="user_major" property="userMajor" jdbcType="VARCHAR" />
+    <result column="user_professional_qualification" property="userProfessionalQualification" jdbcType="VARCHAR" />
+    <result column="user_professional_title" property="userProfessionalTitle" jdbcType="VARCHAR" />
+    <result column="user_career_qualification" property="userCareerQualification" jdbcType="VARCHAR" />
+    <result column="user_role_flag" property="userRoleFlag" jdbcType="INTEGER" />
+    <result column="user_signature" property="userSignature" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="sys.spvisor.core.entity.ana.TUser" extends="BaseResultMap" >
+    <result column="user_pic" property="userPic" jdbcType="BINARY" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    user_id, user_login_name, user_name, user_login_password, status, pwd_err_cnt, expiration_date, 
+    mobile, email, memo, create_datetime, update_datetime, check_status, user_unit, user_sex, 
+    user_identity_card, user_work_status_id, user_location_des, user_latest_work_time, 
+    user_birthdate, user_education, user_major, user_professional_qualification, user_professional_title, 
+    user_career_qualification, user_role_flag, user_signature
+  </sql>
+  <sql id="Blob_Column_List" >
+    user_pic
+  </sql>
+  <select id="selectByExampleWithBLOBs" resultMap="ResultMapWithBLOBs" parameterType="sys.spvisor.core.entity.ana.TUserExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from t_user
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="sys.spvisor.core.entity.ana.TUserExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from t_user
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from t_user
+    where user_id = #{userId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_user
+    where user_id = #{userId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="sys.spvisor.core.entity.ana.TUserExample" >
+    delete from t_user
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="sys.spvisor.core.entity.ana.TUser" >
+    insert into t_user (user_id, user_login_name, user_name, 
+      user_login_password, status, pwd_err_cnt, 
+      expiration_date, mobile, email, 
+      memo, create_datetime, update_datetime, 
+      check_status, user_unit, user_sex, 
+      user_identity_card, user_work_status_id, user_location_des, 
+      user_latest_work_time, user_birthdate, user_education, 
+      user_major, user_professional_qualification, 
+      user_professional_title, user_career_qualification, 
+      user_role_flag, user_signature, user_pic)
+    values (#{userId,jdbcType=INTEGER}, #{userLoginName,jdbcType=VARCHAR}, #{userName,jdbcType=VARCHAR}, 
+      #{userLoginPassword,jdbcType=VARCHAR}, #{status,jdbcType=CHAR}, #{pwdErrCnt,jdbcType=INTEGER}, 
+      #{expirationDate,jdbcType=DATE}, #{mobile,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, 
+      #{memo,jdbcType=VARCHAR}, #{createDatetime,jdbcType=TIMESTAMP}, #{updateDatetime,jdbcType=TIMESTAMP}, 
+      #{checkStatus,jdbcType=VARCHAR}, #{userUnit,jdbcType=VARCHAR}, #{userSex,jdbcType=CHAR}, 
+      #{userIdentityCard,jdbcType=VARCHAR}, #{userWorkStatusId,jdbcType=INTEGER}, #{userLocationDes,jdbcType=VARCHAR}, 
+      #{userLatestWorkTime,jdbcType=DATE}, #{userBirthdate,jdbcType=DATE}, #{userEducation,jdbcType=VARCHAR}, 
+      #{userMajor,jdbcType=VARCHAR}, #{userProfessionalQualification,jdbcType=VARCHAR}, 
+      #{userProfessionalTitle,jdbcType=VARCHAR}, #{userCareerQualification,jdbcType=VARCHAR}, 
+      #{userRoleFlag,jdbcType=INTEGER}, #{userSignature,jdbcType=VARCHAR}, #{userPic,jdbcType=BINARY})
+  </insert>
+  <insert id="insertSelective" parameterType="sys.spvisor.core.entity.ana.TUser" >
+    insert into t_user
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="userLoginName != null" >
+        user_login_name,
+      </if>
+      <if test="userName != null" >
+        user_name,
+      </if>
+      <if test="userLoginPassword != null" >
+        user_login_password,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="pwdErrCnt != null" >
+        pwd_err_cnt,
+      </if>
+      <if test="expirationDate != null" >
+        expiration_date,
+      </if>
+      <if test="mobile != null" >
+        mobile,
+      </if>
+      <if test="email != null" >
+        email,
+      </if>
+      <if test="memo != null" >
+        memo,
+      </if>
+      <if test="createDatetime != null" >
+        create_datetime,
+      </if>
+      <if test="updateDatetime != null" >
+        update_datetime,
+      </if>
+      <if test="checkStatus != null" >
+        check_status,
+      </if>
+      <if test="userUnit != null" >
+        user_unit,
+      </if>
+      <if test="userSex != null" >
+        user_sex,
+      </if>
+      <if test="userIdentityCard != null" >
+        user_identity_card,
+      </if>
+      <if test="userWorkStatusId != null" >
+        user_work_status_id,
+      </if>
+      <if test="userLocationDes != null" >
+        user_location_des,
+      </if>
+      <if test="userLatestWorkTime != null" >
+        user_latest_work_time,
+      </if>
+      <if test="userBirthdate != null" >
+        user_birthdate,
+      </if>
+      <if test="userEducation != null" >
+        user_education,
+      </if>
+      <if test="userMajor != null" >
+        user_major,
+      </if>
+      <if test="userProfessionalQualification != null" >
+        user_professional_qualification,
+      </if>
+      <if test="userProfessionalTitle != null" >
+        user_professional_title,
+      </if>
+      <if test="userCareerQualification != null" >
+        user_career_qualification,
+      </if>
+      <if test="userRoleFlag != null" >
+        user_role_flag,
+      </if>
+      <if test="userSignature != null" >
+        user_signature,
+      </if>
+      <if test="userPic != null" >
+        user_pic,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="userId != null" >
+        #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="userLoginName != null" >
+        #{userLoginName,jdbcType=VARCHAR},
+      </if>
+      <if test="userName != null" >
+        #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="userLoginPassword != null" >
+        #{userLoginPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=CHAR},
+      </if>
+      <if test="pwdErrCnt != null" >
+        #{pwdErrCnt,jdbcType=INTEGER},
+      </if>
+      <if test="expirationDate != null" >
+        #{expirationDate,jdbcType=DATE},
+      </if>
+      <if test="mobile != null" >
+        #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="memo != null" >
+        #{memo,jdbcType=VARCHAR},
+      </if>
+      <if test="createDatetime != null" >
+        #{createDatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDatetime != null" >
+        #{updateDatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="checkStatus != null" >
+        #{checkStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="userUnit != null" >
+        #{userUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="userSex != null" >
+        #{userSex,jdbcType=CHAR},
+      </if>
+      <if test="userIdentityCard != null" >
+        #{userIdentityCard,jdbcType=VARCHAR},
+      </if>
+      <if test="userWorkStatusId != null" >
+        #{userWorkStatusId,jdbcType=INTEGER},
+      </if>
+      <if test="userLocationDes != null" >
+        #{userLocationDes,jdbcType=VARCHAR},
+      </if>
+      <if test="userLatestWorkTime != null" >
+        #{userLatestWorkTime,jdbcType=DATE},
+      </if>
+      <if test="userBirthdate != null" >
+        #{userBirthdate,jdbcType=DATE},
+      </if>
+      <if test="userEducation != null" >
+        #{userEducation,jdbcType=VARCHAR},
+      </if>
+      <if test="userMajor != null" >
+        #{userMajor,jdbcType=VARCHAR},
+      </if>
+      <if test="userProfessionalQualification != null" >
+        #{userProfessionalQualification,jdbcType=VARCHAR},
+      </if>
+      <if test="userProfessionalTitle != null" >
+        #{userProfessionalTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="userCareerQualification != null" >
+        #{userCareerQualification,jdbcType=VARCHAR},
+      </if>
+      <if test="userRoleFlag != null" >
+        #{userRoleFlag,jdbcType=INTEGER},
+      </if>
+      <if test="userSignature != null" >
+        #{userSignature,jdbcType=VARCHAR},
+      </if>
+      <if test="userPic != null" >
+        #{userPic,jdbcType=BINARY},
+      </if>
+    </trim>
+  </insert>
+  
+   <select id="queryUserByCondition" resultMap="BaseResultMap" parameterType="sys.spvisor.core.criteria.people.PeopleManageCriteria">
+		select *  from  t_user   b 
+					<where>
+					<if test="userName != null and userName!= ''">
+    	 				and b.user_name like #{userName} 
+    	 			</if>
+    	 			<if test="userLoginName != null and userLoginName != ''">
+    	 				and b.user_login_name like #{userLoginName} 
+    	 			</if>
+    	 			<if test="userWorkStatusId != null and userWorkStatusId != ''">
+    	 				and b.user_work_status_id = #{userWorkStatusId} 
+    	 			</if>
+    	 			<if test="userRoleFlag != null and userRoleFlag != ''">
+    	 				and b.user_role_flag = #{userRoleFlag} 
+    	 			</if>
+					</where>
+						ORDER BY b.user_id ASC
+						<if test="paging == true">
+							limit #{limit} offset #{offset}
+						</if>
+																 
+    </select>
+     <select id="queryUserByConditionCount" resultMap="BaseResultMap" parameterType="sys.spvisor.core.criteria.people.PeopleManageCriteria">
+			select *  from  t_user   b 
+					<where>
+					<if test="userName != null and userName!= ''">
+    	 				and b.user_name like #{userName} 
+    	 			</if>
+    	 			<if test="userLoginName != null and userLoginName != ''">
+    	 				and b.user_login_name like #{userLoginName} 
+    	 			</if>
+    	 			<if test="userWorkStatusId != null and userWorkStatusId != ''">
+    	 				and b.user_work_status_id = #{userWorkStatusId} 
+    	 			</if>
+    	 			<if test="userWorkStatusId != null and userWorkStatusId != ''">
+    	 				and b.user_role_flag = #{userRoleFlag} 
+    	 			</if>
+					</where>
+						ORDER BY b.user_id ASC																 
+    </select>
+  
+  
+  
+  
+  
+  
+  
+  <select id="countByExample" parameterType="sys.spvisor.core.entity.ana.TUserExample" resultType="java.lang.Integer" >
+    select count(*) from t_user
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update t_user
+    <set >
+      <if test="record.userId != null" >
+        user_id = #{record.userId,jdbcType=INTEGER},
+      </if>
+      <if test="record.userLoginName != null" >
+        user_login_name = #{record.userLoginName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userName != null" >
+        user_name = #{record.userName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userLoginPassword != null" >
+        user_login_password = #{record.userLoginPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="record.status != null" >
+        status = #{record.status,jdbcType=CHAR},
+      </if>
+      <if test="record.pwdErrCnt != null" >
+        pwd_err_cnt = #{record.pwdErrCnt,jdbcType=INTEGER},
+      </if>
+      <if test="record.expirationDate != null" >
+        expiration_date = #{record.expirationDate,jdbcType=DATE},
+      </if>
+      <if test="record.mobile != null" >
+        mobile = #{record.mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="record.email != null" >
+        email = #{record.email,jdbcType=VARCHAR},
+      </if>
+      <if test="record.memo != null" >
+        memo = #{record.memo,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createDatetime != null" >
+        create_datetime = #{record.createDatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateDatetime != null" >
+        update_datetime = #{record.updateDatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.checkStatus != null" >
+        check_status = #{record.checkStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userUnit != null" >
+        user_unit = #{record.userUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userSex != null" >
+        user_sex = #{record.userSex,jdbcType=CHAR},
+      </if>
+      <if test="record.userIdentityCard != null" >
+        user_identity_card = #{record.userIdentityCard,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userWorkStatusId != null" >
+        user_work_status_id = #{record.userWorkStatusId,jdbcType=INTEGER},
+      </if>
+      <if test="record.userLocationDes != null" >
+        user_location_des = #{record.userLocationDes,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userLatestWorkTime != null" >
+        user_latest_work_time = #{record.userLatestWorkTime,jdbcType=DATE},
+      </if>
+      <if test="record.userBirthdate != null" >
+        user_birthdate = #{record.userBirthdate,jdbcType=DATE},
+      </if>
+      <if test="record.userEducation != null" >
+        user_education = #{record.userEducation,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userMajor != null" >
+        user_major = #{record.userMajor,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userProfessionalQualification != null" >
+        user_professional_qualification = #{record.userProfessionalQualification,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userProfessionalTitle != null" >
+        user_professional_title = #{record.userProfessionalTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userCareerQualification != null" >
+        user_career_qualification = #{record.userCareerQualification,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userRoleFlag != null" >
+        user_role_flag = #{record.userRoleFlag,jdbcType=INTEGER},
+      </if>
+      <if test="record.userSignature != null" >
+        user_signature = #{record.userSignature,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userPic != null" >
+        user_pic = #{record.userPic,jdbcType=BINARY},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map" >
+    update t_user
+    set user_id = #{record.userId,jdbcType=INTEGER},
+      user_login_name = #{record.userLoginName,jdbcType=VARCHAR},
+      user_name = #{record.userName,jdbcType=VARCHAR},
+      user_login_password = #{record.userLoginPassword,jdbcType=VARCHAR},
+      status = #{record.status,jdbcType=CHAR},
+      pwd_err_cnt = #{record.pwdErrCnt,jdbcType=INTEGER},
+      expiration_date = #{record.expirationDate,jdbcType=DATE},
+      mobile = #{record.mobile,jdbcType=VARCHAR},
+      email = #{record.email,jdbcType=VARCHAR},
+      memo = #{record.memo,jdbcType=VARCHAR},
+      create_datetime = #{record.createDatetime,jdbcType=TIMESTAMP},
+      update_datetime = #{record.updateDatetime,jdbcType=TIMESTAMP},
+      check_status = #{record.checkStatus,jdbcType=VARCHAR},
+      user_unit = #{record.userUnit,jdbcType=VARCHAR},
+      user_sex = #{record.userSex,jdbcType=CHAR},
+      user_identity_card = #{record.userIdentityCard,jdbcType=VARCHAR},
+      user_work_status_id = #{record.userWorkStatusId,jdbcType=INTEGER},
+      user_location_des = #{record.userLocationDes,jdbcType=VARCHAR},
+      user_latest_work_time = #{record.userLatestWorkTime,jdbcType=DATE},
+      user_birthdate = #{record.userBirthdate,jdbcType=DATE},
+      user_education = #{record.userEducation,jdbcType=VARCHAR},
+      user_major = #{record.userMajor,jdbcType=VARCHAR},
+      user_professional_qualification = #{record.userProfessionalQualification,jdbcType=VARCHAR},
+      user_professional_title = #{record.userProfessionalTitle,jdbcType=VARCHAR},
+      user_career_qualification = #{record.userCareerQualification,jdbcType=VARCHAR},
+      user_role_flag = #{record.userRoleFlag,jdbcType=INTEGER},
+      user_signature = #{record.userSignature,jdbcType=VARCHAR},
+      user_pic = #{record.userPic,jdbcType=BINARY}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update t_user
+    set user_id = #{record.userId,jdbcType=INTEGER},
+      user_login_name = #{record.userLoginName,jdbcType=VARCHAR},
+      user_name = #{record.userName,jdbcType=VARCHAR},
+      user_login_password = #{record.userLoginPassword,jdbcType=VARCHAR},
+      status = #{record.status,jdbcType=CHAR},
+      pwd_err_cnt = #{record.pwdErrCnt,jdbcType=INTEGER},
+      expiration_date = #{record.expirationDate,jdbcType=DATE},
+      mobile = #{record.mobile,jdbcType=VARCHAR},
+      email = #{record.email,jdbcType=VARCHAR},
+      memo = #{record.memo,jdbcType=VARCHAR},
+      create_datetime = #{record.createDatetime,jdbcType=TIMESTAMP},
+      update_datetime = #{record.updateDatetime,jdbcType=TIMESTAMP},
+      check_status = #{record.checkStatus,jdbcType=VARCHAR},
+      user_unit = #{record.userUnit,jdbcType=VARCHAR},
+      user_sex = #{record.userSex,jdbcType=CHAR},
+      user_identity_card = #{record.userIdentityCard,jdbcType=VARCHAR},
+      user_work_status_id = #{record.userWorkStatusId,jdbcType=INTEGER},
+      user_location_des = #{record.userLocationDes,jdbcType=VARCHAR},
+      user_latest_work_time = #{record.userLatestWorkTime,jdbcType=DATE},
+      user_birthdate = #{record.userBirthdate,jdbcType=DATE},
+      user_education = #{record.userEducation,jdbcType=VARCHAR},
+      user_major = #{record.userMajor,jdbcType=VARCHAR},
+      user_professional_qualification = #{record.userProfessionalQualification,jdbcType=VARCHAR},
+      user_professional_title = #{record.userProfessionalTitle,jdbcType=VARCHAR},
+      user_career_qualification = #{record.userCareerQualification,jdbcType=VARCHAR},
+      user_role_flag = #{record.userRoleFlag,jdbcType=INTEGER},
+      user_signature = #{record.userSignature,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="sys.spvisor.core.entity.ana.TUser" >
+    update t_user
+    <set >
+      <if test="userLoginName != null" >
+        user_login_name = #{userLoginName,jdbcType=VARCHAR},
+      </if>
+      <if test="userName != null" >
+        user_name = #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="userLoginPassword != null" >
+        user_login_password = #{userLoginPassword,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=CHAR},
+      </if>
+      <if test="pwdErrCnt != null" >
+        pwd_err_cnt = #{pwdErrCnt,jdbcType=INTEGER},
+      </if>
+      <if test="expirationDate != null" >
+        expiration_date = #{expirationDate,jdbcType=DATE},
+      </if>
+      <if test="mobile != null" >
+        mobile = #{mobile,jdbcType=VARCHAR},
+      </if>
+      <if test="email != null" >
+        email = #{email,jdbcType=VARCHAR},
+      </if>
+      <if test="memo != null" >
+        memo = #{memo,jdbcType=VARCHAR},
+      </if>
+      <if test="createDatetime != null" >
+        create_datetime = #{createDatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateDatetime != null" >
+        update_datetime = #{updateDatetime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="checkStatus != null" >
+        check_status = #{checkStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="userUnit != null" >
+        user_unit = #{userUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="userSex != null" >
+        user_sex = #{userSex,jdbcType=CHAR},
+      </if>
+      <if test="userIdentityCard != null" >
+        user_identity_card = #{userIdentityCard,jdbcType=VARCHAR},
+      </if>
+      <if test="userWorkStatusId != null" >
+        user_work_status_id = #{userWorkStatusId,jdbcType=INTEGER},
+      </if>
+      <if test="userLocationDes != null" >
+        user_location_des = #{userLocationDes,jdbcType=VARCHAR},
+      </if>
+      <if test="userLatestWorkTime != null" >
+        user_latest_work_time = #{userLatestWorkTime,jdbcType=DATE},
+      </if>
+      <if test="userBirthdate != null" >
+        user_birthdate = #{userBirthdate,jdbcType=DATE},
+      </if>
+      <if test="userEducation != null" >
+        user_education = #{userEducation,jdbcType=VARCHAR},
+      </if>
+      <if test="userMajor != null" >
+        user_major = #{userMajor,jdbcType=VARCHAR},
+      </if>
+      <if test="userProfessionalQualification != null" >
+        user_professional_qualification = #{userProfessionalQualification,jdbcType=VARCHAR},
+      </if>
+      <if test="userProfessionalTitle != null" >
+        user_professional_title = #{userProfessionalTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="userCareerQualification != null" >
+        user_career_qualification = #{userCareerQualification,jdbcType=VARCHAR},
+      </if>
+      <if test="userRoleFlag != null" >
+        user_role_flag = #{userRoleFlag,jdbcType=INTEGER},
+      </if>
+      <if test="userSignature != null" >
+        user_signature = #{userSignature,jdbcType=VARCHAR},
+      </if>
+      <if test="userPic != null" >
+        user_pic = #{userPic,jdbcType=BINARY},
+      </if>
+    </set>
+    where user_id = #{userId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="sys.spvisor.core.entity.ana.TUser" >
+    update t_user
+    set user_login_name = #{userLoginName,jdbcType=VARCHAR},
+      user_name = #{userName,jdbcType=VARCHAR},
+      user_login_password = #{userLoginPassword,jdbcType=VARCHAR},
+      status = #{status,jdbcType=CHAR},
+      pwd_err_cnt = #{pwdErrCnt,jdbcType=INTEGER},
+      expiration_date = #{expirationDate,jdbcType=DATE},
+      mobile = #{mobile,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      memo = #{memo,jdbcType=VARCHAR},
+      create_datetime = #{createDatetime,jdbcType=TIMESTAMP},
+      update_datetime = #{updateDatetime,jdbcType=TIMESTAMP},
+      check_status = #{checkStatus,jdbcType=VARCHAR},
+      user_unit = #{userUnit,jdbcType=VARCHAR},
+      user_sex = #{userSex,jdbcType=CHAR},
+      user_identity_card = #{userIdentityCard,jdbcType=VARCHAR},
+      user_work_status_id = #{userWorkStatusId,jdbcType=INTEGER},
+      user_location_des = #{userLocationDes,jdbcType=VARCHAR},
+      user_latest_work_time = #{userLatestWorkTime,jdbcType=DATE},
+      user_birthdate = #{userBirthdate,jdbcType=DATE},
+      user_education = #{userEducation,jdbcType=VARCHAR},
+      user_major = #{userMajor,jdbcType=VARCHAR},
+      user_professional_qualification = #{userProfessionalQualification,jdbcType=VARCHAR},
+      user_professional_title = #{userProfessionalTitle,jdbcType=VARCHAR},
+      user_career_qualification = #{userCareerQualification,jdbcType=VARCHAR},
+      user_role_flag = #{userRoleFlag,jdbcType=INTEGER},
+      user_signature = #{userSignature,jdbcType=VARCHAR},
+      user_pic = #{userPic,jdbcType=BINARY}
+    where user_id = #{userId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="sys.spvisor.core.entity.ana.TUser" >
+    update t_user
+    set user_login_name = #{userLoginName,jdbcType=VARCHAR},
+      user_name = #{userName,jdbcType=VARCHAR},
+      user_login_password = #{userLoginPassword,jdbcType=VARCHAR},
+      status = #{status,jdbcType=CHAR},
+      pwd_err_cnt = #{pwdErrCnt,jdbcType=INTEGER},
+      expiration_date = #{expirationDate,jdbcType=DATE},
+      mobile = #{mobile,jdbcType=VARCHAR},
+      email = #{email,jdbcType=VARCHAR},
+      memo = #{memo,jdbcType=VARCHAR},
+      create_datetime = #{createDatetime,jdbcType=TIMESTAMP},
+      update_datetime = #{updateDatetime,jdbcType=TIMESTAMP},
+      check_status = #{checkStatus,jdbcType=VARCHAR},
+      user_unit = #{userUnit,jdbcType=VARCHAR},
+      user_sex = #{userSex,jdbcType=CHAR},
+      user_identity_card = #{userIdentityCard,jdbcType=VARCHAR},
+      user_work_status_id = #{userWorkStatusId,jdbcType=INTEGER},
+      user_location_des = #{userLocationDes,jdbcType=VARCHAR},
+      user_latest_work_time = #{userLatestWorkTime,jdbcType=DATE},
+      user_birthdate = #{userBirthdate,jdbcType=DATE},
+      user_education = #{userEducation,jdbcType=VARCHAR},
+      user_major = #{userMajor,jdbcType=VARCHAR},
+      user_professional_qualification = #{userProfessionalQualification,jdbcType=VARCHAR},
+      user_professional_title = #{userProfessionalTitle,jdbcType=VARCHAR},
+      user_career_qualification = #{userCareerQualification,jdbcType=VARCHAR},
+      user_role_flag = #{userRoleFlag,jdbcType=INTEGER},
+      user_signature = #{userSignature,jdbcType=VARCHAR}
+    where user_id = #{userId,jdbcType=INTEGER}
+  </update>
+</mapper>

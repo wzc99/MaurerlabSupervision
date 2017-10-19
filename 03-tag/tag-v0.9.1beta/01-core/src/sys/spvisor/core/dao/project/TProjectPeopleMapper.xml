@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="sys.spvisor.core.dao.project.TProjectPeopleMapper" >
+  <resultMap id="BaseResultMap" type="sys.spvisor.core.entity.project.TProjectPeople" >
+    <id column="project_people_id" property="projectPeopleId" jdbcType="INTEGER" />
+    <result column="pp_pro_id" property="ppProId" jdbcType="INTEGER" />
+    <result column="pp_user_id" property="ppUserId" jdbcType="INTEGER" />
+    <result column="pp_status" property="ppStatus" jdbcType="CHAR" />
+    <result column="pp_in_pro_time" property="ppInProTime" jdbcType="TIMESTAMP" />
+    <result column="pp_out_pro_time" property="ppOutProTime" jdbcType="TIMESTAMP" />
+    <result column="pp_pro_role_id" property="ppProRoleId" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    project_people_id, pp_pro_id, pp_user_id, pp_status, pp_in_pro_time, pp_out_pro_time, 
+    pp_pro_role_id
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="sys.spvisor.core.entity.project.TProjectPeopleExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from t_project_people
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_project_people
+    where project_people_id = #{projectPeopleId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_project_people
+    where project_people_id = #{projectPeopleId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="sys.spvisor.core.entity.project.TProjectPeopleExample" >
+    delete from t_project_people
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="sys.spvisor.core.entity.project.TProjectPeople" useGeneratedKeys="true" keyProperty="projectPeopleId">
+    insert into t_project_people ( pp_pro_id, pp_user_id, 
+      pp_status, pp_in_pro_time, pp_out_pro_time, 
+      pp_pro_role_id)
+    values (#{ppProId,jdbcType=INTEGER}, #{ppUserId,jdbcType=INTEGER}, 
+      #{ppStatus,jdbcType=CHAR}, #{ppInProTime,jdbcType=TIMESTAMP}, #{ppOutProTime,jdbcType=TIMESTAMP}, 
+      #{ppProRoleId,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="sys.spvisor.core.entity.project.TProjectPeople" >
+    insert into t_project_people
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="projectPeopleId != null" >
+        project_people_id,
+      </if>
+      <if test="ppProId != null" >
+        pp_pro_id,
+      </if>
+      <if test="ppUserId != null" >
+        pp_user_id,
+      </if>
+      <if test="ppStatus != null" >
+        pp_status,
+      </if>
+      <if test="ppInProTime != null" >
+        pp_in_pro_time,
+      </if>
+      <if test="ppOutProTime != null" >
+        pp_out_pro_time,
+      </if>
+      <if test="ppProRoleId != null" >
+        pp_pro_role_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="projectPeopleId != null" >
+        #{projectPeopleId,jdbcType=INTEGER},
+      </if>
+      <if test="ppProId != null" >
+        #{ppProId,jdbcType=INTEGER},
+      </if>
+      <if test="ppUserId != null" >
+        #{ppUserId,jdbcType=INTEGER},
+      </if>
+      <if test="ppStatus != null" >
+        #{ppStatus,jdbcType=CHAR},
+      </if>
+      <if test="ppInProTime != null" >
+        #{ppInProTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="ppOutProTime != null" >
+        #{ppOutProTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="ppProRoleId != null" >
+        #{ppProRoleId,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="sys.spvisor.core.entity.project.TProjectPeopleExample" resultType="java.lang.Integer" >
+    select count(*) from t_project_people
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update t_project_people
+    <set >
+      <if test="record.projectPeopleId != null" >
+        project_people_id = #{record.projectPeopleId,jdbcType=INTEGER},
+      </if>
+      <if test="record.ppProId != null" >
+        pp_pro_id = #{record.ppProId,jdbcType=INTEGER},
+      </if>
+      <if test="record.ppUserId != null" >
+        pp_user_id = #{record.ppUserId,jdbcType=INTEGER},
+      </if>
+      <if test="record.ppStatus != null" >
+        pp_status = #{record.ppStatus,jdbcType=CHAR},
+      </if>
+      <if test="record.ppInProTime != null" >
+        pp_in_pro_time = #{record.ppInProTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.ppOutProTime != null" >
+        pp_out_pro_time = #{record.ppOutProTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.ppProRoleId != null" >
+        pp_pro_role_id = #{record.ppProRoleId,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update t_project_people
+    set project_people_id = #{record.projectPeopleId,jdbcType=INTEGER},
+      pp_pro_id = #{record.ppProId,jdbcType=INTEGER},
+      pp_user_id = #{record.ppUserId,jdbcType=INTEGER},
+      pp_status = #{record.ppStatus,jdbcType=CHAR},
+      pp_in_pro_time = #{record.ppInProTime,jdbcType=TIMESTAMP},
+      pp_out_pro_time = #{record.ppOutProTime,jdbcType=TIMESTAMP},
+      pp_pro_role_id = #{record.ppProRoleId,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="sys.spvisor.core.entity.project.TProjectPeople" >
+    update t_project_people
+    <set >
+      <if test="ppProId != null" >
+        pp_pro_id = #{ppProId,jdbcType=INTEGER},
+      </if>
+      <if test="ppUserId != null" >
+        pp_user_id = #{ppUserId,jdbcType=INTEGER},
+      </if>
+      <if test="ppStatus != null" >
+        pp_status = #{ppStatus,jdbcType=CHAR},
+      </if>
+      <if test="ppInProTime != null" >
+        pp_in_pro_time = #{ppInProTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="ppOutProTime != null" >
+        pp_out_pro_time = #{ppOutProTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="ppProRoleId != null" >
+        pp_pro_role_id = #{ppProRoleId,jdbcType=INTEGER},
+      </if>
+    </set>
+    where project_people_id = #{projectPeopleId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="sys.spvisor.core.entity.project.TProjectPeople" >
+    update t_project_people
+    set pp_pro_id = #{ppProId,jdbcType=INTEGER},
+      pp_user_id = #{ppUserId,jdbcType=INTEGER},
+      pp_status = #{ppStatus,jdbcType=CHAR},
+      pp_in_pro_time = #{ppInProTime,jdbcType=TIMESTAMP},
+      pp_out_pro_time = #{ppOutProTime,jdbcType=TIMESTAMP},
+      pp_pro_role_id = #{ppProRoleId,jdbcType=INTEGER}
+    where project_people_id = #{projectPeopleId,jdbcType=INTEGER}
+  </update>
+</mapper>
