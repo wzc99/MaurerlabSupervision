@@ -28,11 +28,11 @@
     	 				and f.file_content_introduction like #{fileContentIntroduction} 
     	 			</if>
     	 			<if test="releaseOrganization != null and releaseOrganization != ''">
-    	 				and f.release_organization = #{releaseOrganization} 
+    	 				and f.release_organization like #{releaseOrganization} 
     	 			</if> 
     	 			<if test="type != null and type != ''">
     	 				and f.type = #{type} 
-    	 			</if> 
+    	 			</if>
     	 	</where>	
 		    order by f.file_id
 		    
