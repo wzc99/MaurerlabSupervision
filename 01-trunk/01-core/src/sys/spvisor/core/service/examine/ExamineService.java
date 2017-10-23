@@ -77,7 +77,7 @@ public class ExamineService {
 			}
 
 			int TexamId = examineDao.insertAndReturnId(te);
-			
+
 			// 获取新增审核表中的id，并更新流程表
 			TExaProcessExample tExaProcessExample = new TExaProcessExample();
 			sys.spvisor.core.entity.examine.TExaProcessExample.Criteria criteria = tExaProcessExample.createCriteria();
@@ -201,7 +201,7 @@ public class ExamineService {
 		try {
 			HashMap<Integer, ExamineQueryTempBean> map = getRolesByUserIdProjectOrNot(userId);
 
-			if(map.size()==0)
+			if (map.size() == 0)
 				return 0;
 			TExaProcessExample tExaProcessExample = new TExaProcessExample();
 			boolean tag = false;
@@ -357,7 +357,7 @@ public class ExamineService {
 	public int getExamineByMeRecordCount(int userId, int status) {
 		HashMap<Integer, ExamineQueryTempBean> map = getRolesByUserIdProjectOrNot(userId);
 		TExaProcessExample tExaProcessExample = new TExaProcessExample();
-		if(map.size()==0)
+		if (map.size() == 0)
 			return 0;
 		boolean tag = false;
 		for (int roleId : map.keySet()) {
@@ -409,7 +409,7 @@ public class ExamineService {
 		HashMap<Integer, ExamineQueryTempBean> map = getRolesByUserIdProjectOrNot(userId);
 		TExaProcessExample tExaProcessExample = new TExaProcessExample();
 		boolean tag = false;
-		if(map.size()==0)
+		if (map.size() == 0)
 			return new ArrayList<>();
 		for (int roleId : map.keySet()) {
 			Criteria criteria = tExaProcessExample.createCriteria();
@@ -524,7 +524,7 @@ public class ExamineService {
 				TExaProcessExample example = new TExaProcessExample();
 				TExaProcessExample.Criteria tpCriteria = example.createCriteria();
 				tpCriteria.andExamineIdEqualTo(exaId);
-				List<TExaProcess> tt = tExaProcessMapper.selectByExample(example);
+				//List<TExaProcess> tt = tExaProcessMapper.selectByExample(example);
 				TExaProcess ePTemp = tExaProcessMapper.selectByExample(example).get(0);
 
 				ExamineInit init = new ExamineInit();
@@ -555,6 +555,11 @@ public class ExamineService {
 					init.setProId(ePTemp.getProId());
 				}
 				result = insertExamine(init);
+				if (result == Enumerations.ServiceReturnCode.操作成功.getCode()) {
+					result = ToInvisibleExamineOrProcess(exaId, 0);
+				} else {
+					result = Enumerations.ServiceReturnCode.出错或异常.getCode();
+				}
 
 			} else {
 				result = Enumerations.ServiceReturnCode.非法操作.getCode();
@@ -646,10 +651,10 @@ public class ExamineService {
 						insertAttendance.setStatusId(attendance.getToStatusId());
 						attendance.setToStatusId(0);
 						tAttendanceMapper.updateByPrimaryKeySelective(attendance);
-						
+
 						insertAttendance.setProId(attendance.getProId());
 						insertAttendance.setStartTime(DatetimeUtil.getCurrentTimestamp());
-						
+
 						insertAttendance.setUserId(attendance.getUserId());
 						// 当前状态可用
 						insertAttendance.setStatusIdStatus(0);
