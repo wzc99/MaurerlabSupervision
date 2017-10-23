@@ -12,6 +12,7 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import sys.spvisor.core.common.BaseController;
@@ -261,11 +262,15 @@ public class ExamineController extends BaseController {
 	 */
 	@ResponseBody
 	@RequestMapping("/toFixExamine.ajax")
-	public ReturnDatas ToFixExamine(@Param("exaId") int exaId, HttpSession session, HttpServletRequest req) {
+	public ReturnDatas ToFixExamine(@Param("exaId") int exaId, @Param("exaTitle") String exaTitle,
+			@Param("exaContent") String exaContent, @Param("exaFilePath") String exaFilePath,
+			@RequestParam(value = "exaFileFlag", required = false) Integer exaFileFlag, HttpSession session,
+			HttpServletRequest req) {
 		Long userId = (Long) session.getAttribute("USER_ID");
 		ReturnDatas returnData = ReturnDatas.getSuccessReturnDatas();
 		try {
-			int result = exaService.ToFixExamine(exaId, userId.intValue(), null, null, null, 0);
+			int result = exaService.ToFixExamine(exaId, userId.intValue(), exaTitle, exaContent, exaFilePath,
+					exaFileFlag == null || exaFileFlag == 0 ? 0 : exaFileFlag);
 			if (result != Enumerations.ServiceReturnCode.操作成功.getCode()) {
 				return Enumerations.getReturnDatasByServiceCode(result);
 			}
