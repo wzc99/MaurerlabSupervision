@@ -1,0 +1,347 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>监造物资清单</title>
+	
+	<link rel="stylesheet" type="text/css" href="../../themes/general.css">
+	<link rel="stylesheet" type="text/css" href="../../themes/icon.css">
+	<link rel="stylesheet" type="text/css" href="../../themes/gray/easyui.css">
+
+	<script type="text/javascript" src="../../scripts/jquery-1.8.0.min.js"></script>
+	<script type="text/javascript" src="../../scripts/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="../../scripts/locale/easyui-lang-zh_CN.js"></script>
+	<script type="text/javascript" src="../../scripts/src/jquery.parser.js"></script>
+	<script type="text/javascript" src="../../scripts/general.js"></script>
+	<script type="text/javascript" src="../../scripts/sessionExpriation.js"></script>
+<style type="text/css">	
+.inbe{
+	border: 1px solid #95B8E7;
+	border-radius: 5px 5px 5px 5px;
+	height: 25px;
+}
+#tableWork td{
+	padding-left:0;
+	padding-right:0;
+}
+#attion{
+	padding:5px 10px;
+}
+
+</style>
+<script type="text/javascript">
+	$(function() {
+		//项目的id作为隐藏值保存在表单中
+		var projectId = $.getUrlParam('projectId');
+		//ajax从后台获取数据
+		$.ajax({//委托信息,从后台获取数据
+			url : '../../work/getAllGoodsByProId.ajax?proId='+projectId,
+			type : 'post',
+			dataType : 'JSON',
+			cache: false,
+			data : {
+				proId : projectId 
+			},
+			error: function(XMLHttpRequest, textStatus, errorThrown) {	                   
+	        },
+			success : function(data) {
+				if(!data.first){
+					init_goods(data);
+					
+				}
+			}
+		});
+		
+		var jsonObject;
+		//表单提交的ajax
+		$('#new_form').form({
+			url : '../../work/addOrUpdateGoodList.ajax?proId='+projectId,
+			onSubmit : function() {	
+				
+				if ($(this).form('validate')) {
+					return true;//验证是否为空
+				} else {
+					return false;
+				}
+			},
+			success : function(data) {
+				alert(data);
+				var obj = $.parseJSON(data);//将json字符串转换为object对象
+				if(obj.success){
+					$.messager.alert('提示', obj.message, 'info', function(){
+						 //刷新项目详述页面
+						 href="./project/view.html?proId="+projectId;
+						 alert(href);
+						var content = '<iframe scrolling="auto" frameborder="0"  src="'+href+'" style="width:100%;height:100%;"></iframe>';  
+					    var tt = parent.$('#tabs');  	   
+					    if (tt.tabs('exists', "项目详述")){//如果tab已经存在,则选中该tab，并更新内容          
+					        tt.tabs('select', "项目详述");  
+					        var tab =parent.$('#tabs').tabs('getSelected'); 
+					        parent.$('#tabs').tabs('update', {
+					        	tab: tab,
+					        	options: {
+					        		content:content
+					        	}
+					        });
+					    }
+					    //关闭当前页面
+					 	parent.$('#tabs').tabs('close','物资清单');
+					});
+				} else {
+					$.messager.alert('错误', obj.message, 'error');
+				}
+			}
+		});
+		
+		
+		$.ajax({//得到下拉框数据
+			url : '../../work/getTypeIdAndName.ajax',
+			type : 'post',
+			dataType : 'JSON',
+			cache: false,
+			async:false,
+			data : {
+				proId : projectId 
+			},
+			error: function(XMLHttpRequest, textStatus, errorThrown) {
+	                   
+	        },
+			success : function(data) {//传过来一个json对象
+				jsonObject = data.data;
+			}
+		});
+
+		//事件绑定，点击提交就提交表单
+		$('#btn_submit').bind('click', function() {
+			$("#new_form").submit();
+		});
+		
+		
+		$('#btn_submit_file').bind('click',function() {
+			$.ajax({
+				url : '../../work/produceGoodsFile.ajax',
+				type : 'post',
+				dataType : 'JSON',
+				cache: false,
+				async:false,
+				data : {
+					proId : projectId 
+				},
+				error: function(XMLHttpRequest, textStatus, errorThrown) {
+		                   
+		        },
+				success : function(data) {//传过来一个json对象
+					if(data.success) {
+						alert(data.message)
+						var fileId = data.fileId;
+						$("#recordFileId").html(fileId);
+					}else {
+						alert(data.message)
+					}
+				}
+			});
+		});
+		
+		
+		
+		$.each(jsonObject, function(key, val) {
+            $("#goodType1").append('<option value="' + val.id + '">' + val.type + '</option>');
+        });
+		
+		 var tem = (jsonObject[0].type).split(","); 
+		 var tem2 = tem[tem.length-1];
+		 $("#goodName1").val(tem2);
+		 //当改变时
+		/* $("select[id^='goodType']").change(function(){
+			var that = $(this).attr('id');
+			var curnum=that.substr(8);
+			var id = "#goodName"+curnum;
+			var tem = $(this).children('option:selected').text();
+			var tem1 = tem.split(",");
+			var tem2 = tem1[tem1.length-1];
+			 $(id).val(tem2);
+		}); */
+		
+	
+		var index=2;
+		function init_goods(data){
+			var list=data.list;
+			var length = data.length;
+			
+			$("#goodType1").val(list[0].goodId);
+			$("#goodName1").val(list[0].goodName);
+			$("#goodSpecifications1").val(list[0].goodSpecifications);
+			$("#goodOrderNum1").val(list[0].goodOrderNum);
+			$("#goodUnit1").val(list[0].goodUnit);
+			$("#goodNote1").val(list[0].goodNote);
+			$("#planDate1").datebox("setValue", list[0].planDate);
+			$("#promiseDate1").datebox("setValue", list[0].promiseDate);
+			$("#productNum1").val(list[0].productNum);
+			
+			if(data.length > 1){
+				for(var i=2;i<=length;i++){
+					var delIndex = "equip" + index;
+					var tempIndex=index-1;
+					var num =0;
+					if(list[i-1].goodOrderNum != null){
+						num = list[i-1].goodOrderNum;
+					}
+					$str='';     
+				    $str+='<tr>';     
+				    $str+='<td align="center"><select  			  name="list['+tempIndex+'].goodId" 			id="goodType'+index+'" 			 class="inbe"  	style="width:150px"></select></td>';
+				    $str+='<td align="center"><input type="text"  name="list['+tempIndex+'].goodName" 			id="goodName'+index+'" 			 class="inbe"	value="'+list[i-1].goodName+'"			size="15"/></td>';
+				    $str+='<td align="center"><input type="text"  name="list['+tempIndex+'].goodSpecifications" id="goodSpecifications'+index+'" class="inbe"	value="'+list[i-1].goodSpecifications+'"  size="20"/></td>';
+				    $str+='<td align="center"><input type="text"  name="list['+tempIndex+'].goodOrderNum" 		id="goodOrderNum'+index+'" 		 class="inbe"	value="'+num+'"		size="15"/></td>';
+				    $str+='<td align="center"><input type="text"  name="list['+tempIndex+'].goodUnit" 			id="goodUnit'+index+'" 			 class="inbe"	value="'+list[i-1].goodUnit+'" 			size="20"/></td>';
+				    $str+='<td align="center"><input type="text"  name="list['+tempIndex+'].goodNote" 			id="goodNote'+index+'" 			 class="inbe"	value="'+list[i-1].goodNote+'"			 size="20"/></td>';
+				    $str+='<td align="center"><input type="date"  name="list['+tempIndex+'].planDate" 			id="planDate'+index+'" 			 class="inbe"	value="'+list[i-1].planDate+'"			 size="20"/></td>';
+				    $str+='<td align="center"><input type="date"  name="list['+tempIndex+'].promiseDate" 			id="promiseDate'+index+'" 			 class="inbe"	value="'+list[i-1].promiseDate+'"			 size="20"/></td>';
+				    $str+='<td align="center"><input type="text"  name="list['+tempIndex+'].productNum" 			id="productNum'+index+'" 			 class="inbe"	value="'+list[i-1].productNum+'"			 size="20"/></td>';
+					$str+='<td align="center"><a id="'+delIndex+'" 	href="javascript:delTr(\''+delIndex+'\')" >删除</a></td>';
+					$str+='</tr>';
+				    $("#tableWork").append($str);
+					$.each(jsonObject, function(key, val) {
+						var temp="#goodType"+index;
+						if(val.id == list[i-1].goodId){
+							 $(temp).append('<option value="' + val.id + '"selected = "selected">' + val.type + '</option>');
+						}
+					     $(temp).append('<option value="' + val.id + '">' + val.type + '</option>');
+					 });
+					
+					index++;
+					
+					$("select[id^='goodType']").change(function(){
+						var that = $(this).attr('id');
+						var curnum=that.substr(8);
+						var id = "#goodName"+curnum;
+						var tem = $(this).children('option:selected').text();
+						var tem1 = tem.split(",");
+						var tem2 = tem1[tem1.length-1];
+						 $(id).val(tem2);
+					});
+					
+					
+					
+					
+				}
+			}
+		}
+		
+		$("#addTableWork").click(function(){
+			var delIndex = "equip" + index;
+			var tempIndex=index-1;
+			$str='';     
+		    $str+='<tr>';     
+		    $str+='<td align="center"><select  name="list['+tempIndex+'].goodId" 						id="goodType'+index+'" 			 class="inbe"	style="width:150px"></select></td>';
+		    $str+='<td align="center"><input type="text"  name="list['+tempIndex+'].goodName" 			id="goodName'+index+'" 			 class="inbe"	size="15"/></td>';
+		    $str+='<td align="center"><input type="text"  name="list['+tempIndex+'].goodSpecifications" id="goodSpecifications'+index+'" class="inbe"	size="20"/></td>';
+		    $str+='<td align="center"><input type="text"  name="list['+tempIndex+'].goodOrderNum" 		id="goodOrderNum'+index+'" 		 class="inbe"	size="15"/></td>';
+		    $str+='<td align="center"><input type="text"  name="list['+tempIndex+'].goodUnit" 			id="goodUnit'+index+'" 			 class="inbe"	size="20"/></td>';
+		    $str+='<td align="center"><input type="text"  name="list['+tempIndex+'].goodNote" 			id="goodNote'+index+'" 			 class="inbe"	size="20"/></td>';
+		    $str+='<td align="center"><input type="date"  name="list['+tempIndex+'].planDate" 		required="required"	id="planDate'+index+'" 			 class="inbe"	size="20"/></td>';
+		    $str+='<td align="center"><input type="date"  name="list['+tempIndex+'].promiseDate" 		required="required"	id="promiseDate'+index+'" 			 class="inbe"	size="20"/></td>';
+		    $str+='<td align="center"><input type="text"  name="list['+tempIndex+'].productNum" 			id="productNum'+index+'" 			 class="inbe"	size="20"/></td>';
+			$str+='<td align="center"><a id="'+delIndex+'" 	href="javascript:delTr(\''+delIndex+'\')" >删除</a></td>';
+			$str+='</tr>';
+		    $("#tableWork").append($str);
+			$.each(jsonObject, function(key, val) {
+				var temp="#goodType"+index;
+			     $(temp).append('<option value="' + val.id + '">' + val.type + '</option>');
+			 });
+			
+			var temId = "#goodType"+index;
+			var temp2="#goodName"+index;
+			 var tem = (jsonObject[0].type).split(","); 
+			 var tem2 = tem[tem.length-1];
+			 $(temp2).val(tem2);
+			index++;
+			
+			$("select[id^='goodType']").change(function(){
+				var that = $(this).attr('id');
+				var curnum=that.substr(8);
+				var id = "#goodName"+curnum;
+				var tem = $(this).children('option:selected').text();
+				var tem1 = tem.split(",");
+				var tem2 = tem1[tem1.length-1];
+				 $(id).val(tem2);
+			});
+		
+		});
+		$('[id^=planDate]').datebox({
+			required:true
+		}); 
+		$('[id^=promiseDate]').datebox({
+			required:true
+		}); 
+		
+	});
+	
+	function delTr(tempTdId){//删除
+		var obj  = $("#" + tempTdId);
+		$(obj).parent().parent().remove();  
+	}
+	
+	function do_download() {//下载
+		if(!$("#recordFileId").html()){
+			alert('请先生成物资清单，再进行下载！');
+			return;
+		}
+		alert("我的类型"+7);
+		var form = $("<form>");
+	    form.attr('style', 'display:none');
+	    form.attr('id', 'temp_download_form');
+	    form.attr('target', '');
+	    form.attr('method', 'post');
+	    form.attr('action', '../../file/download.ajax?fileId='+$("#recordFileId").html()+'&type='+7);
+	    $('body').append(form);
+	    form.submit();
+	    form.remove();
+	}
+	</script>
+</head>
+
+<body>
+<form id="new_form" method="post" enctype="multipart/form-data">
+	<!-- <div id="attion"><span>&nbsp;&nbsp;&nbsp;物资类型2填写需要修改的物类型，若类型名称不修改则无须填写</span></div> -->
+	<table class="table_view" id="tableWork">
+		<tr>
+			<td class="td_new_subtitle" colspan="7" ><strong>监造物资清单</strong></td>
+		</tr>
+		<tr>
+			<td align="center" width="200px"><strong>物资类型</strong></td>
+			<td align="center" width="120px"><strong>物资类型2</strong></td>
+			<td align="center" width="180px"><strong>规格型号</strong></td>
+			<td align="center" width="120px"><strong>订货数量</strong></td>
+			<td align="center" width="200px"><strong>单位</strong></td>
+			<td align="center" width="150px"><strong>备注</strong></td>
+			<td align="center" width="150px"><strong>计划完成日期</strong></td>
+			<td align="center" width="150px"><strong>约定完成日期</strong></td>
+			<td align="center" width="150px"><strong>产品编号，针对设备类的（除了泵）</strong></td>
+			<td align="center" width="80px"><a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addTableWork"></a></td>
+		</tr>
+		<tr>
+			<td align="center"><select  id="goodType1"	class="inbe"	name="list[0].goodId" 	style="width:150px"></select></td>
+			<td align="center"><input type="text" 	id="goodName1" 		  		class="inbe"	name="list[0].goodName" 			size="15" /></td>
+			<td align="center"><input type="text" 	id="goodSpecifications1" 	class="inbe"	name="list[0].goodSpecifications" 	size="20" /></td>
+			<td align="center"><input type="text" 	id="goodOrderNum1" 			class="inbe"	name="list[0].goodOrderNum" 		size="15" /></td>
+			<td align="center"><input type="text" 	id="goodUnit1" 		  		class="inbe"	name="list[0].goodUnit" 			size="20" /></td>
+			<td align="center"><input type="text" 	id="goodNote1" 		  		class="inbe"	name="list[0].goodNote" 			size="20" /></td>
+			<td align="center"><input type="text" 	id="planDate1" 		  		class="inbe"	name="list[0].planDate" 			size="20" /></td>
+			<td align="center"><input type="text" 	id="promiseDate1" 		  		class="inbe"	name="list[0].promiseDate" 			size="20" /></td>
+			<td align="center"><input type="text" 	id="productNum1" 		  		class="inbe"	name="list[0].productNum" 			size="20" /></td>
+			<td align="center"></td>
+		</tr>
+	</table>
+	</br>
+	<table class="table_view">
+		<tr>
+			<span id="recordFileId" style="display: none;"></span>
+			<td align="center" ><a id="btn_submit" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok">确认提交</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<a id="btn_submit_file" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok">生成物资清单</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<a id="btn_down_file" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok" onclick="do_download()">下载物资清单</a></td>
+		</tr>
+	</table>
+	
+</form>
+
+</body>
+</html>

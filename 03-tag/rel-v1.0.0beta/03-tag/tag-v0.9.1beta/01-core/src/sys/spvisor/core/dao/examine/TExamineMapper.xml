@@ -1,0 +1,349 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="sys.spvisor.core.dao.examine.TExamineMapper">
+	<resultMap id="BaseResultMap" type="sys.spvisor.core.entity.examine.TExamine">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="submit_id" property="submitId" jdbcType="INTEGER" />
+		<result column="submit_time" property="submitTime" jdbcType="TIMESTAMP" />
+		<result column="status" property="status" jdbcType="INTEGER" />
+		<result column="exa_type" property="exaType" jdbcType="INTEGER" />
+		<result column="exa_title" property="exaTitle" jdbcType="VARCHAR" />
+		<result column="exa_content" property="exaContent" jdbcType="VARCHAR" />
+		<result column="exa_file_flag" property="exaFileFlag" jdbcType="INTEGER" />
+		<result column="exa_file_path" property="exaFilePath" jdbcType="VARCHAR" />
+		<result column="exa_link_id" property="exaLinkId" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Example_Where_Clause">
+		<where>
+			<foreach collection="oredCriteria" item="criteria" separator="or">
+				<if test="criteria.valid">
+					<trim prefix="(" suffix=")" prefixOverrides="and">
+						<foreach collection="criteria.criteria" item="criterion">
+							<choose>
+								<when test="criterion.noValue">
+									and ${criterion.condition}
+								</when>
+								<when test="criterion.singleValue">
+									and ${criterion.condition} #{criterion.value}
+								</when>
+								<when test="criterion.betweenValue">
+									and ${criterion.condition} #{criterion.value}
+									and
+									#{criterion.secondValue}
+								</when>
+								<when test="criterion.listValue">
+									and ${criterion.condition}
+									<foreach collection="criterion.value" item="listItem"
+										open="(" close=")" separator=",">
+										#{listItem}
+									</foreach>
+								</when>
+							</choose>
+						</foreach>
+					</trim>
+				</if>
+			</foreach>
+		</where>
+	</sql>
+	<sql id="Update_By_Example_Where_Clause">
+		<where>
+			<foreach collection="example.oredCriteria" item="criteria"
+				separator="or">
+				<if test="criteria.valid">
+					<trim prefix="(" suffix=")" prefixOverrides="and">
+						<foreach collection="criteria.criteria" item="criterion">
+							<choose>
+								<when test="criterion.noValue">
+									and ${criterion.condition}
+								</when>
+								<when test="criterion.singleValue">
+									and ${criterion.condition} #{criterion.value}
+								</when>
+								<when test="criterion.betweenValue">
+									and ${criterion.condition} #{criterion.value}
+									and
+									#{criterion.secondValue}
+								</when>
+								<when test="criterion.listValue">
+									and ${criterion.condition}
+									<foreach collection="criterion.value" item="listItem"
+										open="(" close=")" separator=",">
+										#{listItem}
+									</foreach>
+								</when>
+							</choose>
+						</foreach>
+					</trim>
+				</if>
+			</foreach>
+		</where>
+	</sql>
+	<sql id="Base_Column_List">
+		id, submit_id, submit_time, status, exa_type, exa_title,
+		exa_content,
+		exa_file_flag,
+		exa_file_path, exa_link_id
+	</sql>
+	<select id="selectByExample" resultMap="BaseResultMap"
+		parameterType="sys.spvisor.core.entity.examine.TExamineExample">
+		select
+		<if test="distinct">
+			distinct
+		</if>
+		<include refid="Base_Column_List" />
+		from t_examine
+		<if test="_parameter != null">
+			<include refid="Example_Where_Clause" />
+		</if>
+		<if test="orderByClause != null">
+			order by ${orderByClause}
+		</if>
+		<if test="limit != -1">
+			limit ${limit} offset ${offset}
+		</if>
+	</select>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from t_examine
+		where id = #{id,jdbcType=INTEGER}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from
+		t_examine
+		where id = #{id,jdbcType=INTEGER}
+	</delete>
+	<delete id="deleteByExample" parameterType="sys.spvisor.core.entity.examine.TExamineExample">
+		delete from t_examine
+		<if test="_parameter != null">
+			<include refid="Example_Where_Clause" />
+		</if>
+	</delete>
+	<insert id="insert" parameterType="sys.spvisor.core.entity.examine.TExamine" useGeneratedKeys="true" keyProperty="id">
+		insert into t_examine (
+		submit_id, submit_time,
+		status, exa_type, exa_title,
+		exa_content,
+		exa_file_flag, exa_file_path,
+		exa_link_id)
+		values
+		(#{submitId,jdbcType=INTEGER},
+		#{submitTime,jdbcType=TIMESTAMP},
+		#{status,jdbcType=INTEGER},
+		#{exaType,jdbcType=INTEGER}, #{exaTitle,jdbcType=VARCHAR},
+		#{exaContent,jdbcType=VARCHAR}, #{exaFileFlag,jdbcType=INTEGER},
+		#{exaFilePath,jdbcType=VARCHAR},
+		#{exaLinkId,jdbcType=INTEGER})
+	</insert>
+
+	<insert id="insertAndReturnId" parameterType="sys.spvisor.core.entity.examine.TExamine">
+		<selectKey resultType="java.lang.Integer" order="AFTER"
+			keyProperty="id">
+			select setval('t_examine_id_seq', (select max(id)+1 from t_examine));
+			SELECT currval('t_examine_id_seq') AS id
+		</selectKey>
+		insert into t_examine ( submit_id, submit_time,
+		status, exa_type,
+		exa_title,
+		exa_content, exa_file_flag, exa_file_path,
+		exa_link_id)
+		values ( #{submitId,jdbcType=INTEGER},
+		#{submitTime,jdbcType=TIMESTAMP},
+		#{status,jdbcType=INTEGER},
+		#{exaType,jdbcType=INTEGER}, #{exaTitle,jdbcType=VARCHAR},
+		#{exaContent,jdbcType=VARCHAR}, #{exaFileFlag,jdbcType=INTEGER},
+		#{exaFilePath,jdbcType=VARCHAR},
+		#{exaLinkId,jdbcType=INTEGER})
+	</insert>
+
+	<insert id="insertSelective" parameterType="sys.spvisor.core.entity.examine.TExamine">
+		insert into t_examine
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="submitId != null">
+				submit_id,
+			</if>
+			<if test="submitTime != null">
+				submit_time,
+			</if>
+			<if test="status != null">
+				status,
+			</if>
+			<if test="exaType != null">
+				exa_type,
+			</if>
+			<if test="exaTitle != null">
+				exa_title,
+			</if>
+			<if test="exaContent != null">
+				exa_content,
+			</if>
+			<if test="exaFileFlag != null">
+				exa_file_flag,
+			</if>
+			<if test="exaFilePath != null">
+				exa_file_path,
+			</if>
+			<if test="exaLinkId != null">
+				exa_link_id,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=INTEGER},
+			</if>
+			<if test="submitId != null">
+				#{submitId,jdbcType=INTEGER},
+			</if>
+			<if test="submitTime != null">
+				#{submitTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="status != null">
+				#{status,jdbcType=INTEGER},
+			</if>
+			<if test="exaType != null">
+				#{exaType,jdbcType=INTEGER},
+			</if>
+			<if test="exaTitle != null">
+				#{exaTitle,jdbcType=VARCHAR},
+			</if>
+			<if test="exaContent != null">
+				#{exaContent,jdbcType=VARCHAR},
+			</if>
+			<if test="exaFileFlag != null">
+				#{exaFileFlag,jdbcType=INTEGER},
+			</if>
+			<if test="exaFilePath != null">
+				#{exaFilePath,jdbcType=VARCHAR},
+			</if>
+			<if test="exaLinkId != null">
+				#{exaLinkId,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+	<select id="countByExample" parameterType="sys.spvisor.core.entity.examine.TExamineExample"
+		resultType="java.lang.Integer">
+		select count(*) from t_examine
+		<if test="_parameter != null">
+			<include refid="Example_Where_Clause" />
+		</if>
+	</select>
+	<update id="updateByExampleSelective" parameterType="map">
+		update t_examine
+		<set>
+			<if test="record.id != null">
+				id = #{record.id,jdbcType=INTEGER},
+			</if>
+			<if test="record.submitId != null">
+				submit_id = #{record.submitId,jdbcType=INTEGER},
+			</if>
+			<if test="record.submitTime != null">
+				submit_time = #{record.submitTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="record.status != null">
+				status = #{record.status,jdbcType=INTEGER},
+			</if>
+			<if test="record.exaType != null">
+				exa_type = #{record.exaType,jdbcType=INTEGER},
+			</if>
+			<if test="record.exaTitle != null">
+				exa_title = #{record.exaTitle,jdbcType=VARCHAR},
+			</if>
+			<if test="record.exaContent != null">
+				exa_content = #{record.exaContent,jdbcType=VARCHAR},
+			</if>
+			<if test="record.exaFileFlag != null">
+				exa_file_flag = #{record.exaFileFlag,jdbcType=INTEGER},
+			</if>
+			<if test="record.exaFilePath != null">
+				exa_file_path = #{record.exaFilePath,jdbcType=VARCHAR},
+			</if>
+			<if test="record.exaLinkId != null">
+				exa_link_id = #{record.exaLinkId,jdbcType=INTEGER},
+			</if>
+		</set>
+		<if test="_parameter != null">
+			<include refid="Update_By_Example_Where_Clause" />
+		</if>
+	</update>
+	<update id="updateByExample" parameterType="map">
+		update t_examine
+		set id = #{record.id,jdbcType=INTEGER},
+		submit_id =
+		#{record.submitId,jdbcType=INTEGER},
+		submit_time =
+		#{record.submitTime,jdbcType=TIMESTAMP},
+		status =
+		#{record.status,jdbcType=INTEGER},
+		exa_type =
+		#{record.exaType,jdbcType=INTEGER},
+		exa_title =
+		#{record.exaTitle,jdbcType=VARCHAR},
+		exa_content =
+		#{record.exaContent,jdbcType=VARCHAR},
+		exa_file_flag =
+		#{record.exaFileFlag,jdbcType=INTEGER},
+		exa_file_path =
+		#{record.exaFilePath,jdbcType=VARCHAR},
+		exa_link_id =
+		#{record.exaLinkId,jdbcType=INTEGER}
+		<if test="_parameter != null">
+			<include refid="Update_By_Example_Where_Clause" />
+		</if>
+	</update>
+	<update id="updateByPrimaryKeySelective" parameterType="sys.spvisor.core.entity.examine.TExamine">
+		update t_examine
+		<set>
+			<if test="submitId != null">
+				submit_id = #{submitId,jdbcType=INTEGER},
+			</if>
+			<if test="submitTime != null">
+				submit_time = #{submitTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=INTEGER},
+			</if>
+			<if test="exaType != null">
+				exa_type = #{exaType,jdbcType=INTEGER},
+			</if>
+			<if test="exaTitle != null">
+				exa_title = #{exaTitle,jdbcType=VARCHAR},
+			</if>
+			<if test="exaContent != null">
+				exa_content = #{exaContent,jdbcType=VARCHAR},
+			</if>
+			<if test="exaFileFlag != null">
+				exa_file_flag = #{exaFileFlag,jdbcType=INTEGER},
+			</if>
+			<if test="exaFilePath != null">
+				exa_file_path = #{exaFilePath,jdbcType=VARCHAR},
+			</if>
+			<if test="exaLinkId != null">
+				exa_link_id = #{exaLinkId,jdbcType=INTEGER},
+			</if>
+		</set>
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="sys.spvisor.core.entity.examine.TExamine">
+		update t_examine
+		set submit_id = #{submitId,jdbcType=INTEGER},
+		submit_time =
+		#{submitTime,jdbcType=TIMESTAMP},
+		status = #{status,jdbcType=INTEGER},
+		exa_type = #{exaType,jdbcType=INTEGER},
+		exa_title =
+		#{exaTitle,jdbcType=VARCHAR},
+		exa_content =
+		#{exaContent,jdbcType=VARCHAR},
+		exa_file_flag =
+		#{exaFileFlag,jdbcType=INTEGER},
+		exa_file_path =
+		#{exaFilePath,jdbcType=VARCHAR},
+		exa_link_id =
+		#{exaLinkId,jdbcType=INTEGER}
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+</mapper>

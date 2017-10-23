@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="sys.spvisor.core.dao.file.TCompanyFileManageMapper" >
+  <resultMap id="BaseResultMap" type="sys.spvisor.core.entity.file.TCompanyFileManage" >
+    <id column="file_id" property="fileId" jdbcType="INTEGER" />
+    <result column="file_name" property="fileName" jdbcType="VARCHAR" />
+    <result column="file_content_introduction" property="fileContentIntroduction" jdbcType="VARCHAR" />
+    <result column="release_organization" property="releaseOrganization" jdbcType="VARCHAR" />
+    <result column="release_date" property="releaseDate" jdbcType="DATE" />
+    <result column="valid_date" property="validDate" jdbcType="DATE" />
+    <result column="post_user_id" property="postUserId" jdbcType="INTEGER" />
+    <result column="post_date" property="postDate" jdbcType="DATE" />
+    <result column="post_path" property="postPath" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    file_id, file_name, file_content_introduction, release_organization, release_date, 
+    valid_date, post_user_id, post_date, post_path, type
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="sys.spvisor.core.entity.file.TCompanyFileManageExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from t_company_file_manage
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_company_file_manage
+    where file_id = #{fileId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_company_file_manage
+    where file_id = #{fileId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="sys.spvisor.core.entity.file.TCompanyFileManageExample" >
+    delete from t_company_file_manage
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="sys.spvisor.core.entity.file.TCompanyFileManage" >
+    insert into t_company_file_manage ( file_name, file_content_introduction, 
+      release_organization, release_date, valid_date, 
+      post_user_id, post_date, post_path, 
+      type)
+    values (#{fileName,jdbcType=VARCHAR}, #{fileContentIntroduction,jdbcType=VARCHAR}, 
+      #{releaseOrganization,jdbcType=VARCHAR}, #{releaseDate,jdbcType=DATE}, #{validDate,jdbcType=DATE}, 
+      #{postUserId,jdbcType=INTEGER}, #{postDate,jdbcType=DATE}, #{postPath,jdbcType=VARCHAR}, 
+      #{type,jdbcType=INTEGER})
+  </insert>
+  <insert id="insertSelective" parameterType="sys.spvisor.core.entity.file.TCompanyFileManage" >
+    insert into t_company_file_manage
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="fileId != null" >
+        file_id,
+      </if>
+      <if test="fileName != null" >
+        file_name,
+      </if>
+      <if test="fileContentIntroduction != null" >
+        file_content_introduction,
+      </if>
+      <if test="releaseOrganization != null" >
+        release_organization,
+      </if>
+      <if test="releaseDate != null" >
+        release_date,
+      </if>
+      <if test="validDate != null" >
+        valid_date,
+      </if>
+      <if test="postUserId != null" >
+        post_user_id,
+      </if>
+      <if test="postDate != null" >
+        post_date,
+      </if>
+      <if test="postPath != null" >
+        post_path,
+      </if>
+      <if test="type != null" >
+        type,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="fileId != null" >
+        #{fileId,jdbcType=INTEGER},
+      </if>
+      <if test="fileName != null" >
+        #{fileName,jdbcType=VARCHAR},
+      </if>
+      <if test="fileContentIntroduction != null" >
+        #{fileContentIntroduction,jdbcType=VARCHAR},
+      </if>
+      <if test="releaseOrganization != null" >
+        #{releaseOrganization,jdbcType=VARCHAR},
+      </if>
+      <if test="releaseDate != null" >
+        #{releaseDate,jdbcType=DATE},
+      </if>
+      <if test="validDate != null" >
+        #{validDate,jdbcType=DATE},
+      </if>
+      <if test="postUserId != null" >
+        #{postUserId,jdbcType=INTEGER},
+      </if>
+      <if test="postDate != null" >
+        #{postDate,jdbcType=DATE},
+      </if>
+      <if test="postPath != null" >
+        #{postPath,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="sys.spvisor.core.entity.file.TCompanyFileManageExample" resultType="java.lang.Integer" >
+    select count(*) from t_company_file_manage
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update t_company_file_manage
+    <set >
+      <if test="record.fileId != null" >
+        file_id = #{record.fileId,jdbcType=INTEGER},
+      </if>
+      <if test="record.fileName != null" >
+        file_name = #{record.fileName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.fileContentIntroduction != null" >
+        file_content_introduction = #{record.fileContentIntroduction,jdbcType=VARCHAR},
+      </if>
+      <if test="record.releaseOrganization != null" >
+        release_organization = #{record.releaseOrganization,jdbcType=VARCHAR},
+      </if>
+      <if test="record.releaseDate != null" >
+        release_date = #{record.releaseDate,jdbcType=DATE},
+      </if>
+      <if test="record.validDate != null" >
+        valid_date = #{record.validDate,jdbcType=DATE},
+      </if>
+      <if test="record.postUserId != null" >
+        post_user_id = #{record.postUserId,jdbcType=INTEGER},
+      </if>
+      <if test="record.postDate != null" >
+        post_date = #{record.postDate,jdbcType=DATE},
+      </if>
+      <if test="record.postPath != null" >
+        post_path = #{record.postPath,jdbcType=VARCHAR},
+      </if>
+      <if test="record.type != null" >
+        type = #{record.type,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update t_company_file_manage
+    set file_id = #{record.fileId,jdbcType=INTEGER},
+      file_name = #{record.fileName,jdbcType=VARCHAR},
+      file_content_introduction = #{record.fileContentIntroduction,jdbcType=VARCHAR},
+      release_organization = #{record.releaseOrganization,jdbcType=VARCHAR},
+      release_date = #{record.releaseDate,jdbcType=DATE},
+      valid_date = #{record.validDate,jdbcType=DATE},
+      post_user_id = #{record.postUserId,jdbcType=INTEGER},
+      post_date = #{record.postDate,jdbcType=DATE},
+      post_path = #{record.postPath,jdbcType=VARCHAR},
+      type = #{record.type,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="sys.spvisor.core.entity.file.TCompanyFileManage" >
+    update t_company_file_manage
+    <set >
+      <if test="fileName != null" >
+        file_name = #{fileName,jdbcType=VARCHAR},
+      </if>
+      <if test="fileContentIntroduction != null" >
+        file_content_introduction = #{fileContentIntroduction,jdbcType=VARCHAR},
+      </if>
+      <if test="releaseOrganization != null" >
+        release_organization = #{releaseOrganization,jdbcType=VARCHAR},
+      </if>
+      <if test="releaseDate != null" >
+        release_date = #{releaseDate,jdbcType=DATE},
+      </if>
+      <if test="validDate != null" >
+        valid_date = #{validDate,jdbcType=DATE},
+      </if>
+      <if test="postUserId != null" >
+        post_user_id = #{postUserId,jdbcType=INTEGER},
+      </if>
+      <if test="postDate != null" >
+        post_date = #{postDate,jdbcType=DATE},
+      </if>
+      <if test="postPath != null" >
+        post_path = #{postPath,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        type = #{type,jdbcType=INTEGER},
+      </if>
+    </set>
+    where file_id = #{fileId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="sys.spvisor.core.entity.file.TCompanyFileManage" >
+    update t_company_file_manage
+    set file_name = #{fileName,jdbcType=VARCHAR},
+      file_content_introduction = #{fileContentIntroduction,jdbcType=VARCHAR},
+      release_organization = #{releaseOrganization,jdbcType=VARCHAR},
+      release_date = #{releaseDate,jdbcType=DATE},
+      valid_date = #{validDate,jdbcType=DATE},
+      post_user_id = #{postUserId,jdbcType=INTEGER},
+      post_date = #{postDate,jdbcType=DATE},
+      post_path = #{postPath,jdbcType=VARCHAR},
+      type = #{type,jdbcType=INTEGER}
+    where file_id = #{fileId,jdbcType=INTEGER}
+  </update>  
+</mapper>

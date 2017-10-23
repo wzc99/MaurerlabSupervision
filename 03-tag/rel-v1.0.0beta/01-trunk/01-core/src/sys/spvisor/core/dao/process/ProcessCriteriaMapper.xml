@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="sys.spvisor.core.dao.process.ProcessCriteriaMapper" >
+  <resultMap id="BaseResultMap" type="sys.spvisor.core.criteria.project.ProcessCriteria" >
+    <result column="id" property="id" jdbcType="INTEGER" />
+    <result column="pro_id" property="proId" jdbcType="INTEGER" />
+    <result column="bigtype_id" property="bigTypeId" jdbcType="INTEGER" />
+    <result column="type_id" property="typeId" jdbcType="INTEGER" />
+    <result column="user_name" property="userName" jdbcType="VARCHAR" />
+    <result column="which_day" property="whichDay" jdbcType="DATE" />
+    <result column="plan_date" property="planDate" jdbcType="DATE" />
+    <result column="promise_date" property="promiseDate" jdbcType="DATE" />
+    <result column="complete_rate" property="completeRateToday" jdbcType="DOUBLE" />            
+    <result column="good_type" property="productName" jdbcType="VARCHAR" />
+    <result column="good_name" property="productName2" jdbcType="VARCHAR" />
+    <result column="good_specifications" property="productNorm" jdbcType="VARCHAR" />
+    <result column="product_num" property="productNum" jdbcType="VARCHAR" />
+  </resultMap>
+  
+ <select id="getSearchProcess" resultMap="BaseResultMap" parameterType="sys.spvisor.core.criteria.project.ProcessCriteria">
+  		select distinct * from 
+  		(select p.id, p.pro_id, 1 as bigtype_id, type_id, user_name, which_day, g.plan_date, g.promise_date, complete_rate, good_type, good_name, good_specifications, g.product_num from t_delivery_pipe_process as p, t_goods_lists as g, t_user as u where u.user_id=p.user_id and g.id=p.type_id 
+	    union all 
+	    select p.wanguan_id, p.pro_id, 2 as bigtype_id, type_id, user_name, which_day, g.plan_date, g.promise_date, complete_rate_today, good_type, good_name, good_specifications, g.product_num from t_wanguan_process as p, t_goods_lists as g, t_user as u where u.user_id=p.user_id and g.id=p.type_id 
+  		union all 
+	    select p.fangfu_id, p.pro_id, 3 as bigtype_id, type_id, user_name, which_day, g.plan_date, g.promise_date, complete_rate_today, good_type, good_name, good_specifications, g.product_num from t_fangfu_process as p, t_goods_lists as g, t_user as u where u.user_id=p.user_id and g.id=p.type_id 
+  		union all 
+	    select p.shiyou_id, p.pro_id, 4 as bigtype_id, type_id, user_name, which_day, g.plan_date, g.promise_date, complete_rate_today, good_type, good_name, good_specifications, g.product_num from t_shiyou_process as p, t_goods_lists as g, t_user as u where u.user_id=p.user_id and g.id=p.type_id 
+  		union all 
+	    select p.guanjian_id, p.pro_id, 5 as bigtype_id, type_id, user_name, which_day, g.plan_date, g.promise_date, complete_rate_today, good_type, good_name, good_specifications, g.product_num from t_guanjian_process as p, t_goods_lists as g, t_user as u where u.user_id=p.user_id and g.id=p.type_id 
+  		union all 
+	    select p.id, p.pro_id, 6 as bigtype_id, type_id, user_name, which_day, g.plan_date, g.promise_date, complete_rate, good_type, good_name, good_specifications, g.product_num from t_valve_process as p, t_goods_lists as g, t_user as u where u.user_id=p.user_id and g.id=p.type_id 
+  		union all 
+	    select p.shebei_id, p.pro_id, 7 as bigtype_id, type_id, user_name, which_day, g.plan_date, g.promise_date, complete_rate_today, good_type, good_name, good_specifications, g.product_num from t_shebei_process as p, t_goods_lists as g, t_user as u where u.user_id=p.user_id and g.id=p.type_id 
+  		union all 
+	    select p.id, p.pro_id, 8 as bigtype_id, type_id, user_name, which_day, g.plan_date, g.promise_date, complete_rate_today, good_type, good_name, good_specifications, g.product_num from t_shebei_beng_process as p, t_goods_lists as g, t_user as u where u.user_id=p.user_id and g.id=p.type_id 
+  		union all 
+	    select p.zuanju_id, p.pro_id, 9 as bigtype_id, type_id, user_name, which_day, g.plan_date, g.promise_date, complete_rate_today, good_type, good_name, good_specifications, g.product_num from t_zuanju_process as p, t_goods_lists as g, t_user as u where u.user_id=p.user_id and g.id=p.type_id 
+  		union all 
+	    select p.jueyuan_id, p.pro_id, 10 as bigtype_id, type_id, user_name, which_day, g.plan_date, g.promise_date, complete_rate_today, good_type, good_name, good_specifications, g.product_num from t_jueyuanjietou_process as p, t_goods_lists as g, t_user as u where u.user_id=p.user_id and g.id=p.type_id) as t 
+  		
+  		<where>
+  			<if test="proId != null" >
+  				and pro_id = #{proId}
+		    </if>
+  			<if test="userName!=null and userName!=''">
+  			and user_name like '%'||#{userName}||'%'
+  			</if>
+  			 <if test="productName!=null and productName!=''">
+  			and (good_type like '%'||#{productName}||'%' or good_name like '%'||#{productName}||'%')
+  			</if>
+
+		   <if test="whichDay != null" >
+		     and which_day=#{whichDay}
+		    </if>
+		    <if test="planDate != null" >
+		     and plan_date=#{planDate}
+		    </if>
+			</where>
+			order by which_day desc
+			 <if test="paging == true">
+				limit #{limit} offset #{offset}
+			</if>
+  </select>
+   <select id="getSearchCount" resultType="int" parameterType="sys.spvisor.core.criteria.project.ProcessCriteria">
+  		select count(*) from 
+  		(select p.id, p.pro_id, 1 as bigtype_id, type_id, user_name, which_day, g.plan_date, g.promise_date, complete_rate, good_type, good_name, good_specifications, g.product_num from t_delivery_pipe_process as p, t_goods_lists as g, t_user as u where u.user_id=p.user_id and g.id=p.type_id 
+	    union all 
+	    select p.wanguan_id, p.pro_id, 2 as bigtype_id, type_id, user_name, which_day, g.plan_date, g.promise_date, complete_rate_today, good_type, good_name, good_specifications, g.product_num from t_wanguan_process as p, t_goods_lists as g, t_user as u where u.user_id=p.user_id and g.id=p.type_id 
+  		union all 
+	    select p.fangfu_id, p.pro_id, 3 as bigtype_id, type_id, user_name, which_day, g.plan_date, g.promise_date, complete_rate_today, good_type, good_name, good_specifications, g.product_num from t_fangfu_process as p, t_goods_lists as g, t_user as u where u.user_id=p.user_id and g.id=p.type_id 
+  		union all 
+	    select p.shiyou_id, p.pro_id, 4 as bigtype_id, type_id, user_name, which_day, g.plan_date, g.promise_date, complete_rate_today, good_type, good_name, good_specifications, g.product_num from t_shiyou_process as p, t_goods_lists as g, t_user as u where u.user_id=p.user_id and g.id=p.type_id 
+  		union all 
+	    select p.guanjian_id, p.pro_id, 5 as bigtype_id, type_id, user_name, which_day, g.plan_date, g.promise_date, complete_rate_today, good_type, good_name, good_specifications, g.product_num from t_guanjian_process as p, t_goods_lists as g, t_user as u where u.user_id=p.user_id and g.id=p.type_id 
+  		union all 
+	    select p.id, p.pro_id, 6 as bigtype_id, type_id, user_name, which_day, g.plan_date, g.promise_date, complete_rate, good_type, good_name, good_specifications, g.product_num from t_valve_process as p, t_goods_lists as g, t_user as u where u.user_id=p.user_id and g.id=p.type_id 
+  		union all 
+	    select p.shebei_id, p.pro_id, 7 as bigtype_id, type_id, user_name, which_day, g.plan_date, g.promise_date, complete_rate_today, good_type, good_name, good_specifications, g.product_num from t_shebei_process as p, t_goods_lists as g, t_user as u where u.user_id=p.user_id and g.id=p.type_id 
+  		union all 
+	    select p.id, p.pro_id, 8 as bigtype_id, type_id, user_name, which_day, g.plan_date, g.promise_date, complete_rate_today, good_type, good_name, good_specifications, g.product_num from t_shebei_beng_process as p, t_goods_lists as g, t_user as u where u.user_id=p.user_id and g.id=p.type_id 
+  		union all 
+	    select p.zuanju_id, p.pro_id, 9 as bigtype_id, type_id, user_name, which_day, g.plan_date, g.promise_date, complete_rate_today, good_type, good_name, good_specifications, g.product_num from t_zuanju_process as p, t_goods_lists as g, t_user as u where u.user_id=p.user_id and g.id=p.type_id 
+  		union all 
+	    select p.jueyuan_id, p.pro_id, 10 as bigtype_id, type_id, user_name, which_day, g.plan_date, g.promise_date, complete_rate_today, good_type, good_name, good_specifications, g.product_num from t_jueyuanjietou_process as p, t_goods_lists as g, t_user as u where u.user_id=p.user_id and g.id=p.type_id) as t 
+  		
+  		<where>
+  			<if test="proId != null" >
+  				and pro_id = #{proId}
+		    </if>
+  			<if test="userName!=null and userName!=''">
+  			and user_name like #{userName}||'%'
+  			</if>
+  			 <if test="productName!=null and productName!=''">
+  			and (good_type like #{productName} or good_name like #{productName})
+  			</if>
+
+		   <if test="whichDay != null" >
+		     and which_day=#{whichDay}
+		    </if>
+		    <if test="planDate != null" >
+		     and plan_date=#{planDate}
+		    </if>
+			</where>
+			
+  </select>  
+  
+
+</mapper>

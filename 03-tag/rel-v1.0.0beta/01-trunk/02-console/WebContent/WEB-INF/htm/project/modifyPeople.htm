@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>人员变更</title>
+	
+	<link rel="stylesheet" type="text/css" href="../../themes/general.css">
+	<link rel="stylesheet" type="text/css" href="../../themes/icon.css">
+	<link rel="stylesheet" type="text/css" href="../../themes/gray/easyui.css">
+	<link rel="stylesheet" type="text/css" href="../../themes/default/easyui.css">
+
+	<script type="text/javascript" src="../../scripts/jquery-1.8.0.min.js"></script>
+	<script type="text/javascript" src="../../scripts/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="../../scripts/locale/easyui-lang-zh_CN.js"></script>
+	<script type="text/javascript" src="../../scripts/src/jquery.parser.js"></script>
+	<script type="text/javascript" src="../../scripts/general.js"></script>
+	<script type="text/javascript" src="../../scripts/sessionExpriation.js"></script>
+	<script type="text/javascript">
+	var that;
+	$(function() {	
+		
+		var projectId = $.getUrlParam('projectId');
+		//$("#projectId").val(projectId);
+		$.ajax({//获取项目名称
+			url : '../../project/getProjectName.ajax',
+			type : 'post',
+			dataType : 'text',
+			cache: false,
+			data : {
+				projectId : projectId,
+			},
+			error: function(XMLHttpRequest, textStatus, errorThrown) {	                    
+	        },
+			success : function(data) {	
+				$('#projectName').text(decodeURI(data));
+			}
+		}); 
+		
+		var getPeopleUrl = '../../dispatch/getPeopleByProjectId.ajax';
+		
+		$.ajax({
+			url : getPeopleUrl,
+			type : 'post',
+			dataType : 'JSON',
+			cache: false,
+			data : {
+				projectId : projectId 
+			},
+			error: function(XMLHttpRequest, textStatus, errorThrown) {
+	                    alert(XMLHttpRequest.status);
+	        },
+			success : function(peopleData) {
+				//alert(peopleData.projectChief[0].ppUsername);
+				init_viewPeople(peopleData);
+			}
+		});
+
+		$( "#dialog" ).dialog({
+			title: '人员派遣',
+	        closed:true,
+	        modal:true,  
+	     	autoOpen: true,
+	      
+	    });
+		$.ajax({//需要数据库的人员信息
+			url : '../../dispatch/selectByStationStatus.ajax',
+			type : 'post',
+			dataType : 'JSON',
+			cache: false,
+			error: function(XMLHttpRequest, textStatus, errorThrown) {
+	                    alert(XMLHttpRequest.status);
+	        },
+			success : function(peopleData) {
+				addpeople(peopleData);
+			}
+		});
+		
+	/* 	  $.extend($.fn.validatebox.defaults.rules, {
+			dateAfterNow: {
+			   validator: function (value) {
+				   alert(value);
+			    var now = new Date().getTime();
+			    return value.getTime()>now;
+			   },
+			   message: '日期必须大于当前日期'
+			}
+		});   */
+		
+		
+		window.chiefInfoIndex = 1;
+		window.managerInfoIndex = 1;
+		window.groupLeaderInfoIndex = 1;
+		window.memberInfoIndex = 1;
+	    $("#addProjectChief").click(function(){
+		   var tempInfoId = "chiefInfoTab" + chiefInfoIndex;
+		   var tempChooseId = "chiefChoose" + chiefInfoIndex;
+	       $str='';
+           $str+='<tr>';
+           //$str+='<td style="display:none;"><input type="hidden" name="peopleId" id="peopleId'+chiefInfoIndex+'" 		/></td>';
+           $str+='<td align="center"><input  type="hidden" readonly="true" name="peopleId" id="peopleId'+chiefInfoIndex+'" 		/><input class="easyui-validatebox input_140"   onclick="func(\''+tempChooseId+'\')" type="text" readonly="true" name="peopleName" 	id="'+tempChooseId+'" 		/></td>';
+           $str+='<td align="center"><input  type="text" name="inProjectDate"  			id="inProjectDate'+tempChooseId+'" 	 /></td>';
+           $str+='<td align="center"><input  type="text" name="outProjectDate"      	id="outProjectDate'+tempChooseId+'" 	/></td>';
+           //$str+='<td><select id="ifInProject'+chiefInfoIndex+'" name="ifInProject" data-options="panelHeight:\'auto\'" editable="false" class="input_140"><option  value=""></option><option  value="是">是</option><option  value="否">否</option></select></td>';
+           $str+='<td align="center" id="ifInProject'+chiefInfoIndex+'"></td>';
+           $str+='<td align="center"><a href="javascript:choose_people(\''+tempInfoId+'\')" >选人</a>&nbsp;&nbsp<a id="'+tempInfoId+'" 	href="javascript:delTr(\''+tempInfoId+'\')" >删除</a></td>';
+	       $str+='</tr>';
+	    
+	       $("#projectChief").append($str);
+	       
+	       add_validate(tempChooseId);
+	       
+	       chiefInfoIndex++;
+	       
+	    });
+	    
+	    $("#addProjectManager").click(function(){
+			   var tempInfoId = "managerInfoTab" + managerInfoIndex;
+			   var tempChooseId = "managerChoose" + managerInfoIndex;
+		       $str='';
+	           $str+='<tr>';
+	           //$str+='<td style="display:none;"><input type="hidden" name="peopleId" id="peopleId'+chiefInfoIndex+'" 		/></td>';
+	           $str+='<td align="center"><input  type="hidden" readonly="true" name="peopleId" id="peopleId'+managerInfoIndex+'" 		/><input class="easyui-validatebox input_140" required="required"  onclick="func(\''+tempChooseId+'\')" type="text" readonly="true" name="peopleName" 	id="'+tempChooseId+'" 		/></td>';
+	           $str+='<td align="center"><input  type="text" name="inProjectDate"  	id="inProjectDate'+tempChooseId+'" 	 /></td>';
+	           $str+='<td align="center"><input  type="text" name="outProjectDate" 	id="outProjectDate'+tempChooseId+'" 	/></td>';
+	           //$str+='<td><select id="ifInProject'+chiefInfoIndex+'" name="ifInProject" data-options="panelHeight:\'auto\'" editable="false" class="input_140"><option  value=""></option><option  value="是">是</option><option  value="否">否</option></select></td>';
+	           $str+='<td align="center" id="ifInProject'+managerInfoIndex+'"></td>';
+	           $str+='<td align="center"><a href="javascript:choose_people(\''+tempInfoId+'\')" >选人</a>&nbsp;&nbsp<a id="'+tempInfoId+'" 	href="javascript:delTr(\''+tempInfoId+'\')" >删除</a></td>';
+		       $str+='</tr>';
+		    
+		       $("#projectManager").append($str);
+		       
+		       add_validate(tempChooseId);  
+		       
+		       managerInfoIndex++;
+		       
+		 });
+	    
+	    $("#addGroupLeader").click(function(){
+			   var tempInfoId = "groupLeaderInfoTab" + groupLeaderInfoIndex;
+			   var tempChooseId = "groupLeaderChoose" + groupLeaderInfoIndex;
+		       $str='';
+	           $str+='<tr>';
+	           //$str+='<td style="display:none;"><input type="hidden" name="peopleId" id="peopleId'+chiefInfoIndex+'" 		/></td>';
+	           $str+='<td align="center"><input  type="hidden" readonly="true" name="peopleId" id="peopleId'+groupLeaderInfoIndex+'" 	/><input class="easyui-validatebox input_140" required="required"  onclick="func(\''+tempChooseId+'\')" type="text" readonly="true" name="peopleName" 	id="'+tempChooseId+'" 	/></td>';
+	           $str+='<td align="center"><input  type="text" name="inProjectDate"  	id="inProjectDate'+tempChooseId+'"  /></td>';
+	           $str+='<td align="center"><input  type="text" name="outProjectDate" 			id="outProjectDate'+tempChooseId+'" 	/></td>';
+	           //$str+='<td><select id="ifInProject'+chiefInfoIndex+'" name="ifInProject" data-options="panelHeight:\'auto\'" editable="false" class="input_140"><option  value=""></option><option  value="是">是</option><option  value="否">否</option></select></td>';
+	           $str+='<td align="center" id="ifInProject'+groupLeaderInfoIndex+'"></td>';
+	           $str+='<td align="center"><a href="javascript:choose_people(\''+tempInfoId+'\')" >选人</a>&nbsp;&nbsp<a id="'+tempInfoId+'" 	href="javascript:delTr(\''+tempInfoId+'\')" >删除</a></td>';
+		       $str+='</tr>';
+		    
+		       $("#groupLeader").append($str);
+		       
+		       add_validate(tempChooseId);
+		       
+		       groupLeaderInfoIndex++;
+		       
+		 });
+	    
+	    $("#addMember").click(function(){
+			   var tempInfoId = "memberInfoTab" + memberInfoIndex;
+			   var tempChooseId = "memberChoose" + memberInfoIndex;
+		       $str='';
+	           $str+='<tr>';
+	           //$str+='<td style="display:none;"><input type="hidden" name="peopleId" id="peopleId'+chiefInfoIndex+'" 		/></td>';
+	           $str+='<td align="center"><input  type="hidden" readonly="true" name="peopleId" id="peopleId'+memberInfoIndex+'" 		/><input class="easyui-validatebox input_140" required="required"  onclick="func(\''+tempChooseId+'\')" type="text" readonly="true" name="peopleName" 	id="'+tempChooseId+'" /></td>';
+	           $str+='<td align="center"><input  type="text" name="inProjectDate"  			id="inProjectDate'+tempChooseId+'" 	 /></td>';
+	           $str+='<td align="center"><input  type="text" name="outProjectDate" 			id="outProjectDate'+tempChooseId+'" 	/></td>';
+	           //$str+='<td><select id="ifInProject'+chiefInfoIndex+'" name="ifInProject" data-options="panelHeight:\'auto\'" editable="false" class="input_140"><option  value=""></option><option  value="是">是</option><option  value="否">否</option></select></td>';
+	           $str+='<td align="center" id="ifInProject'+memberInfoIndex+'"></td>';
+	           $str+='<td align="center"><a href="javascript:choose_people(\''+tempInfoId+'\')" >选人</a>&nbsp;&nbsp<a id="'+tempInfoId+'" 	href="javascript:delTr(\''+tempInfoId+'\')" >删除</a></td>';
+		       $str+='</tr>';
+		    
+		       $("#member").append($str);
+		       
+		       add_validate(tempChooseId);
+		       
+		       memberInfoIndex++;
+		       
+		 });
+	    
+	    
+	    var post;
+	    for(var i = 0; i < 4; i++){
+	    	if(i==0)
+	    	   post = "projectChief";
+	    	else if(i == 1)
+	    		post = "projectManager";
+	    	else if(i == 2)
+	    		post = "groupLeader";
+	    	else if(i == 3)
+	    		post = "member";
+	    	    $('#'+post+'_form').form({
+	    			url : '../../dispatch/saveProjectPeople.ajax?projectId='+projectId+'&post='+post,
+	    			onSubmit : function() {						
+	    				if ($(this).form('validate') ) {
+	    					return true;
+	    				} else {
+	    					return false;
+	    				}
+	    			},
+	    			success : function(data) {
+	    				var obj = $.parseJSON(data);//将json字符串转换为object对象
+	    				if (obj.success) {
+	    					$.messager.alert('提示', obj.message, 'info', function(){
+	    						location.reload();//强迫浏览器刷新当前页面
+	    					});
+	    				} else {
+	    					$.messager.alert('提示', obj.message, 'info');
+	    				}
+	    			}
+	    		});
+	    }
+	    
+	    
+	    $('#saveProjectChief').bind('click', function() {
+			$("#projectChief_form").submit();
+		}); 
+	    $('#saveProjectManager').bind('click', function() {
+			$("#projectManager_form").submit();
+		}); 
+	    $('#saveGroupLeader').bind('click', function() {
+			$("#groupLeader_form").submit();
+		}); 
+	    $('#saveMember').bind('click', function() {
+			$("#member_form").submit();
+		}); 
+	    
+	    function addpeople(peopleData){
+			if(peopleData != null && peopleData.length > 0){
+				for(var i = 0; i < peopleData.length; i++){
+					$str='';
+			        $str+='<tr class="peopleChange">';
+			        $str+='<td align="center" width="50" class="id">' + peopleData[i].people.peoId  + '</td>';
+					$str+='<td align="center" width="70" class="name">' + peopleData[i].people.peoName  + '</td>';
+					$str+='<td align="center" width="100">' + peopleData[i].people.peoStationDesc  + '</td>';
+					if(peopleData[i].project == null || peopleData[i].project.projectName == null)
+						projectName = "";
+					else
+						projectName = peopleData[i].project.projectName;
+				    $str+='<td align="center" width="150">' + projectName  + '</td>';
+				    if(peopleData[i].people.peoContel == null)
+				    	peopleData[i].people.peoContel = "";
+					$str+='<td align="center" width="100">' + peopleData[i].people.peoContel  + '</td>';
+					if(peopleData[i].people.peoEvectionDesc == null)
+						peopleData[i].people.peoEvectionDesc = "";
+					$str+='<td align="center" width="100">' + peopleData[i].people.peoEvectionDesc + '</td>';
+				    $str+='</tr>';
+				    $("#newPeople").append($str);
+				}
+			}
+			$(".peopleChange").click(function(){
+				var name = $(this).children('td.name').text();
+				var id = $(this).children('td.id').text();
+				$(that).val(id);
+				$(that).next().val(name);
+				$("#dialog").dialog('close');
+			})
+		}
+	});
+	
+	function init_viewPeople(peopleData){
+		var post;
+		var list;
+		var postInfoTab;
+		if(peopleData != null){
+			post = "projectChief";
+			list = peopleData.projectChief;
+			postInfoTab = "chiefInfoTab";
+			if(list != null)
+			    init_viewPeopleByPost(postInfoTab,post,list,chiefInfoIndex);
+			
+			
+			post = "projectManager";
+			list = peopleData.projectManager;
+			postInfoTab = "managerInfoTab";
+			if(list != null)
+			    init_viewPeopleByPost(postInfoTab,post,list,managerInfoIndex);
+			
+			post = "groupLeader";
+			list = peopleData.groupLeader;
+			postInfoTab = "groupLeaderInfoTab";
+			if(list != null)
+			    init_viewPeopleByPost(postInfoTab,post,list,groupLeaderInfoIndex);
+			
+			post = "member";
+			list = peopleData.member;
+			postInfoTab = "memberInfoTab";
+			if(list != null)
+			    init_viewPeopleByPost(postInfoTab,post,list,memberInfoIndex);
+		}
+	}
+	
+	function init_viewPeopleByPost(postInfoTab,postTab,list,postInfoIndex){
+		var tempPostInfoId;
+		var status;
+		$str='';
+        $str+='<tr style="display:none;">';
+        $str+='<td align="center"><input  type="hidden" name="projectPeopleId" /><input  type="hidden"  name="peopleId" /><input  type="hidden"  name="peopleName" 	/></td>';
+        $str+='<td align="center"><input  type="hidden" name="inProjectDate" /></td>';
+        $str+='<td align="center"><input  type="hidden" name="outProjectDate"/></td>';
+        $str+='<td align="center"></td>';
+        $str+='<td align="center"></td>';
+	    $str+='</tr>';
+	    $("#"+postTab+"").append($str); 
+		for(var i = 0; i < list.length; i++){
+			tempPostInfoId = postInfoTab + postInfoIndex;
+			if(list[i].ppStatus == "O")
+				status = "是";
+			else if(list[i].ppStatus == "C")
+				status = "否";
+		
+			if(list[i].ppInProTime == null)
+				list[i].ppInProTime = "";
+			if(list[i].ppOutProTime == null)
+				list[i].ppOutProTime = "";
+			
+		$str='';
+        $str+='<tr>';
+        $str+='<td align="center"><input  type="hidden" readonly="true" name="projectPeopleId" id="projectPeopleId'+tempPostInfoId+'" 	value="'+list[i].projectPeopleId+'"	/><input  type="hidden" readonly="true" name="peopleId" id="peopleId'+postInfoIndex+'" 	value="'+list[i].ppPeopleid+'"	/><input class="easyui-validatebox input_140" data-options="required:true" type="text" readonly="true" name="peopleName" 	id="'+tempPostInfoId+'" value="'+list[i].ppUsername+'"		/></td>';
+        $str+='<td align="center"><input  type="text" name="inProjectDate"  	id="inProjectDate'+tempPostInfoId+'"  value="'+list[i].ppInProTime+'"  /></td>';
+        $str+='<td align="center"><input  type="text" name="outProjectDate" 	id="outProjectDate'+tempPostInfoId+'" value="'+list[i].ppOutProTime+'"	/></td>';
+        //$str+='<td><select id="ifInProject'+chiefInfoIndex+'" name="ifInProject" data-options="panelHeight:\'auto\'" editable="false" class="input_140"><option  value=""></option><option  value="是">是</option><option  value="否">否</option></select></td>';
+        $str+='<td align="center">'+status+'</td>';
+        $str+='<td align="center"><a id="'+tempPostInfoId+'" 	href="javascript:delExistTr(\'projectPeopleId'+tempPostInfoId+'\')" >删除</a></td>';
+	    $str+='</tr>';
+	    $("#"+postTab+"").append($str);
+	    
+	    add_validate(tempPostInfoId);
+	    
+	    postInfoIndex++;
+	    if(postTab == "projectChief")
+	        chiefInfoIndex++;
+	    else if(postTab == "projectManager")
+	    	managerInfoIndex++;
+	    else if(postTab == "groupLeader")
+	    	groupLeaderInfoIndex++;
+	    else 
+	    	memberInfoIndex++;
+		}
+	       
+	}
+	
+	
+	function add_validate(tempChooseId){
+    	$('#'+tempChooseId).validatebox({    
+    	    required: true,    
+    	});  
+       
+       $('#inProjectDate'+tempChooseId).datebox({
+    	   onSelect: function(date){
+    		  var beginDate = $('#inProjectDate'+tempChooseId).datebox('getValue');
+    		  var endDate = $('#outProjectDate'+tempChooseId).datebox('getValue');
+    		  if(Date.parse(endDate) - Date.parse(beginDate) <= 0){
+    			  $.messager.alert('提示', '进入日期必须早于离开日期', 'info');
+    			  $('#inProjectDate'+tempChooseId).datebox('setValue', '');	
+    		  }
+    	   },
+			required:true
+	   });  
+	       
+	   $('#outProjectDate'+tempChooseId).datebox({
+		   onSelect: function(date){
+		       if(date.getTime()>new Date().getTime()){
+		          $.messager.alert('提示', '离开日期必须早于当日', 'info');
+		          $('#outProjectDate'+tempChooseId).datebox('setValue', '');	
+		       }
+		       var beginDate = $('#inProjectDate'+tempChooseId).datebox('getValue');
+	    	   var endDate = $('#outProjectDate'+tempChooseId).datebox('getValue');
+		       if(Date.parse(endDate) - Date.parse(beginDate) <= 0){
+		    	   $.messager.alert('提示', '离开日期必须晚于进入日期', 'info');
+	    		   $('#outProjectDate'+tempChooseId).datebox('setValue', '');	
+		       }
+    	   },
+		   required:false
+	   });   
+    }
+
+	
+	function delExistTr(tempTdId){
+		if(window.confirm("您确定要删除此人在项目中的记录吗？")){
+			var ppid = document.getElementById(tempTdId).value;
+			$.ajax({
+				url : '../../dispatch/deleteByProjectPeopleId.ajax?projectPeopleId='+ppid,
+				error: function(XMLHttpRequest, textStatus, errorThrown) {
+		                    alert(XMLHttpRequest.status);
+		        },
+				success : function(data) {
+					var obj = $.parseJSON(data);
+    				if (obj.success) {
+    					$.messager.alert('提示', obj.message, 'info', function(){
+    						location.reload();//强迫浏览器刷新当前页面
+    					});
+    				} else {
+    					$.messager.alert('提示', obj.message, 'info');
+    				}
+				}
+			});
+		}
+	}
+	
+	function delTr(tempTdId){
+		var obj  = $("#" + tempTdId);
+		$(obj).parent().parent().remove();  
+	}
+	
+	//从数据库选人
+	function choose_people(tempTdId){
+		var obj  = $("#" + tempTdId);
+		that = $(obj).parent().parent().children().children();
+		$("#dialog").dialog('open');
+	}
+	function func(tempTdId){
+		var obj  = $("#" + tempTdId);
+		that = $(obj).prev();
+		$("#dialog").dialog('open');
+	}
+	
+	
+	</script>
+</head>
+<body>
+  <br/>
+	<span>项目名称：</span><span id="projectName"></span>
+  <form id="projectChief_form" method="post">
+	<table class="table_view" id="projectChief" style="font-size: 14px; background: #F4F4F4;">
+		<tr>
+			<td style="background: #E5EFFF;" colspan="5" ><strong>项目总监</strong></td>
+		</tr>
+		<tr >
+		    <!-- <td  style="display:none;">编号</td> -->
+		    <td  align="center" width="20%">姓名</td>
+		    <td  align="center" width="25%">进入项目日期</td>
+		    <td  align="center" width="25%">离开项目日期</td>
+		    <td  align="center" width="20%">是否在项目中</td>
+		    <td  align="center">
+			    <a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addProjectChief"></a>
+			   <!--  <a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-menu-ADD_ROLE" id="choosePeople"></a> -->
+			    <a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-save" id="saveProjectChief"></a>
+		    </td>
+	    </tr>
+	    <!--  <tr>
+           <td style="display:none;"><input type="hidden" name="peopleId" id="peopleId'+chiefInfoIndex+'" 		/></td>
+           <td width="15%"><input type="text" name="peopleName" 				id="peopleName'+chiefInfoIndex+'" 		/></td>
+           <td><input type="date" name="inProjectDate"  			id="inProjectDate'+chiefInfoIndex+'" 	 /></td>
+           <td><input type="date" name="outProjectDate" 			id="outProjectDate'+chiefInfoIndex+'" 	/></td>
+           <td id="ifInProject'+chiefInfoIndex+'"></td>
+           <td align="center"><a id="'+tempDelChiefInfoId+'" 	href="javascript:delTr(\''+tempDelChiefInfoId+'\')" >删除</a></td>
+	       </tr> -->
+	</table>
+  </form>
+  <br/>
+  <form id="projectManager_form" method="post">
+	<table class="table_view" id="projectManager" style="font-size: 14px; background: #F4F4F4;">
+		<tr>
+			<td style="background: #E5EFFF;" colspan="5" ><strong>项目经理</strong></td>
+		</tr>
+		
+		<tr>
+		    <td  align="center" width="20%">姓名</td>
+		    <td  align="center" width="25%">进入项目日期</td>
+		    <td  align="center" width="25%">离开项目日期</td>
+		    <td  align="center" width="20%">是否在项目中</td>
+		    <td  align="center">
+		        <a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addProjectManager"></a>
+			     <!--  <a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-menu-ADD_ROLE" id="choosePeople"></a> -->
+			    <a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-save" id="saveProjectManager"></a>
+		    </td>
+	    </tr>
+	</table>
+  </form>
+  <br/>
+  <form id="groupLeader_form" method="post">
+	<table class="table_view" id="groupLeader" style="font-size: 14px; background: #F4F4F4;">
+		<tr>
+			<td style="background: #E5EFFF;" colspan="5" ><strong>监理组长</strong></td>
+		</tr>
+		
+		<tr>
+		    <td  align="center" width="20%">姓名</td>
+		    <td  align="center" width="25%">进入项目日期</td>
+		    <td  align="center" width="25%">离开项目日期</td>
+		    <td  align="center" width="20%">是否在项目中</td>
+		    <td  align="center">
+		        <a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addGroupLeader"></a>
+			    <!--  <a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-menu-ADD_ROLE" id="choosePeople"></a> -->
+			    <a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-save" id="saveGroupLeader"></a>
+		    </td>
+	    </tr>
+	</table>
+  </form>
+  <br/>
+  <form id="member_form" method="post">
+	<table class="table_view" id="member" style="font-size: 14px; background: #F4F4F4;">
+		<tr>
+			<td style="background: #E5EFFF;" colspan="5" ><strong>监理员</strong></td>
+		</tr>
+		
+		<tr>
+		    <td  align="center" width="20%">姓名</td>
+		    <td  align="center" width="25%">进入项目日期</td>
+		    <td  align="center" width="25%">离开项目日期</td>
+		    <td  align="center" width="20%">是否在项目中</td>
+		    <td  align="center">
+		         <a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addMember"></a>
+			    <!--  <a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-menu-ADD_ROLE" id="choosePeople"></a> -->
+			    <a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-save" id="saveMember"></a>
+		    </td>
+	    </tr>
+	</table>
+  </form>
+  
+  <div id="dialog"  style="width:500px;height:280px;padding:10px 20px">
+	<table class="table_view2" id="newPeople">
+		<tr>
+			<td align="center" width="50px">序号</td>
+			<td align="center" width="70px">姓名</td>
+			<td align="center" width="100px">岗位状态</td>
+			<td align="center" width="150px">所在项目</td>
+			<td align="center" width="100px">联系电话</td>
+			<td align="center" width="100px">休假出差</td>
+		</tr>
+	</table>
+</div>
+</body>
+</html>

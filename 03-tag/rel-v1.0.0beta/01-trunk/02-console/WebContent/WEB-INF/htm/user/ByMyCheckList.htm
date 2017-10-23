@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>未读消息列表</title>
+
+
+<link rel="stylesheet" type="text/css" href="../../themes/icon.css"/>
+<link rel="stylesheet" type="text/css" href="../../themes/demo.css"/>
+<link rel="stylesheet" type="text/css" href="../../themes/default/easyui.css"/>
+
+<script type="text/javascript" src="../../scripts/jquery-1.8.0.min.js"></script>
+<script type="text/javascript" src="../../scripts/jquery.easyui.min.js"></script>
+<style type="text/css">
+
+		#myBack {
+			width: 100%;
+			height: 100%;
+			z-index:2;
+	    	background: #FFEFDB;
+	   		position: absolute;
+	    	top: 0px;
+		}
+		#close {
+			position: fixed;
+			top: 10px;
+			right: 20px;
+		}
+		#myBack button {
+			border-radius: 5px;
+			border: 1px solid #CAE1FF;
+			width: 100px;height: 30px;font-size: 20px;color:#473C8B;
+			background: #CAE1FF;
+			font-weight: bold;
+			cursor: pointer;
+		}
+		#viewMyMessage {
+		position: relative;
+		left: 10%;
+		top: 40px;
+		width: 80%;
+		background-color: white;
+		overflow: auto;
+		min-height: 500px;
+		max-height: 600px;
+		border: 1px solid #FFF;border-radius: 10px;
+	}
+	#viewMyMessage div {
+		border-bottom: 1px solid black;
+	}
+	#myBack span {
+		display: inline-block;
+		height: 50px;
+		line-height: 50px;
+	}
+	.explain {
+		width: 30%;
+		text-align: right;
+		color: black;
+		font-weight: bold;
+		font-size: 20px;
+		padding: 10px;
+	 }
+	 .exp_value {
+	 	width: 50%;
+	 	text-align: left;
+	 	font-weight: bold;
+		font-size: 20px;
+		color: green;
+	 }
+	 #already_read {
+	 	position: relative;
+	 	left: 20%;
+	 	width: 15%;
+	 	background: #CDB79E;
+	 }
+	 #ignore {
+	 	position: relative;
+	 	left: 40%;
+	 	width: 15%;
+	 	background: #CDB79E;
+	 } 
+</style>
+
+<script type="text/javascript">
+
+window.onload = function() {
+	$("#myBack").hide();
+	
+	/* $("[id^='query_result']").datagrid({
+		pagination : true,
+		showFilterBar:false,
+		striped: true,
+		sortOrder:"asc",
+		remoteSort:false,
+			onDblClickRow: function(rowIndex, rowData){
+				do_view();
+			}
+	}); */
+	 $("#query_result1").datagrid({
+			pagination : true,
+			showFilterBar:false,
+			striped: true,
+			sortOrder:"asc",
+			remoteSort:false,
+				onDblClickRow: function(rowIndex, rowData){
+					do_view(1);
+				}
+		});
+
+
+	var pg1 = $("#query_result1").datagrid("getPager");
+	if (pg1) {
+		$(pg1).pagination({		
+			onBeforeRefresh : function() {
+				//alert('before refresh');
+			},
+			onRefresh : function(pageNumber, pageSize) {
+				do_submit(1,pageNumber, pageSize,4)
+			},
+			onChangePageSize : function() {
+				//alert('pagesize changed');
+			},
+			onSelectPage : function(pageNumber, pageSize) {
+				do_submit(1,pageNumber, pageSize,4);
+			}
+		});
+	}
+
+	do_submit(1,1,10,4); 
+
+	/*  4:全部 0:审核中 1通过 2未通过 3撤销 tip:不包括不可见的审核 */
+	//index表示那个tab中的datagrid发生的事件
+	 function do_submit(index,pageNumber, pageSize,status) {
+		var targetForm = '#query_form1';
+		$(targetForm).form('submit', {
+			url : '../../examine/getExamineByMeList.ajax',
+			onSubmit : function(param) {
+				param.pageSize = pageSize;
+				param.index = pageNumber;
+				return $(this).form('validate');
+			},
+			success : function(data) {
+				var obj = $.parseJSON(data);
+				var myData = {};
+				myData.total = obj.page.totalCount;
+				myData.rows = parseJson(obj.data);
+				$('#query_result1').datagrid('loadData', myData);
+			}
+		});
+	}
+	//index表示那个table里面的数据
+	function do_view(index) {
+		window.row = $('#query_result'+index).datagrid('getSelected');
+		alert(window.row.id);
+		$.ajax({
+			url : '../../examine/getExamineByMeById.ajax',
+			type : 'get',
+			dataType : 'JSON',
+			data : {
+				processId : window.row.processId,
+				type : 0
+			},
+			success : function(data) {
+				var data = parseJson1(data.data);
+				$("#myBack").show();
+				$(".myFile").show();
+				$("#already_read").show();
+				$("#ignore").show();
+				$("#already_disagree").show();
+				
+				$("#submitter").html(data[0].userName);
+				$("#submit_time").html(formatTime(data[0].submitTime));
+				$("#mes_title").html(data[0].exaTitle);
+				$("#mes_content").html(data[0].exaContent);
+				$("#submit_status").html(formatStatus(data[0].status));
+				if(data[0].exaFileFlag!=0) {
+					//是否显示文件名称和下载预览
+					$("#file_name").html(data[0].exaFilePath);
+					$("#down_and_preview").html(
+							'<pre><a href="../ViewPDF.html?fileurl=' + data[0].exaLinkId + '&type='+1+'" target="_blank">预览</a>     <a href="javascript:do_download(' + data[0].exaLinkId + ','+1+')">下载</a>  </pre>');
+				}else {
+					//没有文件就隐藏
+					$(".myFile").hide();
+				}
+				//如果状态不为0，那么无法进行审核操作
+				if(data[0].status!=0) {
+					$("#already_read").hide();
+					$("#already_disagree").hide();
+				};
+			}
+		});
+	}
+	
+	
+	
+	$("#divBtnView").click(function() {
+		do_view();
+	});
+	$("#close").click(function(){
+		$("#myBack").hide();
+	});
+	
+}
+	function parseJson(obj) {
+		var result = [];
+		for(var key in obj){ //第一层循环取到各个list  
+			var One = {};
+			One.nodeName = obj[key].nodeName;
+			One.processId = obj[key].processId;
+			One.userName = obj[key].userName;
+			One.exaType = obj[key].exaType;
+			One.exaByMeType = obj[key].exaByMeType;
+		     var List = obj[key].exaContent;
+		   
+	          One.id = List.id;  
+	          One.submitId = List.submitId;
+	          One.submitName = List.submitName;
+	          One.submitTime = List.submitTime;
+	          One.status = List.status;
+	          One.exaType = List.exaType;
+	          One.exaTitle = List.exaTitle;
+	          One.exaContent = List.exaContent;
+	          One.exaFileFlag = List.exaFileFlag;
+	          One.exaFilePath = List.exaFilePath;
+	          One.exaLinkId = List.exaLinkId;
+		     
+		     result.push(One);
+		 }
+		return result;
+	}
+	
+	function parseJson1(obj) {
+		var result = [];
+		
+			var One = {};
+			One.nodeName = obj.nodeName;
+			One.processId = obj.processId;
+			One.userName = obj.userName;
+			One.exaType = obj.exaType;
+		     var List = obj.exaContent;
+		   
+	          One.id = List.id;  
+	          One.submitId = List.submitId;
+	          One.submitName = List.submitName;
+	          One.submitTime = List.submitTime;
+	          One.status = List.status;
+	          One.exaType = List.exaType;
+	          One.exaTitle = List.exaTitle;
+	          One.exaContent = List.exaContent;
+	          One.exaFileFlag = List.exaFileFlag;
+	          One.exaFilePath = List.exaFilePath;
+	          One.exaLinkId = List.exaLinkId;
+		     
+		     result.push(One);
+		 
+		return result;
+	}
+	
+	
+	function do_download(projectPlanFileId,type) {//下载
+		var form = $("<form>");
+	    form.attr('style', 'display:none');
+	    form.attr('id', 'temp_download_form');
+	    form.attr('target', '');
+	    form.attr('method', 'post');
+	    form.attr('action', '../../file/download.ajax?fileId='+projectPlanFileId+'&type='+type);
+	    $('body').append(form);
+	    form.submit();
+	    form.remove();
+	}
+	//审核通过
+	function recodeAgree() {
+		alert(window.row.id);
+		var note = $("#note").val();
+		$.ajax({
+				url : '../../examine/toDoExamine.ajax',
+				type : 'get',
+				dataType : 'JSON',
+				data : {
+					processId : window.row.processId,
+					toNodeStatus : 1,
+					note : encodeURI(note)
+				},
+				success : function(data) {
+					if(data.statusCode == 200) {
+						alert("审核成功");
+						$("#myBack").hide();
+						href="./user/ByMyCheckList.htm";
+						 alert(href);
+						var content = '<iframe scrolling="auto" frameborder="0"  src="'+href+'" style="width:100%;height:100%;"></iframe>';  
+					    var tt = parent.$('#tabs');  	   
+					    if (tt.tabs('exists', "由我审核")){//如果tab已经存在,则选中该tab，并更新内容          
+					        tt.tabs('select', "由我审核");  
+					        var tab =parent.$('#tabs').tabs('getSelected'); 
+					        parent.$('#tabs').tabs('update', {
+					        	tab: tab,
+					        	options: {
+					        		content:content
+					        	}
+					        });
+					}else {
+						alert("请重试");
+					}
+				}else {
+					alert("请重试");
+				}
+				}
+			});
+	}	
+	//审核不通过
+	function recodeDisAgree() {
+		alert(window.row.id);
+		var note = $("#note").val();
+		$.ajax({
+				url : '../../examine/toDoExamine.ajax',
+				type : 'get',
+				dataType : 'JSON',
+				data : {
+					processId : window.row.processId,
+					toNodeStatus : 2,
+					note : note
+				},
+				success : function(data) {
+					if(data.statusCode == 200) {
+						alert("审核成功");
+						$("#myBack").hide();
+						href="./user/ByMyCheckList.htm";
+						 alert(href);
+						var content = '<iframe scrolling="auto" frameborder="0"  src="'+href+'" style="width:100%;height:100%;"></iframe>';  
+					    var tt = parent.$('#tabs');  	   
+					    if (tt.tabs('exists', "由我审核")){//如果tab已经存在,则选中该tab，并更新内容          
+					        tt.tabs('select', "由我审核");  
+					        var tab =parent.$('#tabs').tabs('getSelected'); 
+					        parent.$('#tabs').tabs('update', {
+					        	tab: tab,
+					        	options: {
+					        		content:content
+					        	}
+					        });
+					}else {
+						alert("请重试");
+					}
+				}else {
+					alert("请重试");
+				}
+				}
+			});
+	}
+	//格式化文件名称
+	function formatFile(val,row) {
+		if(!val) {
+			return "";
+		}else {
+			return val;
+		}
+	}
+	
+	//格式化类型
+	function formatType(val) {
+		if(val == 0) {
+			return "考勤";
+		}else if(val == 1) {
+			return "普通消息"
+		}else if(val == 2) {
+			return "文件消息";
+		}else {
+			return "error";
+		}
+	}
+	
+	//格式化时间
+	function formatTime(date) {
+		var unixTimestamp = new Date(date) ;
+		commonTime = unixTimestamp.toLocaleString();
+		return commonTime;
+	}
+	Date.prototype.toLocaleString = function() {
+        return this.getFullYear() + "年" + (this.getMonth() + 1) + "月" + this.getDate() + "日 " + this.getHours() + "点" + this.getMinutes() + "分" + this.getSeconds() + "秒";
+  };
+  
+  //格式化状态
+  function formatStatus(status) {
+	 // 提交状态：0表示审核中，1表示通过，2表示未通过，-1表示不可见，3:撤销状态
+	  if(status == 0) {
+		  return "审核中";
+	  }else if( status == 1) {
+		  return "通过";
+	  }else if( status == 2) {
+		  return "未通过";
+	  }else if(status == -1) {
+		  return "不可见";
+	  }else if(status == 3) {
+		  return "撤销状态";
+	  }else {
+		  return "error";
+	  }
+  }
+	
+	//格式化下载
+	function downLoad1(val,row,index) {
+		//http://blog.csdn.net/carlblack1987/article/details/38852187
+		 //function里面的三个参数代表当前字段值，当前行数据对象，行号（行号从0开始）
+		 //alert(row.id);
+		 return '<a href="#" onclick="downHsCode(' + index + ',1)">下载</a>'; 
+	}
+	
+	//格式化预览
+	function preview1(val,row,index) {
+		 return '<a href="#" onclick="preHsCode(' + index + ',1)">预览</a>'; 
+	}
+	
+
+	
+	function downHsCode(index,formId) {
+        $('#query_result'+formId).datagrid('selectRow', index);  
+        var row = $('#query_result'+formId).datagrid('getSelected');  
+        if(!row.exaFilePath) {
+        	alert("这不是文件类型的消息，没有附件可以下载");
+        }else {
+        	var form = $("<form>");
+            form.attr('style', 'display:none');
+            form.attr('id', 'temp_download_form');
+            form.attr('target', '');
+            form.attr('method', 'post');
+            form.attr('action', '../../file/download.ajax?fileId='+row.exaLinkId+'&type=1');
+            $('body').append(form);
+            form.submit();
+            form.remove();
+        }
+    }  
+	function preHsCode(index,formId) {
+        $('#query_result'+formId).datagrid('selectRow', index);  
+        var row = $('#query_result'+formId).datagrid('getSelected');
+        if(!row.exaFilePath) {
+        	alert("这不是文件类型的消息，没有附件可以预览");
+        }else {
+        	window.open('../ViewPDF.html?fileurl='+row.exaLinkId+'&type=1');
+        }
+      	
+    }  
+
+	</script>
+
+</head>
+<body>
+	<div id="tt" class="easyui-tabs" style="width:80%;margin: 60px 5%;">
+	    <div title="全部" style="padding:20px;">
+			<form id="query_form1" method="post">
+				<div style="margin: 0 5px">
+					<table class="easyui-datagrid" title="" id="query_result1"
+						data-options="singleSelect:true,pagination:true,rownumbers:true,pageNumber:1,pageSize:10,pageList:[1,5,10]"
+						toolbar="#tb">
+						<thead>
+							<tr>
+								
+								<th data-options="field:'id',width:40,hidden:true,align:'center'">ID</th>
+								<th data-options="field:'userName',width:100,hidden:false,align:'center'">发送者</th>
+								<th data-options="field:'submitTime',width:100,hidden:false,align:'center',sortable:'true'" formatter="formatTime">发送时间</th>
+								<th data-options="field:'status',width:100,hidden:false,align:'center',sortable:'true'" formatter="formatStatus">审核状态</th>
+								<th data-options="field:'exaType',width:100,hidden:false,align:'center'" formatter="formatType">消息类型</th>
+								<th data-options="field:'exaTitle',width:100,hidden:false,align:'center'">消息标题</th>
+								<th data-options="field:'exaContent',width:100,hidden:false,align:'center'">消息内容</th>
+								<th data-options="field:'exaFilePath',width:100,hidden:false,align:'center'" formatter="formatFile">附件名称</th>
+								<th data-options="field:'preview',width:100,hidden:false,align:'center'" formatter="downLoad1">下载</th>
+								<th data-options="field:'download',width:100,hidden:false,align:'center'" formatter="preview1">预览</th>
+								<th data-options="field:'exaLinkId',width:100,hidden:true,align:'center'" >另一张表的id</th>
+								<th data-options="field:'processId',width:100,hidden:true,align:'center'" >审核流程表的id</th>
+							</tr>
+						</thead>
+					</table>
+		
+					
+		
+				</div>
+			</form>
+	    </div>
+
+	</div>
+
+	<div id="myBack">
+			<button id="close">关闭</button>
+			<div id="viewMyMessage">
+				<div class="no1">
+					<span class="explain">发送消息者：</span>
+					<span class="exp_value" id="submitter"></span>
+				</div>
+				<div class="no1">
+					<span class="explain">发送时间：</span>
+					<span class="exp_value" id="submit_time"></span>
+				</div>
+				<div class="no1">
+					<span class="explain">审核状态：</span>
+					<span class="exp_value" id="submit_status"></span>
+				</div>
+				<div class="no1">
+					<span class="explain">消息标题：</span>
+					<span class="exp_value" id="mes_title"></span>
+				</div>
+				<div class="no1">
+					<span class="explain">消息内容：</span>
+					<span class="exp_value" id="mes_content"></span>
+				</div>
+				<div class="no1 myFile">
+					<span class="explain">文件名称：</span>
+					<span class="exp_value" id="file_name"></span>
+				</div>
+				<div class="no1 myFile">
+					<span class="explain">文件操作：</span>
+					<span class="exp_value" id="down_and_preview"></span>
+				</div>
+				<div class="no1">
+					<span class="explain">留言：</span>
+					<span class="exp_value" style="margin-top:20px;"><textarea id="note" cols="60" rows="3"></textarea></span>
+				</div>
+				<div class="no1" style="height: 50px;line-height:50px;">
+					<button id="already_read" onclick="recodeAgree()" style="width:150px;">审核通过</button>
+					<button id="already_disagree" onclick="recodeDisAgree()" style="width:150px;margin-left:300px;">审核不通过</button>
+				</div>
+			</div>
+		</div>
+</body>

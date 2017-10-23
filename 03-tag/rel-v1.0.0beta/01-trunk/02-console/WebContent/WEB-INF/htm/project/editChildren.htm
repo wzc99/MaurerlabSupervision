@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>选择子类</title>
+	<link rel="stylesheet" type="text/css" href="../../themes/general.css">
+	<link rel="stylesheet" type="text/css" href="../../themes/icon.css">
+	<link rel="stylesheet" type="text/css" href="../../themes/gray/easyui.css">
+
+	<script type="text/javascript" src="../../scripts/jquery-1.8.0.min.js"></script>
+	<script type="text/javascript" src="../../scripts/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="../../scripts/locale/easyui-lang-zh_CN.js"></script>
+	<script type="text/javascript" src="../../scripts/src/jquery.parser.js"></script>
+	<script type="text/javascript" src="../../scripts/general.js"></script>
+	<script type="text/javascript" src="../../scripts/sessionExpriation.js"></script>
+<script type="text/javascript">
+	$(function() {
+		
+		var projectId = $.getUrlParam('projectId');
+		//alert(projectId);
+		
+		
+		$.ajax({//修改的ajax
+			url : '../../work/getTypeLevel.ajax?projectId='+projectId,
+			type : 'post',
+			dataType : 'JSON',
+			cache: false,
+			data : {
+				proId : projectId 
+			},
+			error: function(XMLHttpRequest, textStatus, errorThrown) {
+	                   
+	        },//已经填过需要修改
+			success : function(data) {
+				if(!data.first){//给一个标志位，判断是否填过信息
+					init_children(data);
+				}
+			}
+		});
+		
+		$('#new_form').form({
+			url : '../../work/addTypeLevel.ajax?projectId='+projectId,//ajax地址修改
+		
+			onSubmit : function() {
+				if ($(this).form('validate')) {
+					return true;
+				} else {
+					return false;
+				}
+			},
+			success : function(data) {
+				var obj = $.parseJSON(data);
+				if (obj.success) {
+					$.messager.alert('提示', obj.message, 'info', function(){
+						//刷新项目详述页面
+						href="./project/view.html?proId="+projectId;
+						var content = '<iframe scrolling="auto" frameborder="0"  src="'+href+'" style="width:100%;height:100%;"></iframe>';  
+					    var tt = parent.$('#tabs');  	   
+					    if (tt.tabs('exists', "项目详述")){//如果tab已经存在,则选中该tab，并更新内容          
+					        tt.tabs('select', "项目详述");  
+					        var tab =parent.$('#tabs').tabs('getSelected'); 
+					        parent.$('#tabs').tabs('update', {
+					        	tab: tab,
+					        	options: {
+					        		content:content
+					        	}
+					        });
+					    }
+					    //关闭当前页面
+					 	parent.$('#tabs').tabs('close','选择子类');
+					});
+				} else {
+					$.messager.alert('错误', obj.message, 'error');
+				}
+			}
+		});
+		
+		$('#new_form_add').form({
+			url : '../../work/addType.ajax',//添加新的子类
+			onSubmit : function() {
+				if ($(this).form('validate')) {
+					return true;
+				} else {
+					return false;
+				}
+			},
+			success : function(data) {
+				var obj = $.parseJSON(data);
+				if (obj.success) {
+					$.messager.alert('提示', obj.message, 'info', function(){
+						//刷新项目详述页面
+						href="./project/view.html?proId="+projectId;
+						var content = '<iframe scrolling="auto" frameborder="0"  src="'+href+'" style="width:100%;height:100%;"></iframe>';  
+					    var tt = parent.$('#tabs');  	   
+					    if (tt.tabs('exists', "项目详述")){//如果tab已经存在,则选中该tab，并更新内容          
+					        tt.tabs('select', "项目详述");  
+					        var tab =parent.$('#tabs').tabs('getSelected'); 
+					        parent.$('#tabs').tabs('update', {
+					        	tab: tab,
+					        	options: {
+					        		content:content
+					        	}
+					        });
+					    }
+					    //关闭当前页面
+					 	parent.$('#tabs').tabs('close','选择子类');
+					});
+				} else {
+					$.messager.alert('错误', obj.message, 'error');
+				}
+			}
+		});
+		
+		$('#btn_submit').bind('click', function() {
+			$("#new_form").submit();
+		});
+		
+		$('#btn_submit_add').bind('click', function() {
+			$("#new_form_add").submit();
+		});
+		
+		var curnum="";
+		$("input[id^='ctimedateToast']").combobox({
+			url:'../../work/getLevelOneName.ajax',//监造物资下拉菜单
+			valueField:'type',//待修改
+			textField:'type',//待修改
+			onChange: function (n,o) {//当大类改变时触发
+				var that = $(this).attr('id');
+				curnum=that.substr(14);
+				var two='#cabstract'+curnum;
+				$(two).combobox({
+					url:'../../work/getLevelTwoName.ajax?name='+encodeURI(encodeURI(n)),//二级分类的下拉菜单
+					valueField:'type',//待修改
+					textField:'type',//待修改
+				}); 
+			}
+		});
+		//二级类型改变时触发，
+		$("input[id^='cabstract']").combobox({
+			onChange: function (n,o) {//当大类改变时触发
+				var that = $(this).attr('id');
+				curnum=that.substr(9)
+				var tem = "#ctimedateToast"+curnum;
+				var big = $(tem).combobox('getValue');
+				$.ajax({     
+				        url : '../../work/decideHaveThree.ajax',//提交二级监造物资
+						type : 'post',
+						dataType : 'JSON',
+						cache: false,
+						data : {
+							name : n ,
+							bigName:big//传递给后台二级物资名称
+						},
+						error: function(XMLHttpRequest, textStatus, errorThrown) {
+			        	},
+						success : function(data) {
+							var third='#three'+curnum;//二级分类的下拉菜单
+							alert(data.have);
+							if(data.have){//有三级类型
+								$(third).next(".combo").show();
+								$(third).combobox({
+									url:'../../work/getLevelThreeName.ajax?name='+encodeURI(encodeURI(n))+"&bigName="+encodeURI(encodeURI(big)),//如果有三级的话，三级的下拉菜单
+									valueField:'type',//待修改
+									textField:'type',//待修改
+								}); 
+							}
+							else{
+								$(third).next(".combo").hide();
+							}
+						}
+					});
+			}
+		});
+		
+	});
+	
+	function init_children(data){
+		var length = data.length;
+		var list = data.list;
+		for(var i=0;i<length;i++){
+			var id1 = "#ctimedateToast"+(i+1);
+			var id2="#cabstract"+(i+1);
+			var id3="#three"+(i+1);
+			$(id1).combobox('setValue',list[i].bigTypeName);
+			$(id2).combobox('setValue',list[i].smallTypeName);
+			$(id3).combobox('setValue',list[i].threeLevelName);
+		}
+	}
+
+</script>
+</head>
+<body>
+<form id="new_form" method="post" enctype="multipart/form-data">
+	<table class="table_new" id="chargeDetail">
+		<tr>
+			<td class="td_new_subtitle" colspan="3"><strong>选择子类</strong></td>
+		</tr>
+		<tr>
+			<td align="center"><strong>物资分类</strong></td>
+			<td align="center" ><strong>二级分类</strong></td>
+			<td align="center"><strong>三级分类</strong></td>
+		</tr>
+		<tr>
+			<td align="center"><input class="easyui-combobox input_180" id="ctimedateToast1" data-options="panelHeight:'auto'" editable="false" name="list[0].bigTypeName"/></td>
+			<td align="center"><input class="easyui-combobox input_180" id="cabstract1" data-options="panelHeight:'auto'" editable="false" name="list[0].smallTypeName"/></td>
+			<td align="center"><input class="easyui-combobox input_180" id="three1" data-options="panelHeight:'auto'" editable="false" name="list[0].threeLevelName"/></td>
+		</tr>
+		<tr>
+			<td align="center"><input class="easyui-combobox input_180" id="ctimedateToast2" data-options="panelHeight:'auto'" editable="false" name="list[1].bigTypeName"/></td>
+			<td align="center"><input class="easyui-combobox input_180" id="cabstract2" data-options="panelHeight:'auto'" editable="false" name="list[1].smallTypeName"/></td>
+			<td align="center"><input class="easyui-combobox input_180" id="three2" data-options="panelHeight:'auto'" editable="false" name="list[1].threeLevelName"/></td>
+		</tr>
+		<tr>
+			<td align="center"><input class="easyui-combobox input_180" id="ctimedateToast3" data-options="panelHeight:'auto'" editable="false" name="list[2].bigTypeName"/></td>
+			<td align="center"><input class="easyui-combobox input_180" id="cabstract3" data-options="panelHeight:'auto'" editable="false" name="list[2].smallTypeName"/></td>
+			<td align="center"><input class="easyui-combobox input_180" id="three3" data-options="panelHeight:'auto'" editable="false" name="list[2].threeLevelName"/></td>
+		</tr>
+		<tr>
+			<td align="center"><input class="easyui-combobox input_180" id="ctimedateToast4" data-options="panelHeight:'auto'" editable="false" name="list[3].bigTypeName"/></td>
+			<td align="center"><input class="easyui-combobox input_180" id="cabstract4" data-options="panelHeight:'auto'" editable="false" name="list[3].smallTypeName"/></td>
+			<td align="center"><input class="easyui-combobox input_180" id="three4" data-options="panelHeight:'auto'" editable="false" name="list[3].threeLevelName"/></td>
+		</tr>
+		<tr>
+			<td align="center"><input class="easyui-combobox input_180" id="ctimedateToast5" data-options="panelHeight:'auto'" editable="false" name="list[4].bigTypeName"/></td>
+			<td align="center"><input class="easyui-combobox input_180" id="cabstract5" data-options="panelHeight:'auto'" editable="false" name="list[4].smallTypeName"/></td>
+			<td align="center"><input class="easyui-combobox input_180" id="three5" data-options="panelHeight:'auto'" editable="false" name="list[4].threeLevelName"/></td>
+		</tr>
+		<tr>
+			<td align="center"><input class="easyui-combobox input_180" id="ctimedateToast6" data-options="panelHeight:'auto'" editable="false" name="list[5].bigTypeName"/></td>
+			<td align="center"><input class="easyui-combobox input_180" id="cabstract6" data-options="panelHeight:'auto'" editable="false" name="list[5].smallTypeName"/></td>
+			<td align="center"><input class="easyui-combobox input_180" id="three6" data-options="panelHeight:'auto'" editable="false" name="list[5].threeLevelName"/></td>
+		</tr>
+		<tr>
+			<td align="center"><input class="easyui-combobox input_180" id="ctimedateToast7" data-options="panelHeight:'auto'" editable="false" name="list[6].bigTypeName"/></td>
+			<td align="center"><input class="easyui-combobox input_180" id="cabstract7" data-options="panelHeight:'auto'" editable="false" name="list[6].smallTypeName"/></td>
+			<td align="center"><input class="easyui-combobox input_180" id="three7" data-options="panelHeight:'auto'" editable="false" name="list[6].threeLevelName"/></td>
+		</tr>
+		<tr>
+			<td align="center"><input class="easyui-combobox input_180" id="ctimedateToast8" data-options="panelHeight:'auto'" editable="false" name="list[7].bigTypeName"/></td>
+			<td align="center"><input class="easyui-combobox input_180" id="cabstract8" data-options="panelHeight:'auto'" editable="false" name="list[7].smallTypeName"/></td>
+			<td align="center"><input class="easyui-combobox input_180" id="three8" data-options="panelHeight:'auto'" editable="false" name="list[7].threeLevelName"/></td>
+		</tr>
+		<tr>
+			<td align="center"><input class="easyui-combobox input_180" id="ctimedateToast9" data-options="panelHeight:'auto'" editable="false" name="list[8].bigTypeName"/></td>
+			<td align="center"><input class="easyui-combobox input_180" id="cabstract9" data-options="panelHeight:'auto'" editable="false" name="list[8].smallTypeName"/></td>
+			<td align="center"><input class="easyui-combobox input_180" id="three9" data-options="panelHeight:'auto'" editable="false" name="list[8].threeLevelName"/></td>
+		</tr>
+		<tr>
+			<td align="center"><input class="easyui-combobox input_180" id="ctimedateToast10" data-options="panelHeight:'auto'" editable="false" name="list[9].bigTypeName"/></td>
+			<td align="center"><input class="easyui-combobox input_180" id="cabstract10" data-options="panelHeight:'auto'" editable="false" name="list[9].smallTypeName"/></td>
+			<td align="center"><input class="easyui-combobox input_180" id="three10" data-options="panelHeight:'auto'" editable="false" name="list[9].threeLevelName"/></td>
+		</tr>
+	</table>
+	<table class="table_new">
+		<tr>
+			<td align="center" width="100%"><a id="btn_submit" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok">确认提交</a></td>
+		</tr>
+	</table>
+	<br/>
+</form>
+<form id="new_form_add" method="post" enctype="multipart/form-data">
+	<table class="table_new">
+		<tr>
+			<td class="td_new_subtitle" colspan="3"><strong>添加子类</strong></td>
+		</tr>
+		<tr>
+			<td align="center" ><strong>物资分类</strong></td>
+			<td align="center" ><strong>二级分类</strong></td>
+			<td align="center" ><strong>三级分类</strong></td>
+		</tr>
+		<tr>
+			<td  align="center">
+				<input class="easyui-validatebox input_180" type="text" data-options="validType:'length[2,100]'" id="first1" name="list[0].bigTypeName" />
+			</td>
+			<td  align="center">
+				<input class="easyui-validatebox input_180" type="text" data-options="validType:'length[2,100]'" id="second1" name="list[0].smallTypeName" />
+			</td>
+			<td  align="center">
+				<input class="easyui-validatebox input_180" type="text" data-options="validType:'length[2,100]'" id="third1" name="list[0].threeLevelName" />
+			</td>
+		</tr>
+		<tr>
+			<td  align="center">
+				<input class="easyui-validatebox input_180" type="text" data-options="validType:'length[2,100]'" id="first2" name="list[1].bigTypeName" />
+			</td>
+			<td  align="center">
+				<input class="easyui-validatebox input_180" type="text" data-options="validType:'length[2,100]'" id="second2" name="list[1].smallTypeName" />
+			</td>
+			<td  align="center">
+				<input class="easyui-validatebox input_180" type="text" data-options="validType:'length[2,100]'" id="third2" name="list[1].threeLevelName" />
+			</td>
+		</tr>
+		<tr>
+			<td  align="center">
+				<input class="easyui-validatebox input_180" type="text" data-options="validType:'length[2,100]'" id="first3" name="list[2].bigTypeName" />
+			</td>
+			<td  align="center">
+				<input class="easyui-validatebox input_180" type="text" data-options="validType:'length[2,100]'" id="second3" name="list[2].smallTypeName" />
+			</td>
+			<td  align="center">
+				<input class="easyui-validatebox input_180" type="text" data-options="validType:'length[2,100]'" id="third3" name="list[2].threeLevelName" />
+			</td>
+		</tr>
+	</table>
+	<br/>
+	<table class="table_new">
+		<tr>
+			<td align="center" width="100%"><a id="btn_submit_add" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok">确认提交</a></td>
+		</tr>
+	</table>
+	
+	<br/>
+</form>
+</body>
+</html>

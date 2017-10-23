@@ -1,0 +1,483 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="sys.spvisor.core.dao.process.TZuanjuProcessMapper" >
+  <resultMap id="BaseResultMap" type="sys.spvisor.core.entity.process.TZuanjuProcess" >
+    <id column="zuanju_id" property="zuanjuId" jdbcType="INTEGER" />
+    <result column="type_id" property="typeId" jdbcType="INTEGER" />
+    <result column="pro_id" property="proId" jdbcType="INTEGER" />
+    <result column="product_name" property="productName" jdbcType="VARCHAR" />
+    <result column="product_norm" property="productNorm" jdbcType="VARCHAR" />
+    <result column="daoliao" property="daoliao" jdbcType="DOUBLE" />
+    <result column="guantitiaozhi" property="guantitiaozhi" jdbcType="DOUBLE" />
+    <result column="zuankongcheyuan" property="zuankongcheyuan" jdbcType="DOUBLE" />
+    <result column="mocahanjie" property="mocahanjie" jdbcType="DOUBLE" />
+    <result column="wusunjiance" property="wusunjiance" jdbcType="DOUBLE" />
+    <result column="luowenjiagong" property="luowenjiagong" jdbcType="DOUBLE" />
+    <result column="zuantingluoxuan" property="zuantingluoxuan" jdbcType="DOUBLE" />
+    <result column="tufu" property="tufu" jdbcType="DOUBLE" />
+    <result column="chengpinruku" property="chengpinruku" jdbcType="DOUBLE" />
+    <result column="fayun" property="fayun" jdbcType="DOUBLE" />
+    <result column="complete_rate_today" property="completeRateToday" jdbcType="DOUBLE" />
+    <result column="plan_date" property="planDate" jdbcType="DATE" />
+    <result column="promise_date" property="promiseDate" jdbcType="DATE" />
+    <result column="which_day" property="whichDay" jdbcType="DATE" />
+    <result column="sumbit_date" property="sumbitDate" jdbcType="DATE" />
+    <result column="user_id" property="userId" jdbcType="INTEGER" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    zuanju_id, type_id, pro_id, product_name, product_norm, daoliao, guantitiaozhi, zuankongcheyuan, 
+    mocahanjie, wusunjiance, luowenjiagong, zuantingluoxuan, tufu, chengpinruku, fayun, 
+    complete_rate_today, plan_date, promise_date, which_day, sumbit_date, user_id
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="sys.spvisor.core.entity.process.TZuanjuProcessExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from t_zuanju_process
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_zuanju_process
+    where zuanju_id = #{zuanjuId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_zuanju_process
+    where zuanju_id = #{zuanjuId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="sys.spvisor.core.entity.process.TZuanjuProcessExample" >
+    delete from t_zuanju_process
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="sys.spvisor.core.entity.process.TZuanjuProcess" useGeneratedKeys="true" keyProperty="zuanjuId">
+    insert into t_zuanju_process (type_id, pro_id, 
+      product_name, product_norm, daoliao, 
+      guantitiaozhi, zuankongcheyuan, mocahanjie, 
+      wusunjiance, luowenjiagong, zuantingluoxuan, 
+      tufu, chengpinruku, fayun, 
+      complete_rate_today, plan_date, promise_date, 
+      which_day, sumbit_date, user_id
+      )
+    values (#{typeId,jdbcType=INTEGER}, #{proId,jdbcType=INTEGER}, 
+      #{productName,jdbcType=VARCHAR}, #{productNorm,jdbcType=VARCHAR}, #{daoliao,jdbcType=DOUBLE}, 
+      #{guantitiaozhi,jdbcType=DOUBLE}, #{zuankongcheyuan,jdbcType=DOUBLE}, #{mocahanjie,jdbcType=DOUBLE}, 
+      #{wusunjiance,jdbcType=DOUBLE}, #{luowenjiagong,jdbcType=DOUBLE}, #{zuantingluoxuan,jdbcType=DOUBLE}, 
+      #{tufu,jdbcType=DOUBLE}, #{chengpinruku,jdbcType=DOUBLE}, #{fayun,jdbcType=DOUBLE}, 
+      #{completeRateToday,jdbcType=DOUBLE}, #{planDate,jdbcType=DATE}, #{promiseDate,jdbcType=DATE}, 
+      #{whichDay,jdbcType=DATE}, #{sumbitDate,jdbcType=DATE}, #{userId,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="sys.spvisor.core.entity.process.TZuanjuProcess" >
+    insert into t_zuanju_process
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="zuanjuId != null" >
+        zuanju_id,
+      </if>
+      <if test="typeId != null" >
+        type_id,
+      </if>
+      <if test="proId != null" >
+        pro_id,
+      </if>
+      <if test="productName != null" >
+        product_name,
+      </if>
+      <if test="productNorm != null" >
+        product_norm,
+      </if>
+      <if test="daoliao != null" >
+        daoliao,
+      </if>
+      <if test="guantitiaozhi != null" >
+        guantitiaozhi,
+      </if>
+      <if test="zuankongcheyuan != null" >
+        zuankongcheyuan,
+      </if>
+      <if test="mocahanjie != null" >
+        mocahanjie,
+      </if>
+      <if test="wusunjiance != null" >
+        wusunjiance,
+      </if>
+      <if test="luowenjiagong != null" >
+        luowenjiagong,
+      </if>
+      <if test="zuantingluoxuan != null" >
+        zuantingluoxuan,
+      </if>
+      <if test="tufu != null" >
+        tufu,
+      </if>
+      <if test="chengpinruku != null" >
+        chengpinruku,
+      </if>
+      <if test="fayun != null" >
+        fayun,
+      </if>
+      <if test="completeRateToday != null" >
+        complete_rate_today,
+      </if>
+      <if test="planDate != null" >
+        plan_date,
+      </if>
+      <if test="promiseDate != null" >
+        promise_date,
+      </if>
+      <if test="whichDay != null" >
+        which_day,
+      </if>
+      <if test="sumbitDate != null" >
+        sumbit_date,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="zuanjuId != null" >
+        #{zuanjuId,jdbcType=INTEGER},
+      </if>
+      <if test="typeId != null" >
+        #{typeId,jdbcType=INTEGER},
+      </if>
+      <if test="proId != null" >
+        #{proId,jdbcType=INTEGER},
+      </if>
+      <if test="productName != null" >
+        #{productName,jdbcType=VARCHAR},
+      </if>
+      <if test="productNorm != null" >
+        #{productNorm,jdbcType=VARCHAR},
+      </if>
+      <if test="daoliao != null" >
+        #{daoliao,jdbcType=DOUBLE},
+      </if>
+      <if test="guantitiaozhi != null" >
+        #{guantitiaozhi,jdbcType=DOUBLE},
+      </if>
+      <if test="zuankongcheyuan != null" >
+        #{zuankongcheyuan,jdbcType=DOUBLE},
+      </if>
+      <if test="mocahanjie != null" >
+        #{mocahanjie,jdbcType=DOUBLE},
+      </if>
+      <if test="wusunjiance != null" >
+        #{wusunjiance,jdbcType=DOUBLE},
+      </if>
+      <if test="luowenjiagong != null" >
+        #{luowenjiagong,jdbcType=DOUBLE},
+      </if>
+      <if test="zuantingluoxuan != null" >
+        #{zuantingluoxuan,jdbcType=DOUBLE},
+      </if>
+      <if test="tufu != null" >
+        #{tufu,jdbcType=DOUBLE},
+      </if>
+      <if test="chengpinruku != null" >
+        #{chengpinruku,jdbcType=DOUBLE},
+      </if>
+      <if test="fayun != null" >
+        #{fayun,jdbcType=DOUBLE},
+      </if>
+      <if test="completeRateToday != null" >
+        #{completeRateToday,jdbcType=DOUBLE},
+      </if>
+      <if test="planDate != null" >
+        #{planDate,jdbcType=DATE},
+      </if>
+      <if test="promiseDate != null" >
+        #{promiseDate,jdbcType=DATE},
+      </if>
+      <if test="whichDay != null" >
+        #{whichDay,jdbcType=DATE},
+      </if>
+      <if test="sumbitDate != null" >
+        #{sumbitDate,jdbcType=DATE},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="sys.spvisor.core.entity.process.TZuanjuProcessExample" resultType="java.lang.Integer" >
+    select count(*) from t_zuanju_process
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update t_zuanju_process
+    <set >
+      <if test="record.zuanjuId != null" >
+        zuanju_id = #{record.zuanjuId,jdbcType=INTEGER},
+      </if>
+      <if test="record.typeId != null" >
+        type_id = #{record.typeId,jdbcType=INTEGER},
+      </if>
+      <if test="record.proId != null" >
+        pro_id = #{record.proId,jdbcType=INTEGER},
+      </if>
+      <if test="record.productName != null" >
+        product_name = #{record.productName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.productNorm != null" >
+        product_norm = #{record.productNorm,jdbcType=VARCHAR},
+      </if>
+      <if test="record.daoliao != null" >
+        daoliao = #{record.daoliao,jdbcType=DOUBLE},
+      </if>
+      <if test="record.guantitiaozhi != null" >
+        guantitiaozhi = #{record.guantitiaozhi,jdbcType=DOUBLE},
+      </if>
+      <if test="record.zuankongcheyuan != null" >
+        zuankongcheyuan = #{record.zuankongcheyuan,jdbcType=DOUBLE},
+      </if>
+      <if test="record.mocahanjie != null" >
+        mocahanjie = #{record.mocahanjie,jdbcType=DOUBLE},
+      </if>
+      <if test="record.wusunjiance != null" >
+        wusunjiance = #{record.wusunjiance,jdbcType=DOUBLE},
+      </if>
+      <if test="record.luowenjiagong != null" >
+        luowenjiagong = #{record.luowenjiagong,jdbcType=DOUBLE},
+      </if>
+      <if test="record.zuantingluoxuan != null" >
+        zuantingluoxuan = #{record.zuantingluoxuan,jdbcType=DOUBLE},
+      </if>
+      <if test="record.tufu != null" >
+        tufu = #{record.tufu,jdbcType=DOUBLE},
+      </if>
+      <if test="record.chengpinruku != null" >
+        chengpinruku = #{record.chengpinruku,jdbcType=DOUBLE},
+      </if>
+      <if test="record.fayun != null" >
+        fayun = #{record.fayun,jdbcType=DOUBLE},
+      </if>
+      <if test="record.completeRateToday != null" >
+        complete_rate_today = #{record.completeRateToday,jdbcType=DOUBLE},
+      </if>
+      <if test="record.planDate != null" >
+        plan_date = #{record.planDate,jdbcType=DATE},
+      </if>
+      <if test="record.promiseDate != null" >
+        promise_date = #{record.promiseDate,jdbcType=DATE},
+      </if>
+      <if test="record.whichDay != null" >
+        which_day = #{record.whichDay,jdbcType=DATE},
+      </if>
+      <if test="record.sumbitDate != null" >
+        sumbit_date = #{record.sumbitDate,jdbcType=DATE},
+      </if>
+      <if test="record.userId != null" >
+        user_id = #{record.userId,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update t_zuanju_process
+    set zuanju_id = #{record.zuanjuId,jdbcType=INTEGER},
+      type_id = #{record.typeId,jdbcType=INTEGER},
+      pro_id = #{record.proId,jdbcType=INTEGER},
+      product_name = #{record.productName,jdbcType=VARCHAR},
+      product_norm = #{record.productNorm,jdbcType=VARCHAR},
+      daoliao = #{record.daoliao,jdbcType=DOUBLE},
+      guantitiaozhi = #{record.guantitiaozhi,jdbcType=DOUBLE},
+      zuankongcheyuan = #{record.zuankongcheyuan,jdbcType=DOUBLE},
+      mocahanjie = #{record.mocahanjie,jdbcType=DOUBLE},
+      wusunjiance = #{record.wusunjiance,jdbcType=DOUBLE},
+      luowenjiagong = #{record.luowenjiagong,jdbcType=DOUBLE},
+      zuantingluoxuan = #{record.zuantingluoxuan,jdbcType=DOUBLE},
+      tufu = #{record.tufu,jdbcType=DOUBLE},
+      chengpinruku = #{record.chengpinruku,jdbcType=DOUBLE},
+      fayun = #{record.fayun,jdbcType=DOUBLE},
+      complete_rate_today = #{record.completeRateToday,jdbcType=DOUBLE},
+      plan_date = #{record.planDate,jdbcType=DATE},
+      promise_date = #{record.promiseDate,jdbcType=DATE},
+      which_day = #{record.whichDay,jdbcType=DATE},
+      sumbit_date = #{record.sumbitDate,jdbcType=DATE},
+      user_id = #{record.userId,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="sys.spvisor.core.entity.process.TZuanjuProcess" >
+    update t_zuanju_process
+    <set >
+      <if test="typeId != null" >
+        type_id = #{typeId,jdbcType=INTEGER},
+      </if>
+      <if test="proId != null" >
+        pro_id = #{proId,jdbcType=INTEGER},
+      </if>
+      <if test="productName != null" >
+        product_name = #{productName,jdbcType=VARCHAR},
+      </if>
+      <if test="productNorm != null" >
+        product_norm = #{productNorm,jdbcType=VARCHAR},
+      </if>
+      <if test="daoliao != null" >
+        daoliao = #{daoliao,jdbcType=DOUBLE},
+      </if>
+      <if test="guantitiaozhi != null" >
+        guantitiaozhi = #{guantitiaozhi,jdbcType=DOUBLE},
+      </if>
+      <if test="zuankongcheyuan != null" >
+        zuankongcheyuan = #{zuankongcheyuan,jdbcType=DOUBLE},
+      </if>
+      <if test="mocahanjie != null" >
+        mocahanjie = #{mocahanjie,jdbcType=DOUBLE},
+      </if>
+      <if test="wusunjiance != null" >
+        wusunjiance = #{wusunjiance,jdbcType=DOUBLE},
+      </if>
+      <if test="luowenjiagong != null" >
+        luowenjiagong = #{luowenjiagong,jdbcType=DOUBLE},
+      </if>
+      <if test="zuantingluoxuan != null" >
+        zuantingluoxuan = #{zuantingluoxuan,jdbcType=DOUBLE},
+      </if>
+      <if test="tufu != null" >
+        tufu = #{tufu,jdbcType=DOUBLE},
+      </if>
+      <if test="chengpinruku != null" >
+        chengpinruku = #{chengpinruku,jdbcType=DOUBLE},
+      </if>
+      <if test="fayun != null" >
+        fayun = #{fayun,jdbcType=DOUBLE},
+      </if>
+      <if test="completeRateToday != null" >
+        complete_rate_today = #{completeRateToday,jdbcType=DOUBLE},
+      </if>
+      <if test="planDate != null" >
+        plan_date = #{planDate,jdbcType=DATE},
+      </if>
+      <if test="promiseDate != null" >
+        promise_date = #{promiseDate,jdbcType=DATE},
+      </if>
+      <if test="whichDay != null" >
+        which_day = #{whichDay,jdbcType=DATE},
+      </if>
+      <if test="sumbitDate != null" >
+        sumbit_date = #{sumbitDate,jdbcType=DATE},
+      </if>
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+    </set>
+    where zuanju_id = #{zuanjuId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="sys.spvisor.core.entity.process.TZuanjuProcess" >
+    update t_zuanju_process
+    set type_id = #{typeId,jdbcType=INTEGER},
+      pro_id = #{proId,jdbcType=INTEGER},
+      product_name = #{productName,jdbcType=VARCHAR},
+      product_norm = #{productNorm,jdbcType=VARCHAR},
+      daoliao = #{daoliao,jdbcType=DOUBLE},
+      guantitiaozhi = #{guantitiaozhi,jdbcType=DOUBLE},
+      zuankongcheyuan = #{zuankongcheyuan,jdbcType=DOUBLE},
+      mocahanjie = #{mocahanjie,jdbcType=DOUBLE},
+      wusunjiance = #{wusunjiance,jdbcType=DOUBLE},
+      luowenjiagong = #{luowenjiagong,jdbcType=DOUBLE},
+      zuantingluoxuan = #{zuantingluoxuan,jdbcType=DOUBLE},
+      tufu = #{tufu,jdbcType=DOUBLE},
+      chengpinruku = #{chengpinruku,jdbcType=DOUBLE},
+      fayun = #{fayun,jdbcType=DOUBLE},
+      complete_rate_today = #{completeRateToday,jdbcType=DOUBLE},
+      plan_date = #{planDate,jdbcType=DATE},
+      promise_date = #{promiseDate,jdbcType=DATE},
+      which_day = #{whichDay,jdbcType=DATE},
+      sumbit_date = #{sumbitDate,jdbcType=DATE},
+      user_id = #{userId,jdbcType=INTEGER}
+    where zuanju_id = #{zuanjuId,jdbcType=INTEGER}
+  </update>
+     <select id="accumulateScheduleByproId" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select type_id,sum(COALESCE(daoliao,0)) as daoliao,sum(COALESCE(guantitiaozhi,0)) as guantitiaozhi,sum(COALESCE(zuankongcheyuan,0)) as zuankongcheyuan,sum(COALESCE(mocahanjie,0)) as mocahanjie,
+    sum(COALESCE(wusunjiance,0)) as wusunjiance,sum(COALESCE(luowenjiagong,0)) as luowenjiagong,sum(COALESCE(zuantingluoxuan,0)) as zuantingluoxuan,sum(COALESCE(tufu,0)) as tufu,
+    sum(COALESCE(chengpinruku,0)) as chengpinruku,sum(COALESCE(fayun,0)) as fayun,
+    sum(COALESCE(complete_rate_today,0)) as complete_rate_today
+    from t_zuanju_process
+    where pro_id = #{projectId,jdbcType=INTEGER}
+    group by type_id
+  </select>
+    <select id="weeklyScheduleByproId" resultMap="BaseResultMap" parameterType="map" >
+    select type_id,sum(COALESCE(daoliao,0)) as daoliao,sum(COALESCE(guantitiaozhi,0)) as guantitiaozhi,sum(COALESCE(zuankongcheyuan,0)) as zuankongcheyuan,sum(COALESCE(mocahanjie,0)) as mocahanjie,
+    sum(COALESCE(wusunjiance,0)) as wusunjiance,sum(COALESCE(luowenjiagong,0)) as luowenjiagong,sum(COALESCE(zuantingluoxuan,0)) as zuantingluoxuan,sum(COALESCE(tufu,0)) as tufu,
+    sum(COALESCE(chengpinruku,0)) as chengpinruku,sum(COALESCE(fayun,0)) as fayun,
+    sum(COALESCE(complete_rate_today,0)) as complete_rate_today
+    from t_zuanju_process
+    where pro_id = #{projectId,jdbcType=INTEGER} and which_day between #{d0} and #{d1}
+    group by type_id
+  </select>
+</mapper>

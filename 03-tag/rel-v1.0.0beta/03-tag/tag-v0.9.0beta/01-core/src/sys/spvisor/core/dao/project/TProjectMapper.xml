@@ -1,0 +1,649 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="sys.spvisor.core.dao.project.TProjectMapper" >
+  <resultMap id="BaseResultMap" type="sys.spvisor.core.entity.project.TProject" >
+    <id column="pro_id" property="proId" jdbcType="INTEGER" />
+    <result column="project_name" property="projectName" jdbcType="VARCHAR" />
+    <result column="pro_unit" property="proUnit" jdbcType="VARCHAR" />
+    <result column="pro_entrust_time" property="proEntrustTime" jdbcType="DATE" />
+    <result column="pro_num" property="proNum" jdbcType="VARCHAR" />
+    <result column="pro_conpeople" property="proConpeople" jdbcType="VARCHAR" />
+    <result column="pro_conntel" property="proConntel" jdbcType="VARCHAR" />
+    <result column="pro_goods" property="proGoods" jdbcType="VARCHAR" />
+    <result column="pro_type" property="proType" jdbcType="VARCHAR" />
+    <result column="pro_factory" property="proFactory" jdbcType="VARCHAR" />
+    <result column="pro_factoryconnpeople" property="proFactoryconnpeople" jdbcType="VARCHAR" />
+    <result column="pro_factoryconntel" property="proFactoryconntel" jdbcType="VARCHAR" />
+    <result column="pro_basis" property="proBasis" jdbcType="VARCHAR" />
+    <result column="pro_reportway" property="proReportway" jdbcType="VARCHAR" />
+    <result column="pro_reportfilename" property="proReportfilename" jdbcType="VARCHAR" />
+    <result column="pro_endtime" property="proEndtime" jdbcType="DATE" />
+    <result column="pro_producttype" property="proProducttype" jdbcType="VARCHAR" />
+    <result column="pro_reporttime" property="proReporttime" jdbcType="VARCHAR" />
+    <result column="pro_create_user_id" property="proCreateUserId" jdbcType="INTEGER" />
+    <result column="pro_create_time" property="proCreateTime" jdbcType="TIMESTAMP" />
+    <result column="pro_last_update_time" property="proLastUpdateTime" jdbcType="TIMESTAMP" />
+    <result column="pro_big_project_id" property="proBigProjectId" jdbcType="INTEGER" />
+    <result column="pro_report_rate" property="proReportRate" jdbcType="VARCHAR" />
+    <result column="pro_status" property="proStatus" jdbcType="CHAR" />
+    <result column="pro_start_time" property="proStartTime" jdbcType="TIMESTAMP" />
+    <result column="pro_big_project_name" property="proBigProjectName" jdbcType="VARCHAR" />
+    <result column="pro_goodsnum" property="proGoodsnum" jdbcType="VARCHAR" />
+    <result column="pro_small_product_type" property="proSmallProductType" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    pro_id, project_name, pro_unit, pro_entrust_time, pro_num, pro_conpeople, pro_conntel, 
+    pro_goods, pro_type, pro_factory, pro_factoryconnpeople, pro_factoryconntel, pro_basis, 
+    pro_reportway, pro_reportfilename, pro_endtime, pro_producttype, pro_reporttime, 
+    pro_create_user_id, pro_create_time, pro_last_update_time, pro_big_project_id, pro_report_rate, 
+    pro_status, pro_start_time, pro_big_project_name, pro_goodsnum, pro_small_product_type
+  </sql>
+  <select id="getSearchProjects" resultMap="BaseResultMap" parameterType="sys.spvisor.core.criteria.project.ProjectCriteria">
+  		select distinct pro.* from t_project pro
+  			LEFT JOIN t_project_people peo
+  				ON pro.pro_id = peo.pp_pro_id 
+  		<where>
+  			<if test="proNum != null and proNum!=''" >
+  				and pro.pro_num like #{proNum}
+		    </if>
+  			<if test="proBigProjectName!=null and proBigProjectName!=''">
+  			and pro.pro_big_project_name like #{proBigProjectName}
+  			</if>
+  			 <if test="projectName!=null and projectName!=''">
+  			and pro.project_name like #{projectName}
+  			</if>
+
+		   <if test="proStartTime != null" >
+		     and pro.pro_start_time=#{proStartTime}
+		    </if>
+		    <if test="proUnit != null and proUnit!= ''" >
+		     and pro.pro_unit like #{proUnit}
+		    </if>
+		    <if test="proGoods != null and proGoods != ''" >
+		     and pro.pro_goods like #{proGoods}
+		    </if>
+		   
+		    <if test="proStatus != null and proStatus!=''" >
+		     and pro.pro_status=#{proStatus}
+		    </if>
+		    <if test="userId != 0" >
+		     and peo.pp_user_id=#{userId}
+		   </if>
+			</where>
+			order by pro.pro_id
+			 <if test="paging == true">
+				limit #{limit} offset #{offset}
+			</if>
+  </select>
+   <select id="getSearchCount" resultMap="BaseResultMap" parameterType="sys.spvisor.core.criteria.project.ProjectCriteria">
+  		select distinct pro.* from t_project pro
+  			LEFT JOIN t_project_people peo
+  				ON pro.pro_id = peo.pp_pro_id 
+  		<where>
+  			<if test="proNum != null and proNum!=''" >
+  				and pro.pro_num like #{proNum}
+		    </if>
+  			<if test="proBigProjectName!=null and proBigProjectName!=''">
+  			and pro.pro_big_project_name like #{proBigProjectName}
+  			</if>
+  			 <if test="projectName!=null and projectName!=''">
+  			and pro.project_name like #{projectName}
+  			</if>
+
+		   <if test="proStartTime != null" >
+		     and pro.pro_start_time=#{proStartTime}
+		    </if>
+		    <if test="proUnit != null and proUnit!= ''" >
+		     and pro.pro_unit like #{proUnit}
+		    </if>
+		    <if test="proGoods != null and proGoods != ''" >
+		     and pro.pro_goods like #{proGoods}
+		    </if>
+		   
+		    <if test="proStatus != null and proStatus!=''" >
+		     and pro.pro_status=#{proStatus}
+		    </if>
+		    <if test="userId != 0" >
+		     and peo.pp_user_id=#{userId}
+		   </if>
+			</where>
+			
+  </select>
+
+  
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="sys.spvisor.core.entity.project.TProjectExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from t_project
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_project
+    where pro_id = #{proId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_project
+    where pro_id = #{proId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="sys.spvisor.core.entity.project.TProjectExample" >
+    delete from t_project
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="sys.spvisor.core.entity.project.TProject" useGeneratedKeys="true" keyProperty="proId" >
+    insert into t_project ( project_name, pro_unit, 
+      pro_entrust_time, pro_num, pro_conpeople, 
+      pro_conntel, pro_goods, pro_type, 
+      pro_factory, pro_factoryconnpeople, pro_factoryconntel, 
+      pro_basis, pro_reportway, pro_reportfilename, 
+      pro_endtime, pro_producttype, pro_reporttime, 
+      pro_create_user_id, pro_create_time, pro_last_update_time, 
+      pro_big_project_id, pro_report_rate, pro_status, 
+      pro_start_time, pro_big_project_name, pro_goodsnum, 
+      pro_small_product_type)
+    values ( #{projectName,jdbcType=VARCHAR}, #{proUnit,jdbcType=VARCHAR}, 
+      #{proEntrustTime,jdbcType=DATE}, #{proNum,jdbcType=VARCHAR}, #{proConpeople,jdbcType=VARCHAR}, 
+      #{proConntel,jdbcType=VARCHAR}, #{proGoods,jdbcType=VARCHAR}, #{proType,jdbcType=VARCHAR}, 
+      #{proFactory,jdbcType=VARCHAR}, #{proFactoryconnpeople,jdbcType=VARCHAR}, #{proFactoryconntel,jdbcType=VARCHAR}, 
+      #{proBasis,jdbcType=VARCHAR}, #{proReportway,jdbcType=VARCHAR}, #{proReportfilename,jdbcType=VARCHAR}, 
+      #{proEndtime,jdbcType=DATE}, #{proProducttype,jdbcType=VARCHAR}, #{proReporttime,jdbcType=VARCHAR}, 
+      #{proCreateUserId,jdbcType=INTEGER}, #{proCreateTime,jdbcType=TIMESTAMP}, #{proLastUpdateTime,jdbcType=TIMESTAMP}, 
+      #{proBigProjectId,jdbcType=INTEGER}, #{proReportRate,jdbcType=VARCHAR}, #{proStatus,jdbcType=CHAR}, 
+      #{proStartTime,jdbcType=TIMESTAMP}, #{proBigProjectName,jdbcType=VARCHAR}, #{proGoodsnum,jdbcType=VARCHAR}, 
+      #{proSmallProductType,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="sys.spvisor.core.entity.project.TProject" >
+    insert into t_project
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="proId != null" >
+        pro_id,
+      </if>
+      <if test="projectName != null" >
+        project_name,
+      </if>
+      <if test="proUnit != null" >
+        pro_unit,
+      </if>
+      <if test="proEntrustTime != null" >
+        pro_entrust_time,
+      </if>
+      <if test="proNum != null" >
+        pro_num,
+      </if>
+      <if test="proConpeople != null" >
+        pro_conpeople,
+      </if>
+      <if test="proConntel != null" >
+        pro_conntel,
+      </if>
+      <if test="proGoods != null" >
+        pro_goods,
+      </if>
+      <if test="proType != null" >
+        pro_type,
+      </if>
+      <if test="proFactory != null" >
+        pro_factory,
+      </if>
+      <if test="proFactoryconnpeople != null" >
+        pro_factoryconnpeople,
+      </if>
+      <if test="proFactoryconntel != null" >
+        pro_factoryconntel,
+      </if>
+      <if test="proBasis != null" >
+        pro_basis,
+      </if>
+      <if test="proReportway != null" >
+        pro_reportway,
+      </if>
+      <if test="proReportfilename != null" >
+        pro_reportfilename,
+      </if>
+      <if test="proEndtime != null" >
+        pro_endtime,
+      </if>
+      <if test="proProducttype != null" >
+        pro_producttype,
+      </if>
+      <if test="proReporttime != null" >
+        pro_reporttime,
+      </if>
+      <if test="proCreateUserId != null" >
+        pro_create_user_id,
+      </if>
+      <if test="proCreateTime != null" >
+        pro_create_time,
+      </if>
+      <if test="proLastUpdateTime != null" >
+        pro_last_update_time,
+      </if>
+      <if test="proBigProjectId != null" >
+        pro_big_project_id,
+      </if>
+      <if test="proReportRate != null" >
+        pro_report_rate,
+      </if>
+      <if test="proStatus != null" >
+        pro_status,
+      </if>
+      <if test="proStartTime != null" >
+        pro_start_time,
+      </if>
+      <if test="proBigProjectName != null" >
+        pro_big_project_name,
+      </if>
+      <if test="proGoodsnum != null" >
+        pro_goodsnum,
+      </if>
+      <if test="proSmallProductType != null" >
+        pro_small_product_type,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="proId != null" >
+        #{proId,jdbcType=INTEGER},
+      </if>
+      <if test="projectName != null" >
+        #{projectName,jdbcType=VARCHAR},
+      </if>
+      <if test="proUnit != null" >
+        #{proUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="proEntrustTime != null" >
+        #{proEntrustTime,jdbcType=DATE},
+      </if>
+      <if test="proNum != null" >
+        #{proNum,jdbcType=VARCHAR},
+      </if>
+      <if test="proConpeople != null" >
+        #{proConpeople,jdbcType=VARCHAR},
+      </if>
+      <if test="proConntel != null" >
+        #{proConntel,jdbcType=VARCHAR},
+      </if>
+      <if test="proGoods != null" >
+        #{proGoods,jdbcType=VARCHAR},
+      </if>
+      <if test="proType != null" >
+        #{proType,jdbcType=VARCHAR},
+      </if>
+      <if test="proFactory != null" >
+        #{proFactory,jdbcType=VARCHAR},
+      </if>
+      <if test="proFactoryconnpeople != null" >
+        #{proFactoryconnpeople,jdbcType=VARCHAR},
+      </if>
+      <if test="proFactoryconntel != null" >
+        #{proFactoryconntel,jdbcType=VARCHAR},
+      </if>
+      <if test="proBasis != null" >
+        #{proBasis,jdbcType=VARCHAR},
+      </if>
+      <if test="proReportway != null" >
+        #{proReportway,jdbcType=VARCHAR},
+      </if>
+      <if test="proReportfilename != null" >
+        #{proReportfilename,jdbcType=VARCHAR},
+      </if>
+      <if test="proEndtime != null" >
+        #{proEndtime,jdbcType=DATE},
+      </if>
+      <if test="proProducttype != null" >
+        #{proProducttype,jdbcType=VARCHAR},
+      </if>
+      <if test="proReporttime != null" >
+        #{proReporttime,jdbcType=VARCHAR},
+      </if>
+      <if test="proCreateUserId != null" >
+        #{proCreateUserId,jdbcType=INTEGER},
+      </if>
+      <if test="proCreateTime != null" >
+        #{proCreateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="proLastUpdateTime != null" >
+        #{proLastUpdateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="proBigProjectId != null" >
+        #{proBigProjectId,jdbcType=INTEGER},
+      </if>
+      <if test="proReportRate != null" >
+        #{proReportRate,jdbcType=VARCHAR},
+      </if>
+      <if test="proStatus != null" >
+        #{proStatus,jdbcType=CHAR},
+      </if>
+      <if test="proStartTime != null" >
+        #{proStartTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="proBigProjectName != null" >
+        #{proBigProjectName,jdbcType=VARCHAR},
+      </if>
+      <if test="proGoodsnum != null" >
+        #{proGoodsnum,jdbcType=VARCHAR},
+      </if>
+      <if test="proSmallProductType != null" >
+        #{proSmallProductType,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="sys.spvisor.core.entity.project.TProjectExample" resultType="java.lang.Integer" >
+    select count(*) from t_project
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update t_project
+    <set >
+      <if test="record.proId != null" >
+        pro_id = #{record.proId,jdbcType=INTEGER},
+      </if>
+      <if test="record.projectName != null" >
+        project_name = #{record.projectName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.proUnit != null" >
+        pro_unit = #{record.proUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="record.proEntrustTime != null" >
+        pro_entrust_time = #{record.proEntrustTime,jdbcType=DATE},
+      </if>
+      <if test="record.proNum != null" >
+        pro_num = #{record.proNum,jdbcType=VARCHAR},
+      </if>
+      <if test="record.proConpeople != null" >
+        pro_conpeople = #{record.proConpeople,jdbcType=VARCHAR},
+      </if>
+      <if test="record.proConntel != null" >
+        pro_conntel = #{record.proConntel,jdbcType=VARCHAR},
+      </if>
+      <if test="record.proGoods != null" >
+        pro_goods = #{record.proGoods,jdbcType=VARCHAR},
+      </if>
+      <if test="record.proType != null" >
+        pro_type = #{record.proType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.proFactory != null" >
+        pro_factory = #{record.proFactory,jdbcType=VARCHAR},
+      </if>
+      <if test="record.proFactoryconnpeople != null" >
+        pro_factoryconnpeople = #{record.proFactoryconnpeople,jdbcType=VARCHAR},
+      </if>
+      <if test="record.proFactoryconntel != null" >
+        pro_factoryconntel = #{record.proFactoryconntel,jdbcType=VARCHAR},
+      </if>
+      <if test="record.proBasis != null" >
+        pro_basis = #{record.proBasis,jdbcType=VARCHAR},
+      </if>
+      <if test="record.proReportway != null" >
+        pro_reportway = #{record.proReportway,jdbcType=VARCHAR},
+      </if>
+      <if test="record.proReportfilename != null" >
+        pro_reportfilename = #{record.proReportfilename,jdbcType=VARCHAR},
+      </if>
+      <if test="record.proEndtime != null" >
+        pro_endtime = #{record.proEndtime,jdbcType=DATE},
+      </if>
+      <if test="record.proProducttype != null" >
+        pro_producttype = #{record.proProducttype,jdbcType=VARCHAR},
+      </if>
+      <if test="record.proReporttime != null" >
+        pro_reporttime = #{record.proReporttime,jdbcType=VARCHAR},
+      </if>
+      <if test="record.proCreateUserId != null" >
+        pro_create_user_id = #{record.proCreateUserId,jdbcType=INTEGER},
+      </if>
+      <if test="record.proCreateTime != null" >
+        pro_create_time = #{record.proCreateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.proLastUpdateTime != null" >
+        pro_last_update_time = #{record.proLastUpdateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.proBigProjectId != null" >
+        pro_big_project_id = #{record.proBigProjectId,jdbcType=INTEGER},
+      </if>
+      <if test="record.proReportRate != null" >
+        pro_report_rate = #{record.proReportRate,jdbcType=VARCHAR},
+      </if>
+      <if test="record.proStatus != null" >
+        pro_status = #{record.proStatus,jdbcType=CHAR},
+      </if>
+      <if test="record.proStartTime != null" >
+        pro_start_time = #{record.proStartTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.proBigProjectName != null" >
+        pro_big_project_name = #{record.proBigProjectName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.proGoodsnum != null" >
+        pro_goodsnum = #{record.proGoodsnum,jdbcType=VARCHAR},
+      </if>
+      <if test="record.proSmallProductType != null" >
+        pro_small_product_type = #{record.proSmallProductType,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update t_project
+    set pro_id = #{record.proId,jdbcType=INTEGER},
+      project_name = #{record.projectName,jdbcType=VARCHAR},
+      pro_unit = #{record.proUnit,jdbcType=VARCHAR},
+      pro_entrust_time = #{record.proEntrustTime,jdbcType=DATE},
+      pro_num = #{record.proNum,jdbcType=VARCHAR},
+      pro_conpeople = #{record.proConpeople,jdbcType=VARCHAR},
+      pro_conntel = #{record.proConntel,jdbcType=VARCHAR},
+      pro_goods = #{record.proGoods,jdbcType=VARCHAR},
+      pro_type = #{record.proType,jdbcType=VARCHAR},
+      pro_factory = #{record.proFactory,jdbcType=VARCHAR},
+      pro_factoryconnpeople = #{record.proFactoryconnpeople,jdbcType=VARCHAR},
+      pro_factoryconntel = #{record.proFactoryconntel,jdbcType=VARCHAR},
+      pro_basis = #{record.proBasis,jdbcType=VARCHAR},
+      pro_reportway = #{record.proReportway,jdbcType=VARCHAR},
+      pro_reportfilename = #{record.proReportfilename,jdbcType=VARCHAR},
+      pro_endtime = #{record.proEndtime,jdbcType=DATE},
+      pro_producttype = #{record.proProducttype,jdbcType=VARCHAR},
+      pro_reporttime = #{record.proReporttime,jdbcType=VARCHAR},
+      pro_create_user_id = #{record.proCreateUserId,jdbcType=INTEGER},
+      pro_create_time = #{record.proCreateTime,jdbcType=TIMESTAMP},
+      pro_last_update_time = #{record.proLastUpdateTime,jdbcType=TIMESTAMP},
+      pro_big_project_id = #{record.proBigProjectId,jdbcType=INTEGER},
+      pro_report_rate = #{record.proReportRate,jdbcType=VARCHAR},
+      pro_status = #{record.proStatus,jdbcType=CHAR},
+      pro_start_time = #{record.proStartTime,jdbcType=TIMESTAMP},
+      pro_big_project_name = #{record.proBigProjectName,jdbcType=VARCHAR},
+      pro_goodsnum = #{record.proGoodsnum,jdbcType=VARCHAR},
+      pro_small_product_type = #{record.proSmallProductType,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="sys.spvisor.core.entity.project.TProject" >
+    update t_project
+    <set >
+      <if test="projectName != null" >
+        project_name = #{projectName,jdbcType=VARCHAR},
+      </if>
+      <if test="proUnit != null" >
+        pro_unit = #{proUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="proEntrustTime != null" >
+        pro_entrust_time = #{proEntrustTime,jdbcType=DATE},
+      </if>
+      <if test="proNum != null" >
+        pro_num = #{proNum,jdbcType=VARCHAR},
+      </if>
+      <if test="proConpeople != null" >
+        pro_conpeople = #{proConpeople,jdbcType=VARCHAR},
+      </if>
+      <if test="proConntel != null" >
+        pro_conntel = #{proConntel,jdbcType=VARCHAR},
+      </if>
+      <if test="proGoods != null" >
+        pro_goods = #{proGoods,jdbcType=VARCHAR},
+      </if>
+      <if test="proType != null" >
+        pro_type = #{proType,jdbcType=VARCHAR},
+      </if>
+      <if test="proFactory != null" >
+        pro_factory = #{proFactory,jdbcType=VARCHAR},
+      </if>
+      <if test="proFactoryconnpeople != null" >
+        pro_factoryconnpeople = #{proFactoryconnpeople,jdbcType=VARCHAR},
+      </if>
+      <if test="proFactoryconntel != null" >
+        pro_factoryconntel = #{proFactoryconntel,jdbcType=VARCHAR},
+      </if>
+      <if test="proBasis != null" >
+        pro_basis = #{proBasis,jdbcType=VARCHAR},
+      </if>
+      <if test="proReportway != null" >
+        pro_reportway = #{proReportway,jdbcType=VARCHAR},
+      </if>
+      <if test="proReportfilename != null" >
+        pro_reportfilename = #{proReportfilename,jdbcType=VARCHAR},
+      </if>
+      <if test="proEndtime != null" >
+        pro_endtime = #{proEndtime,jdbcType=DATE},
+      </if>
+      <if test="proProducttype != null" >
+        pro_producttype = #{proProducttype,jdbcType=VARCHAR},
+      </if>
+      <if test="proReporttime != null" >
+        pro_reporttime = #{proReporttime,jdbcType=VARCHAR},
+      </if>
+      <if test="proCreateUserId != null" >
+        pro_create_user_id = #{proCreateUserId,jdbcType=INTEGER},
+      </if>
+      <if test="proCreateTime != null" >
+        pro_create_time = #{proCreateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="proLastUpdateTime != null" >
+        pro_last_update_time = #{proLastUpdateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="proBigProjectId != null" >
+        pro_big_project_id = #{proBigProjectId,jdbcType=INTEGER},
+      </if>
+      <if test="proReportRate != null" >
+        pro_report_rate = #{proReportRate,jdbcType=VARCHAR},
+      </if>
+      <if test="proStatus != null" >
+        pro_status = #{proStatus,jdbcType=CHAR},
+      </if>
+      <if test="proStartTime != null" >
+        pro_start_time = #{proStartTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="proBigProjectName != null" >
+        pro_big_project_name = #{proBigProjectName,jdbcType=VARCHAR},
+      </if>
+      <if test="proGoodsnum != null" >
+        pro_goodsnum = #{proGoodsnum,jdbcType=VARCHAR},
+      </if>
+      <if test="proSmallProductType != null" >
+        pro_small_product_type = #{proSmallProductType,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where pro_id = #{proId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="sys.spvisor.core.entity.project.TProject" >
+    update t_project
+    set project_name = #{projectName,jdbcType=VARCHAR},
+      pro_unit = #{proUnit,jdbcType=VARCHAR},
+      pro_entrust_time = #{proEntrustTime,jdbcType=DATE},
+      pro_num = #{proNum,jdbcType=VARCHAR},
+      pro_conpeople = #{proConpeople,jdbcType=VARCHAR},
+      pro_conntel = #{proConntel,jdbcType=VARCHAR},
+      pro_goods = #{proGoods,jdbcType=VARCHAR},
+      pro_type = #{proType,jdbcType=VARCHAR},
+      pro_factory = #{proFactory,jdbcType=VARCHAR},
+      pro_factoryconnpeople = #{proFactoryconnpeople,jdbcType=VARCHAR},
+      pro_factoryconntel = #{proFactoryconntel,jdbcType=VARCHAR},
+      pro_basis = #{proBasis,jdbcType=VARCHAR},
+      pro_reportway = #{proReportway,jdbcType=VARCHAR},
+      pro_reportfilename = #{proReportfilename,jdbcType=VARCHAR},
+      pro_endtime = #{proEndtime,jdbcType=DATE},
+      pro_producttype = #{proProducttype,jdbcType=VARCHAR},
+      pro_reporttime = #{proReporttime,jdbcType=VARCHAR},
+      pro_create_user_id = #{proCreateUserId,jdbcType=INTEGER},
+      pro_create_time = #{proCreateTime,jdbcType=TIMESTAMP},
+      pro_last_update_time = #{proLastUpdateTime,jdbcType=TIMESTAMP},
+      pro_big_project_id = #{proBigProjectId,jdbcType=INTEGER},
+      pro_report_rate = #{proReportRate,jdbcType=VARCHAR},
+      pro_status = #{proStatus,jdbcType=CHAR},
+      pro_start_time = #{proStartTime,jdbcType=TIMESTAMP},
+      pro_big_project_name = #{proBigProjectName,jdbcType=VARCHAR},
+      pro_goodsnum = #{proGoodsnum,jdbcType=VARCHAR},
+      pro_small_product_type = #{proSmallProductType,jdbcType=VARCHAR}
+    where pro_id = #{proId,jdbcType=INTEGER}
+  </update>
+</mapper>

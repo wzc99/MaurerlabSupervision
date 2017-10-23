@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="sys.spvisor.core.dao.project.TBigProjectMapper" >
+  <resultMap id="BaseResultMap" type="sys.spvisor.core.entity.project.TBigProject" >
+    <id column="big_project_id" property="bigProjectId" jdbcType="INTEGER" />
+    <result column="big_project_name" property="bigProjectName" jdbcType="VARCHAR" />
+    <result column="big_project_create_time" property="bigProjectCreateTime" jdbcType="TIMESTAMP" />
+    <result column="big_project_create_people" property="bigProjectCreatePeople" jdbcType="VARCHAR" />
+    <result column="big_project_create_people_id" property="bigProjectCreatePeopleId" jdbcType="INTEGER" />
+  </resultMap>
+  <resultMap id="tProjectMap" type="sys.spvisor.core.entity.project.TProject" >
+    <id column="pro_id" property="proId" jdbcType="INTEGER" />
+    <result column="project_name" property="projectName" jdbcType="VARCHAR" />
+    <result column="pro_unit" property="proUnit" jdbcType="VARCHAR" />
+    <result column="pro_entrust_time" property="proEntrustTime" jdbcType="DATE" />
+    <result column="pro_num" property="proNum" jdbcType="VARCHAR" />
+    <result column="pro_conpeople" property="proConpeople" jdbcType="VARCHAR" />
+    <result column="pro_conntel" property="proConntel" jdbcType="VARCHAR" />
+    <result column="pro_goods" property="proGoods" jdbcType="VARCHAR" />
+    <result column="pro_type" property="proType" jdbcType="VARCHAR" />
+    <result column="pro_factory" property="proFactory" jdbcType="VARCHAR" />
+    <result column="pro_factoryconnpeople" property="proFactoryconnpeople" jdbcType="VARCHAR" />
+    <result column="pro_factoryconntel" property="proFactoryconntel" jdbcType="VARCHAR" />
+    <result column="pro_basis" property="proBasis" jdbcType="VARCHAR" />
+    <result column="pro_reportway" property="proReportway" jdbcType="VARCHAR" />
+    <result column="pro_reportfilename" property="proReportfilename" jdbcType="VARCHAR" />
+    <result column="pro_endtime" property="proEndtime" jdbcType="DATE" />
+    <result column="pro_producttype" property="proProducttype" jdbcType="VARCHAR" />
+    <result column="pro_goodsnum" property="proGoodsnum" jdbcType="INTEGER" />
+    <result column="pro_reporttime" property="proReporttime" jdbcType="VARCHAR" />
+    <result column="pro_create_user_id" property="proCreateUserId" jdbcType="INTEGER" />
+    <result column="pro_create_time" property="proCreateTime" jdbcType="TIMESTAMP" />
+    <result column="pro_last_update_time" property="proLastUpdateTime" jdbcType="TIMESTAMP" />
+    <result column="pro_big_project_id" property="proBigProjectId" jdbcType="INTEGER" />
+    <result column="pro_report_rate" property="proReportRate" jdbcType="VARCHAR" />
+    <result column="pro_status" property="proStatus" jdbcType="CHAR" />
+    <result column="pro_start_time" property="proStartTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    big_project_id, big_project_name, big_project_create_time, big_project_create_people, 
+    big_project_create_people_id
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="sys.spvisor.core.entity.project.TBigProjectExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from t_big_project
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+    <if test="limit != -1">
+		limit ${limit} offset ${offset}
+	</if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_big_project
+    where big_project_id = #{bigProjectId,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_big_project
+    where big_project_id = #{bigProjectId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="sys.spvisor.core.entity.project.TBigProjectExample" >
+    delete from t_big_project
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="sys.spvisor.core.entity.project.TBigProject" useGeneratedKeys="true" keyProperty="bigProjectId">
+    insert into t_big_project (big_project_name, big_project_create_time, 
+      big_project_create_people, big_project_create_people_id
+      )
+    values ( #{bigProjectName,jdbcType=VARCHAR}, #{bigProjectCreateTime,jdbcType=TIMESTAMP}, 
+      #{bigProjectCreatePeople,jdbcType=VARCHAR}, #{bigProjectCreatePeopleId,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="sys.spvisor.core.entity.project.TBigProject" >
+    insert into t_big_project
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="bigProjectId != null" >
+        big_project_id,
+      </if>
+      <if test="bigProjectName != null" >
+        big_project_name,
+      </if>
+      <if test="bigProjectCreateTime != null" >
+        big_project_create_time,
+      </if>
+      <if test="bigProjectCreatePeople != null" >
+        big_project_create_people,
+      </if>
+      <if test="bigProjectCreatePeopleId != null" >
+        big_project_create_people_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="bigProjectId != null" >
+        #{bigProjectId,jdbcType=INTEGER},
+      </if>
+      <if test="bigProjectName != null" >
+        #{bigProjectName,jdbcType=VARCHAR},
+      </if>
+      <if test="bigProjectCreateTime != null" >
+        #{bigProjectCreateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="bigProjectCreatePeople != null" >
+        #{bigProjectCreatePeople,jdbcType=VARCHAR},
+      </if>
+      <if test="bigProjectCreatePeopleId != null" >
+        #{bigProjectCreatePeopleId,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="sys.spvisor.core.entity.project.TBigProjectExample" resultType="java.lang.Integer" >
+    select count(*) from t_big_project
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update t_big_project
+    <set >
+      <if test="record.bigProjectId != null" >
+        big_project_id = #{record.bigProjectId,jdbcType=INTEGER},
+      </if>
+      <if test="record.bigProjectName != null" >
+        big_project_name = #{record.bigProjectName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.bigProjectCreateTime != null" >
+        big_project_create_time = #{record.bigProjectCreateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.bigProjectCreatePeople != null" >
+        big_project_create_people = #{record.bigProjectCreatePeople,jdbcType=VARCHAR},
+      </if>
+      <if test="record.bigProjectCreatePeopleId != null" >
+        big_project_create_people_id = #{record.bigProjectCreatePeopleId,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update t_big_project
+    set big_project_id = #{record.bigProjectId,jdbcType=INTEGER},
+      big_project_name = #{record.bigProjectName,jdbcType=VARCHAR},
+      big_project_create_time = #{record.bigProjectCreateTime,jdbcType=TIMESTAMP},
+      big_project_create_people = #{record.bigProjectCreatePeople,jdbcType=VARCHAR},
+      big_project_create_people_id = #{record.bigProjectCreatePeopleId,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="sys.spvisor.core.entity.project.TBigProject" >
+    update t_big_project
+    <set >
+      <if test="bigProjectName != null" >
+        big_project_name = #{bigProjectName,jdbcType=VARCHAR},
+      </if>
+      <if test="bigProjectCreateTime != null" >
+        big_project_create_time = #{bigProjectCreateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="bigProjectCreatePeople != null" >
+        big_project_create_people = #{bigProjectCreatePeople,jdbcType=VARCHAR},
+      </if>
+      <if test="bigProjectCreatePeopleId != null" >
+        big_project_create_people_id = #{bigProjectCreatePeopleId,jdbcType=INTEGER},
+      </if>
+    </set>
+    where big_project_id = #{bigProjectId,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="sys.spvisor.core.entity.project.TBigProject" >
+    update t_big_project
+    set big_project_name = #{bigProjectName,jdbcType=VARCHAR},
+      big_project_create_time = #{bigProjectCreateTime,jdbcType=TIMESTAMP},
+      big_project_create_people = #{bigProjectCreatePeople,jdbcType=VARCHAR},
+      big_project_create_people_id = #{bigProjectCreatePeopleId,jdbcType=INTEGER}
+    where big_project_id = #{bigProjectId,jdbcType=INTEGER}
+  </update>
+</mapper>

@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>管理文件</title>
+<link rel="stylesheet" type="text/css" href="../../themes/general.css"  />
+<!-- <link rel="stylesheet" type="text/css" href="../../themes/demo.css" 	 		/> -->
+<link rel="stylesheet" type="text/css" href="../../themes/icon.css" 			/>
+<link rel="stylesheet" type="text/css" href="../../themes/jquery-ui.css" 		/>
+<link rel="stylesheet" type="text/css" href="../../themes/default/easyui.css" 	/>
+<script type="text/javascript" src="../../scripts/jquery-1.8.0.min.js"></script>
+<script type="text/javascript" src="../../scripts/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../../scripts/src/jquery.parser.js"></script>
+<script type="text/javascript" src="../../scripts/locale/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript" src="../../scripts/sessionExpriation.js"></script>
+<script type="text/javascript" src="../../scripts/datagrid-filter.js"></script>
+<script type="text/javascript">
+	
+$(function() {
+
+		$('#query_result').datagrid({
+			onDblClickRow : function(rowIndex, rowData) {
+				view(rowData);
+			}
+		});
+		
+		
+		var page = $('#query_result').datagrid('getPager');
+
+		$('#btn_query').bind('click', function(){
+		//在这里，如果日期控件没有选择，那么，。。。。
+		//点查询钮查询时总是以第一页开始 
+		$(page).pagination('select', 1);//主要是用来做分页的，选择一个新页面，从1开始计数
+      	});
+		$('#btn_reset').bind('click', function() {
+			$('#query_form').form('clear');
+			$('#query_result').datagrid('loadData', {
+				total : 0,
+				rows : []
+			});
+		});
+
+		// init_view_by_permission();//函数声明，后面有详解
+
+		$(page).pagination({
+			onBeforeRefresh : function() {//刷新按钮点击之前触发，返回 false 就取消刷新动作。
+			},
+			onRefresh : function(pageNumber, pageSize) {//刷新之后触发。
+
+				do_submit(pageNumber, pageSize)
+			},
+			onChangePageSize : function() {//当用户改变页面尺寸时触发。
+			},
+			onSelectPage : function(pageNumber, pageSize) {//当用户选择新的页面时触发。回调函数包含两个参数：pageNumber：新的页码  pageSize：新的页面尺寸
+
+				do_submit(pageNumber, pageSize);
+			}
+		});
+		
+		//发布日期
+		$('#EditreleaseDate').datebox({
+		onSelect: function(date){
+			
+		},
+		});
+		// 有效日期
+		$('#EditvalidDate').datebox({
+		onSelect: function(date){
+			
+		},
+		});
+		// 上传日期
+		/*$('#EditpostDate').datebox({
+		onSelect: function(date){
+			
+		},
+		});*/
+	function do_submit(pageNumber, pageSize) {
+			$('#query_form').form('submit', {
+				url : '../../file/queryFile.ajax',
+
+				onSubmit : function(param) {
+					param.paging = true;
+					param.offset = (pageNumber - 1) * pageSize;
+					param.limit = pageSize;
+					return $(this).form('validate');
+				},
+				success : function(data) {
+					var obj = $.parseJSON(data);
+					alert(obj.message);
+					$('#query_result').datagrid('loadData', obj)
+				}
+			});
+		}
+		$('#btn_submit').bind('click', function() {
+			$("#new_form").submit();
+		});
+
+		
+		var fileTypeId = 7; 
+		$('#new_form').form({//提交表单的验证
+			url : '../../file/saveFile.ajax?fileTypeId='+fileTypeId,
+			onSubmit : function() {	
+				if(!setNess()) {
+					return false;
+				}
+				if ($(this).form('validate')) {
+					return true;//验证是否为空
+				} else {
+					return false;
+				}
+			},
+			success : function(data) {
+				
+				var obj = $.parseJSON(data);//将json字符串转换为object对象
+				alert(obj);
+				if(obj.success){
+					$.messager.alert('提示', obj.message, 'info', function(){
+					
+					});
+				} else {
+					$.messager.alert('错误', obj.message, 'error');
+				}
+			}
+								
+		});
+		var fileInfoIndex = 1;//从第1个开始,但是也有其他情况
+		$("#addFileUpload").click(function(){
+			var tempDelFileInfoId = "fileInfoTab" + fileInfoIndex;
+		    $str='';
+	        $str+='<tr>';
+	        $str+='<td align="center"><input  type="file" 	name="list['+fileInfoIndex+'].fileNameOri"  			id="fileName'+fileInfoIndex+'"  /></td>';
+/* 	        $str+='<td align="center" ><span class="origin"></span></td>' */
+	        $str+='<td align="center"><input type="text" name="list['+fileInfoIndex+'].fileContentIntroduction" 				id="fileContentIntroduction'+fileInfoIndex+'" 		size="50"/></td>';
+			$str+='<td align="center"><input type="text" name="list['+fileInfoIndex+'].releaseOrganization" 				id="releaseOrganization'+fileInfoIndex+'" 		size="30"/></td>';
+		    $str+='<td align="center"><a id="'+tempDelFileInfoId+'" 	href="javascript:delTr(\''+tempDelFileInfoId+'\')" >删除</a></td>';
+		    $str+='</tr>';
+		    $("#fileInfoTab").append($str);
+		    fileInfoIndex++;
+		});	
+		})
+		
+	function delTr(tempTdId){//删除
+		var obj  = $("#" + tempTdId);
+		$(obj).parent().parent().remove();  
+	}
+		
+	
+	function formatDownLoad(val, row) {	
+		 return '<a href="#" onclick="download(row)">下载</a>';		
+	}
+	/* download(row){
+	
+	} */
+	
+	function formatPreview(val, row) {	
+		 return '<button type="button">预览</button>';		
+	}
+	
+	function formatDate(val, row) {	
+		  return formatTime(val);		
+	}
+	function do_edit() {
+		var row = $('#query_result').datagrid('getSelected');
+		if (row == null) {
+			$.messager.alert('Info', '请选择行', 'info');
+			return;
+		}
+		edit(row);
+	}
+	
+	function do_remove() {
+		var row = $('#query_result').datagrid('getSelected');
+		if (row == null) {
+			$.messager.alert('Info', '请选择行', 'info');
+			return;
+		}
+		RemoveFile(row);
+	}
+	function edit(row) {
+
+		parent.addTabWithIcon("修改档案文件", "./files/edit.htm?fileId="+row.fileId, "icon-eidt");
+		// $('#EditWindow').window('open').window('refresh');
+		//  // row.releaseDate = formatTime(row.releaseDate);
+		// // row.validDate = formatTime(row.validDate);
+		
+		//  // $('#EditreleaseDate').datebox('setValue', '6/1/2012');	// 设置日期输入框的值
+		//  // $('#EditvalidDate').datebox('setValue', row.validDate);	// 设置日期输入框的值
+		//  // $('#EditpostDate').datebox('setValue', row.postDate);	// 设置日期输入框的值
+		//  $("#EdituserName").text(row.userName);
+		//  $("#EditpostDate").text(formatTime(row.postDate));
+		//   alert(myformatter(row.validDate));
+		 
+		// // alert(row.validDate);
+		// // alert(row.postDate);
+		// /*$("#EditfileType").text("公司资质");*/
+		//   $('#query_form_Edit').form('load', row);
+		//    $('#EditreleaseDate').datebox('setValue', myformatter(row.releaseDate));	// 设置日期输入框的值
+		//   $("#EditvalidDate").val(myformatter(row.validDate));
+		//   // $("#EditreleaseDate").val(myformatter(row.releaseDate));
+		
+	}
+
+	// function myformatter(date){  
+ //    var y = date.getFullYear();  
+ //    var m = date.getMonth()+1;  
+ //    var d = date.getDate();  
+ //    return y+'-'+(m<10?('0'+m):m)+'-'+(d<10?('0'+d):d);  
+ //    } 
+  function myformatter(date){  
+		  var unixTimestamp = new Date(date) ;
+		    var y = unixTimestamp.getFullYear();  
+		    var m = unixTimestamp.getMonth()+1;  
+		    var d = unixTimestamp.getDate();  
+		    return y+'-'+(m<10?('0'+m):m)+'-'+(d<10?('0'+d):d);  
+		}
+	/*function dealDate() {
+	//设置时间  
+	 
+	var EditreleaseDate=$("#EditreleaseDate").datebox("getValue"); 
+		if(EditreleaseDate == null || EditreleaseDate == '') {
+			 var curr_time = new Date(1900,0);   
+			 $("#EditreleaseDate").datebox("setValue",myformatter(curr_time));
+		}
+	var EditvalidDate=$("#EditvalidDate").datebox("getValue"); 
+		if(EditvalidDate == null || EditvalidDate == '') {
+			 var curr_time = new Date(1900,0);   
+			 $("#EditvalidDate").datebox("setValue",myformatter(curr_time));
+		}
+	var EditpostDate=$("#EditpostDate").datebox("getValue"); 
+		if(EditpostDate == null || EditpostDate == '') {
+			 var curr_time = new Date(1900,0);   
+			 $("#EditpostDate").datebox("setValue",myformatter(curr_time));
+		}
+ 	}
+*/
+	
+ 	function formatTime(date) {
+		var unixTimestamp = new Date(date) ;
+		commonTime = unixTimestamp.toLocaleString();
+		return commonTime;
+	}
+	Date.prototype.toLocaleString = function() {
+        return this.getFullYear() + "年" + (this.getMonth() + 1) + "月" + this.getDate() + "日 " ;
+  	};
+	/* function EditFileData() {
+		
+		$.ajax({
+			url : '../../file/EditFileData.ajax',
+			type : 'post',
+			dataType : 'JSON',
+			data : {
+				fileId : $("#EditfileId").val(),
+				fileName : encodeURI($("#EditfileName").val()),
+				releaseOrganization : encodeURI($("#EditreleaseOrganization").val()),
+				fileContentIntroduction : encodeURI($("#EditfileContentIntroduction").val()),
+				validDate : encodeURI($("#EditvalidDate").val()),
+			},
+			success : function(data) {
+				if (data.success) {
+					$.messager.alert('提示', obj.message, 'info', function() {
+
+						 EditWindowClose();
+
+					});
+
+				} else {
+					$.messager.alert('错误', obj.message, 'error');
+				}
+			}
+		});
+		
+	} */
+	
+	 function RemoveFile(row){
+		$.messager.confirm('确认','您确认想要删除文件<span style="color:red">  '+row.fileName+'  </span>吗？',function(r){    
+    		if (r){    
+        		 $.ajax({     
+		        url : '../../file/Removefile.ajax',//ajax地址待修改
+				type : 'post',
+				dataType : 'JSON',
+				data : {
+					fileId : row.fileId //给你的目前的名字待修改
+				},
+				error: function(XMLHttpRequest, textStatus, errorThrown) {
+	                    
+	        	},
+				success : function(data) {
+					/* var obj = $.parseJSON(data);//将json字符串转换为object对象 */
+				if (data.success) {
+					 
+					/* location.reload();//强迫浏览器刷新当前页面 */
+					$.messager.alert('提示', data.message, 'info', function() {
+					 $('#query_form').form('submit', {
+						 url : '../../file/queryFile.ajax', 
+						success : function(data) {
+							var obj = $.parseJSON(data);
+							$('#query_result').datagrid('loadData', obj)
+						}
+					}); 
+						
+					});
+				} else {
+					$.messager.alert('错误', data.message, 'error');
+				}
+				}    
+		}); 
+		} 
+	});
+	} 
+	function do_view() {
+		var row = $('#query_result').datagrid('getSelected');//返回第一个选中的行
+		if (row == null) {
+			$.messager.alert('Info', '请选择行', 'info');
+			return;
+		}
+		view(row);
+	}
+	function view(row) {
+		$('#ViewWindow').window('open').window('refresh');
+		$("#ViewfileType").text("管理文件");
+		$("#ViewfileName").text(row.fileName);
+		$("#ViewreleaseDate").text(formatTime(row.releaseDate));
+		$("#ViewvalidDate").text(formatTime(row.validDate));
+		$("#ViewuserName").text(row.userName);
+		$("#ViewpostDate").text(formatTime(row.postDate));
+		$("#ViewreleaseOrganization").text(row.releaseOrganization);
+		$("#ViewfileContentIntroduction").text(row.fileContentIntroduction);
+		/*$('#query_form_View').form('load', row);*/
+	}
+	//关闭修改人员信息窗口
+	function EditWindowClose() {
+		$('#EditWindow').window('close');
+	}
+	//关闭查看人员信息窗口
+	function ViewWindowClose() {
+		/* $('input').removeAttr("readonly"); */
+		$('#ViewWindow').window('close');
+	}
+	function setNess() {
+		//提交的时候必须填写第一项
+	 	if( !$("#fileContentIntroduction1").val() || $("#fileContentIntroduction1").val() == "此项为必填项！") {
+			 $("#fileContentIntroduction1").css({
+				 "border":"1px solid red",
+				 "backgroundColor":"yellow"
+			 });
+			 $("#fileContentIntroduction1").val("此项为必填项！");
+			 return false;
+			
+		 }
+		//上传图片，其对应的文件描述必须填写
+		var length = $('#fileInfoTab input[id^=fileName]').length + 1;
+		var sum = 0;
+		 for(let i = 1; i < length ;i++) {
+			 $("#fileName"+i).each(function(){ 
+				 if($(this).val()!="") { 
+					 if( !$("#fileContentIntroduction"+i).val() || $("#fileContentIntroduction"+i).val() == "此项为必填项！") {
+						 $("#fileContentIntroduction"+i).css({
+							 "border":"1px solid red",
+							 "backgroundColor":"yellow"
+						 });
+						 $("#fileContentIntroduction"+i).val("此项为必填项！");
+						 sum ++;
+					 }else {
+						 $("#fileContentIntroduction"+i).css({
+							 "border":"1px solid black",
+							 "backgroundColor":"white"
+						 });
+					 }
+					 if( !$("#releaseOrganization"+i).val() || $("#releaseOrganization"+i).val() == "此项为必填项！") {
+						 $("#releaseOrganization"+i).css({
+							 "border":"1px solid red",
+							 "backgroundColor":"yellow"
+						 });
+						 $("#releaseOrganization"+i).val("此项为必填项！");
+						 sum ++;
+					 }else {
+						 $("#releaseOrganization"+i).css({
+							 "border":"1px solid black",
+							 "backgroundColor":"white"
+						 });
+					 }
+					 
+					 
+					
+				 }else {
+					 return true;
+				 }
+			}); 
+		 }
+		 if(sum != 0) {
+			 return false;
+		 }else {
+			 return true;
+		 }
+	}
+</script>
+
+
+</head>
+<body>
+<div style="margin: 5px 0"></div>
+<div style="margin: 0 5px">
+<form id="query_form" method="post">
+	<table class="table_view" style="font-size: 12px; background: #F1F1F1;">
+	<tr>
+		<td class="td_view_name_people">文件名称</td>
+		<td class="td_view_value_people"><input class="easyui-validatebox input_140" id="fileName" name="fileName" /></td>
+		<td class="td_view_name_people">发布机构</td>
+		<td class="td_view_value_people"><input class="easyui-validatebox input_140" id="releaseOrganization" name="releaseOrganization" /></td>
+		<td class="td_view_name_people">内容简介</td>
+		<td class="td_view_value_people" ><input class="easyui-validatebox input_140" type="text" id="fileContentIntroduction" name="fileContentIntroduction" /></td>
+		
+		<td class="td_view_name_people"  hidden="true">文件类型</td>
+		<td class="td_view_value_people" hidden="true"><input class="easyui-validatebox input_140" type="text" id="filetype" name="type" hidden="true" value="7"/></td>
+	</tr>
+	<tr>
+		<td colspan="6" align="center" class="td_view_name">
+			<div align="center">
+				<a id="btn_query" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"	>查询</a>
+				<a id="btn_reset" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-reset" 	>重置</a>
+			</div>
+		</td>
+	</tr>
+	</table>
+</form>
+</div>
+
+<div style="margin: 10px 0;"></div>
+	<div style="margin: 0 5px">
+		<table title="查询结果" id="query_result" 
+			data-options="singleSelect:true,pagination:true,rownumbers:true,pageNumber:1,pageSize:10,pageList:[1,5,10]"
+			toolbar="#tb" >
+			<thead>
+				<tr>
+					<th field="ck" checkbox="true"></th>
+					<th data-options="field:'fileId',width:80,hidden:true,align:'center',sortable:'true'">文件ID</th>
+					<th data-options="field:'fileName',width:130,hidden:false,align:'center',sortable:'true'">文件名称</th>					
+					<th data-options="field:'fileContentIntroduction',width:140,hidden:false,align:'center',sortable:'true'">内容简介</th>
+					<th data-options="field:'releaseOrganization',width:120,hidden:false,align:'center',sortable:'true'">发布机构</th>
+					<th data-options="field:'releaseDate',width:100,hidden:false,align:'center',sortable:'true',formatter:formatDate">发布日期</th>
+					<th data-options="field:'validDate',width:100,hidden:false,align:'center',sortable:'true',formatter:formatDate">有效日期</th>
+					<th data-options="field:'postUserId',width:100,hidden:true,align:'center',sortable:'true'">上传人</th>
+					<th data-options="field:'userName',width:100,hidden:false,align:'center',sortable:'true'">上传人</th>	
+					<!-- <th data-options="field:'postDate',width:100,hidden:false,align:'center',sortable:'true'">上传日期</th> -->
+					 <th data-options="field:'postDate',width:100,hidden:false,align:'center',sortable:'true',formatter:formatDate">上传日期</th> 
+					<th data-options="field:'_downLoad',width:100,hidden:false,align:'center',formatter:formatDownLoad">下载</th>
+					<th data-options="field:'_preview',width:100,hidden:false,align:'center',formatter:formatPreview">预览</th>							
+				</tr>
+			</thead>
+		</table>
+
+		 <div id="tb">			
+			<div id="divBtnView" style="float:left">
+				<a href="#" class="easyui-linkbutton" iconCls="icon-view"
+					plain="true" onclick="javascript:do_view()">查看档案信息</a>
+			</div>
+			<div id="divBtnEdit" style="float: left">
+				<a href="#" class="easyui-linkbutton" iconCls="icon-edit"
+					plain="true" onclick="javascript:do_edit()">修改档案信息</a>
+			</div>	
+			<div id="divBtnDele" style="float: left">
+				<a href="#" class="easyui-linkbutton" iconCls="icon-cancel"
+					plain="true" onclick="javascript:do_remove()">删除档案信息 </a>
+			</div>	
+		</div> 
+	</div>
+ <form id="new_form" method="post" enctype="multipart/form-data">
+<input type="hidden" name="fileNameTotal" 		id="fileName_total" 		value="" />
+
+	<table class="table_new" id="fileInfoTab">		
+		<tr>
+			<td align="center" width="60px"><strong>上传</strong></td>
+			<!-- <td align="center" width="150px"><strong>已上传文件名</strong></td> -->
+			<td align="center" width="150px"><strong>内容简介</strong></td>
+			<td align="center" width="150px"><strong>发布机构</strong></td>
+			<td align="center" width="40px"><a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addFileUpload"></a></td>
+		</tr>
+		<tr>
+			
+			<td align="center"><input align="center" type="file" 	id="fileName1" 	name="list[0].fileNameOri"  /></td>
+			<!-- <td align="center" ><span class="origin"></span></td> -->
+			<td align="center"><input type="text" name="list[0].fileContentIntroduction" value="" 		id="fileContentIntroduction1" 		size="50"/></td>
+			<td align="center"><input type="text" name="list[0].releaseOrganization" value="" 		id="releaseOrganization1" 		size="30"/></td>
+			<td align="center">&nbsp;</td>
+		</tr>
+		
+		
+	</table>
+	<table class="table_new">
+	<tr>
+		<td align="center" width="100%"><a id="btn_submit" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok">确认提交</a></td>
+	</tr>
+	</table>
+	
+</form>
+
+
+
+	<!-- 修改档案文件窗口 -->
+	<!-- <div id="EditWindow" class="easyui-window" title="修改档案文件"
+		data-options="collapsible:false,closable:false,minimizable:false,maximizable:false,modal:true,closed:true,iconCls:'icon-Edit'"
+		style="width:700px;height:460px;padding:10px;">
+		<div class="easyui-layout" data-options="fit:true">
+		<div data-options="region:'center'" style="padding:10px;">
+				<form id="query_form_Edit" method="post">
+					<table class="table_view">
+						
+						<tr>	
+							<td class="td_view_name"  style = "text-align: center"  hidden="true">档案ID</td>
+							<td class="td_view_value" hidden="true"><input
+								class="easyui-validatebox input_140" type="text" data-options="editable:false"
+								id="EditfileId" name="fileId"  readonly = "true"/></td>
+						</tr>
+						<tr>	
+							<td class="td_view_name"  style = "text-align: center"  >文件类别</td>
+							<td class="td_view_value" colspan=3><span > 公司资质</span></td>
+							<td class="td_view_value" colspan=3><input
+								class="easyui-validatebox input_140" type="text" data-options="editable:false"
+								id="EditfileType" name="fileType"  readonly = "true"/></td>
+						</tr>
+
+						<tr>		
+							<td class="td_view_name"  style = "text-align: center"  >文件名称</td>
+							<td class="td_view_value" colspan=3><input
+								class="easyui-validatebox input_360" type="text" 
+								id="EditfileName" name="fileName"  /></td>
+						</tr>
+
+						 <tr>
+						 	<td class="td_view_name"  style = "text-align: center"  >上传人</td>
+							 <td class="td_view_value"><span id="EdituserName"  ></span></td> 
+							<td class="td_view_value"><input
+								class="easyui-validatebox input_140" type="text" data-options="editable:false"
+								id="EdituserName" name="userName"  readonly = "true"/></td> 
+							
+							<td class="td_view_name"  style = "text-align: center" >上传日期</td>
+							<td class="td_view_value"><span id="EditpostDate"  ></span></td> 
+							<td class="td_view_value"><input
+								class="easyui-validatebox input_140" type="text" 
+								id="EditpostDate" name="postDate" readonly = "true"/></td>	 											
+						</tr> 
+				
+						<tr>	
+							<td class="td_view_name"  style = "text-align: center" >发布日期</td>
+							<td class="td_view_value"><input
+								class="easyui-validatebox input_140" type="text" 
+								id="EditreleaseDate" name="releaseDate" /></td>
+							 <td class="td_view_name"  style = "text-align: center" >有效日期</td>
+							<td class="td_view_value"><input
+								class="easyui-validatebox input_140" type="text" 
+								id="EditvalidDate" name="validDate" /></td>
+						</tr> 
+						
+						
+						<tr>							
+							<td class="td_view_name"  style = "text-align: center" >发布机构</td>
+							<td class="td_view_value" colspan=3><input  type="text"
+								class="easyui-validatebox input_360" id="EditreleaseOrganization"
+								name="releaseOrganization"  /></td>
+						</tr>
+
+						<tr>		
+							<td class="td_view_name"  style = "text-align: center" >内容简介</td>
+							<td class="td_view_value" colspan=3><input  type="text"
+								class="easyui-textbox textarea_360" id="EditfileContentIntroduction"
+								name="fileContentIntroduction"  /></td>			
+						</tr>
+						
+								
+					</table>
+				</form>
+			</div>
+			<div data-options="region:'south',border:false"
+				style="text-align:right;padding:5px 0 0;">
+					<a class="easyui-linkbutton"
+					data-options="iconCls:'icon-ok'" href="javascript:void(0)"
+					onclick="EditFileData()" style="width:80px">确认</a>
+					<a class="easyui-linkbutton"
+					data-options="iconCls:'icon-cancel'" href="javascript:void(0)"
+					onclick="EditWindowClose()" style="width:80px">取消</a>
+			</div>
+		</div>
+	</div> -->
+
+
+<!-- 查看档案信息窗口 -->
+	<div id="ViewWindow" class="easyui-window" title="查看档案信息"
+		data-options="collapsible:false,closable:false,minimizable:false,maximizable:false,modal:true,closed:true,iconCls:'icon-Edit'"
+		style="width:700px;height:460px;padding:10px;">
+		<div class="easyui-layout" data-options="fit:true">
+		<div data-options="region:'center'" style="padding:10px;">
+				<form id="query_form_View" method="post">
+					<table class="table_view">
+						
+						<tr>	
+							<td class="td_view_name"  style = "text-align: center"  hidden="true">档案ID</td>
+							<td class="td_view_value" hidden="true"><input
+								class="easyui-validatebox input_140" type="text" data-options="editable:false"
+								id="ViewfileId" name="fileId"  readonly = "true"/></td>
+						</tr>
+						<tr>	
+							<td class="td_view_name"  style = "text-align: center"  >文件类别</td>
+							<td class="td_view_value" colspan=3><span id="ViewfileType"  ></span></td>
+							
+						</tr>
+						<tr>
+							<td class="td_view_name"  style = "text-align: center"  >文件名称</td>
+							<td class="td_view_value" colspan=3><span id="ViewfileName"  ></span></td>
+							
+						</tr>
+				
+						<tr>	
+							<td class="td_view_name"  style = "text-align: center" >发布日期</td>
+							<td class="td_view_value"><span id="ViewreleaseDate"  ></span></td>
+						
+							<td class="td_view_name"  style = "text-align: center" >有效日期</td>
+							<td class="td_view_value"><span id="ViewvalidDate"  ></span></td>
+							
+						</tr>
+						
+						<tr>
+							<td class="td_view_name"  style = "text-align: center" >上传人</td>
+							<td class="td_view_value"><span id="ViewuserName"  ></span></td>
+							
+							<td class="td_view_name"  style = "text-align: center" >上传日期</td>
+							<td class="td_view_value"><span id="ViewpostDate"  ></span></td>
+																	
+						</tr>
+
+						<tr>							
+							<td class="td_view_name"  style = "text-align: center" >发布机构</td>
+							<td class="td_view_value" colspan=3><span id="ViewreleaseOrganization"  ></span></td>
+							
+						</tr>
+
+						<tr>
+							<td class="td_view_name"  style = "text-align: center" >内容简介</td>
+							<td class="td_view_value" colspan=3><span id="ViewfileContentIntroduction"  ></span></td>
+						
+						</tr>
+						
+								
+					</table>
+				</form>
+			</div>
+			<div data-options="region:'south',border:false"
+				style="text-align:right;padding:5px 0 0;">
+					<a class="easyui-linkbutton"
+					data-options="iconCls:'icon-cancel'" href="javascript:void(0)"
+					onclick="ViewWindowClose()" style="width:80px">取消</a>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

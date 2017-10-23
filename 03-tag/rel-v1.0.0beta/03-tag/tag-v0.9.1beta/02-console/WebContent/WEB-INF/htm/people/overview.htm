@@ -1,0 +1,398 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>当天人员动态表</title>
+<link rel="stylesheet" type="text/css" href="../../themes/general.css"  />
+<!-- <link rel="stylesheet" type="text/css" href="../../themes/demo.css" 	 		/> -->
+<link rel="stylesheet" type="text/css" href="../../themes/icon.css" 			/>
+<link rel="stylesheet" type="text/css" href="../../themes/jquery-ui.css" 		/>
+<link rel="stylesheet" type="text/css" href="../../themes/default/easyui.css" 	/>
+<script type="text/javascript" src="../../scripts/jquery-1.8.0.min.js"></script>
+<script type="text/javascript" src="../../scripts/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../../scripts/src/jquery.parser.js"></script>
+<script type="text/javascript" src="../../scripts/locale/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript" src="../../scripts/sessionExpriation.js"></script>
+<script type="text/javascript" src="../../scripts/datagrid-filter.js"></script>
+<script type="text/javascript">
+	
+	
+	$(function() {
+
+		 
+		 
+		
+		$('#userWorkStatus').combobox({
+				url : '../../people/getPostStatus.ajax',
+				valueField : 'postStatusId',
+				textField : 'postStatusDes',
+				panelHeight : 'auto',
+
+			});
+
+		// $('#roleDesc').combobox({
+		// 		url : '../../people/getAddroleDesc.ajax',
+		// 		valueField : 'roleDesc',
+		// 		textField : 'roleDesc',
+		// 		panelHeight : 'auto',
+		// 	});
+
+		$('#query_result').datagrid({
+			/* collapsible:true, */
+			/* url : '../../people/getAllPeople.ajax',  */
+		/* 	url : '../../people/queryPeople.ajax',   */
+			// pagination : true,
+			// pageList: [10, 20, 30], 
+			// pageSize:10,
+			// showFilterBar:false,
+			// striped: true,
+			// sortOrder:"asc",
+			// remoteSort:false,
+			onDblClickRow : function(rowIndex, rowData) {
+				view(rowData);
+
+			}
+		});
+		
+		
+		var page = $('#query_result').datagrid('getPager');
+
+		$('#btn_query').bind('click', function(){
+		//在这里，如果日期控件没有选择，那么，。。。。
+		//点查询钮查询时总是以第一页开始 
+		$(page).pagination('select', 1);//主要是用来做分页的，选择一个新页面，从1开始计数
+      	});
+		$('#btn_reset').bind('click', function() {
+			$('#query_form').form('clear');
+			$('#query_result').datagrid('loadData', {
+				total : 0,
+				rows : []
+			});
+		});
+
+		// init_view_by_permission();//函数声明，后面有详解
+
+		$(page).pagination({
+			onBeforeRefresh : function() {//刷新按钮点击之前触发，返回 false 就取消刷新动作。
+			},
+			onRefresh : function(pageNumber, pageSize) {//刷新之后触发。
+
+				do_submit(pageNumber, pageSize)
+			},
+			onChangePageSize : function() {//当用户改变页面尺寸时触发。
+			},
+			onSelectPage : function(pageNumber, pageSize) {//当用户选择新的页面时触发。回调函数包含两个参数：pageNumber：新的页码  pageSize：新的页面尺寸
+
+				do_submit(pageNumber, pageSize);
+			}
+		});
+
+		// $('#btn_query').bind('click', function() {
+		// var peoJobNum = $("#peoJobNum").val();
+		// var peoStationDesc = $('#peoStationDesc').combobox('getValue');
+		// var peoName = $("#peoName").val();
+		// var projectName = $("#projectName").val();
+		// var roleDesc = $('#roleDesc').combobox('getValue');
+		// var proFactory = $("#proFactory").val();
+
+		// var dg = $('#query_result').datagrid();
+		// $('#query_result').datagrid('enableFilter');
+		// dg.datagrid('removeFilterRule');
+		// if(peoJobNum == '' && peoStationDesc == '' && peoName == '' && projectName == '' && roleDesc == ''&& proFactory == ''){
+		// 	dg.datagrid('disableFilter');
+		// 	$('#query_result').datagrid({url : '../../people/getAllPeople.ajax'});
+		// }else{
+		// if(peoJobNum != ''){
+  //       	dg.datagrid('addFilterRule', {
+		// 	field: 'peoJobNum',
+		// 	op: 'contains',
+		// 	value: peoJobNum
+		// 	});
+  //       }
+        
+  //       if(peoStationDesc != ''){
+  //       	dg.datagrid('addFilterRule', {
+		// 	field: 'peoStationDesc',
+		// 	op: 'contains',
+		// 	value: peoStationDesc
+		// 	});
+  //       }
+
+  //  		if(peoName != ''){
+  //       	dg.datagrid('addFilterRule', {
+		// 	field: 'peoName',
+		// 	op: 'contains',
+		// 	value: peoName
+		// 	});
+  //       }
+  //       if(projectName != ''){
+  //       	dg.datagrid('addFilterRule', {
+		// 	field: 'projectName',
+		// 	op: 'contains',
+		// 	value: projectName
+		// 	});
+  //       }
+  //       if(proFactory != ''){
+  //       	dg.datagrid('addFilterRule', {
+		// 	field: 'proFactory',
+		// 	op: 'contains',
+		// 	value: proFactory
+		// 	});
+  //       }
+  //       if(roleDesc != ''){
+  //       	dg.datagrid('addFilterRule', {
+		// 	field: 'roleDesc',
+		// 	op: 'contains',
+		// 	value: roleDesc
+		// 	});
+  //       }
+		// dg.datagrid('doFilter');
+		// }
+		// });
+
+
+	function do_submit(pageNumber, pageSize) {
+
+			$('#query_form').form('submit', {
+				url : '../../people/queryPeople.ajax',
+
+				onSubmit : function(param) {
+					param.paging = true;
+					param.offset = (pageNumber - 1) * pageSize;
+					param.limit = pageSize;
+					return $(this).form('validate');
+				},
+				success : function(data) {
+					var obj = $.parseJSON(data);
+					alert(obj.message);
+					$('#query_result').datagrid('loadData', obj)
+				}
+			});
+
+		}
+
+	});
+
+	function do_view() {
+		var row = $('#query_result').datagrid('getSelected');//返回第一个选中的行
+		if (row == null) {
+			$.messager.alert('Info', '请选择行', 'info');
+			return;
+		}
+		view(row);
+	}
+	//打开新页面查看		
+	function view(row) {
+		$('#ViewWindow').window('open').window('refresh');
+		if (row.ppStatus == "O") {
+			row.ppStatus = "在项目里面"
+		} else if (row.ppStatus == "C") {
+			row.ppStatus = "离开项目"
+		}else if (row.ppStatus == "Z") {
+			row.ppStatus = "暂时离开项目"
+		}
+		;
+		$('#query_form_View').form('load', row);
+	}
+
+	function formatPeopleWorkStatus(val, row) {
+		if (val == "出差" || val == "办公室出勤") {
+			return '<span style="color:green">' + val + '</span>';
+		} else if (val == "离职") {
+			return '<span style="color:red">' + val + '</span>';
+		} else if (val == "本人待岗" || val == "非本人待岗") {
+			return '<span style="color:blue">' + val + '</span>';
+		} else if (val == "休假" || val == "请假") {
+			return '<span style="color:fuchsia ">' + val + '</span>';
+		} else if (val == "备用") {
+			return '<span style="color:orange">' + val + '</span>';
+		} else {
+			return val;
+		}
+	}
+
+	function formatPrejectInStatus(val, row) {
+		if (val == "O") {
+			return '<span style="color:green">在项目中</span>';
+		} else if (val == "C") {
+			return '<span style="color:red">离开项目</span>';
+		}else if (val == "Z") {
+			return '<span style="color:red">暂时离开项目</span>';
+		}
+	}
+	//关闭查看人员信息窗口
+	function ViewWindowClose() {
+		/* $('input').removeAttr("readonly"); */
+		$('#ViewWindow').window('close');
+	}
+	function formatDate(val, row) {	
+		  return formatTime(val);		
+	}
+	function formatTime(date) {
+		var unixTimestamp = new Date(date) ;
+		commonTime = unixTimestamp.toLocaleString();
+		return commonTime;
+	}
+	Date.prototype.toLocaleString = function() {
+        return this.getFullYear() + "年" + (this.getMonth() + 1) + "月" + this.getDate() + "日 " ;
+  	};
+</script>
+</head>
+<body>
+<div style="margin: 5px 0"></div>
+<div style="margin: 0 5px">
+<form id="query_form" method="post">
+	<table class="table_view" style="font-size: 12px; background: #F1F1F1;">
+	<tr>
+	 	<td class="td_view_name_people">员工编号</td>
+		<td class="td_view_value_people"><input class="easyui-validatebox input_140" id="userLoginName" name="userLoginName" /></td> 
+		<td class="td_view_name_people">姓名</td>
+		<td class="td_view_value_people" ><input class="easyui-validatebox input_140" type="text" id="userName" name="userName" /></td>
+		<td class="td_view_name_people">岗位状态</td>							
+		<td class="td_view_value_people"><input class="easyui-combobox" id="userWorkStatus" name="userWorkStatusId" /></td>
+		
+				
+	</tr>
+	<tr>
+		<!-- <td class="td_view_name_people">角色</td>							
+		<td class="td_view_value_people"><input class="easyui-combobox" id="roleDesc" name="roleDesc" /></td>	 -->
+		<td class="td_view_name_people">所在项目</td>							
+		<td class="td_view_value_people"><input class="easyui-validatebox input_140" id="projectName" name="projectName" /></td> 
+		<td class="td_view_name_people">所在厂家</td>
+		<td class="td_view_value_people"><input class="easyui-validatebox input_140" id="proUnit" name="proUnit" /></td>
+	</tr>
+
+	<tr>
+		<td colspan="6" align="center" class="td_view_name">
+			<div align="center">
+				<a id="btn_query" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"	>查询</a>
+				<a id="btn_reset" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-reset" 	>重置</a>
+			</div>
+		</td>
+	</tr>
+	</table>
+</form>
+</div>
+
+<div style="margin: 10px 0;"></div>
+	<div style="margin: 0 5px">
+		<table title="查询结果" id="query_result" 
+			data-options="singleSelect:true,pagination:true,rownumbers:true,pageNumber:1,pageSize:10,pageList:[1,5,10]"
+			toolbar="#tb" >
+			<thead>
+				<tr>
+					<th field="ck" checkbox="true"></th>
+					<th data-options="field:'userId',width:80,hidden:true,align:'center'">人员ID</th>
+					<th data-options="field:'userLoginName',width:80,hidden:false,align:'center'">员工编号</th>
+					<th data-options="field:'userName',width:80,hidden:false,align:'center'">姓名</th>
+					<th data-options="field:'userSex',width:80,align:'center'">性别</th>
+					<th data-options="field:'role',width:150,align:'center'">角色</th>
+					<th data-options="field:'userWorkStatus',width:100,align:'center',formatter:formatPeopleWorkStatus">岗位状态</th>
+					<th data-options="field:'projectName',width:100,align:'center'">所在项目</th>
+					<th data-options="field:'ppProRole',width:100,align:'center'">项目职务</th>
+					<th data-options="field:'proUnit',width:120,align:'center'">所在厂家</th>
+					<th data-options="field:'ppStatus',width:100,align:'center',formatter:formatPrejectInStatus">是否还在项目里</th>
+					<th data-options="field:'userLocationDes',width:80,align:'center'">出差位置</th>					
+					<!-- <th data-options="field:'proProducttype',hidden:true,width:140,align:'center',sortable:'true'">项目类型</th> -->
+					<th data-options="field:'userLatestWorkTime',width:110,align:'center'" formatter="formatTime">最近一次进入项目</th>
+				</tr>
+			</thead>
+		</table>
+		<div id="tb">
+			<div id="divBtnView" style="float:left">
+				<a href="#" class="easyui-linkbutton" iconCls="icon-view"
+					plain="true" onclick="javascript:do_view()">查看人员信息</a>
+			</div>
+			
+		</div>
+		</div>
+		<!-- 查看人员信息窗口 -->
+	<div id="ViewWindow" class="easyui-window" title="查看人员信息"
+		data-options="collapsible:false,closable:false,minimizable:false,maximizable:false,modal:true,closed:true,iconCls:'icon-view'"
+		style="width:700px;height:460px;padding:10px;">
+		<div class="easyui-layout" data-options="fit:true">
+		<div data-options="region:'center'" style="padding:10px;">
+				<form id="query_form_View" method="post">
+					<table class="table_view">
+						
+						<tr>	
+							<td class="td_view_name"  style = "text-align: center" >员工编号</td>
+							<td class="td_view_value"><input
+								class="easyui-validatebox input_140" type="text" data-options="editable:false"
+								id="ViewpeoJobNum" name="userLoginName"  readonly = "true"/></td>
+							<td class="td_view_name"  style = "text-align: center" >姓名</td>
+							<td class="td_view_value"><input
+								class="easyui-validatebox input_140" type="text" data-options="editable:false"
+								id="ViewpeoName" name="userName"  readonly = "true"/></td>
+						</tr>
+						
+						<tr>
+							<td class="td_view_name"  style = "text-align: center" >性别</td>
+							<td class="td_view_value"><input
+								class="easyui-combobox" id="ViewuserSex"
+								name="userSex" data-options="panelHeight:'auto'"
+								 readonly = "true" /></td>
+							<td class="td_view_name"  style = "text-align: center" >角色</td>
+							<td class="td_view_value"><input
+								class="easyui-validatebox input_140" type="text" data-options="editable:false"
+								id="ViewroleDesc" name="role"  readonly = "true"/></td>		
+																	
+						</tr>
+
+						<tr>	
+							<td class="td_view_name"  style = "text-align: center" >岗位状态</td>
+							<td class="td_view_value"><input
+								class="easyui-validatebox input_140" type="text" data-options="editable:false"
+								id="ViewpeoStationDesc" name="userWorkStatus"  readonly = "true"/></td>	 	
+							
+							<td class="td_view_name"  style = "text-align: center" >出差位置</td>
+							<td class="td_view_value"><input
+								class="easyui-validatebox input_140" type="text" data-options="editable:false"
+								id="ViewpeoEvectionLocation" name="userLocationDes"  readonly = "true"/></td>
+						</tr>						
+	
+						<tr>
+							<td class="td_view_name"  style = "text-align: center" >所在项目</td>
+							<td class="td_view_value"><input
+								class="easyui-validatebox input_140" type="text" data-options="editable:false"
+								id="ViewuserLoginName" name="userLoginName"  readonly = "true"/></td>
+							<td class="td_view_name"  style = "text-align: center"  >项目职务</td>
+							<td class="td_view_value"  ><input
+								class="easyui-validatebox input_140" type="text" data-options="editable:false"
+								id="ViewppProRoleDesc" name="ppProRole"  readonly = "true"/></td>						
+							
+						</tr>
+
+
+						<tr>							
+							<td class="td_view_name">所在厂家</td>
+							<td class="td_view_value"><input  type="text"
+								class="easyui-validatebox input_140" id="AddproFactory"
+								name="proUnit"   readonly = "true"/></td>
+							<td class="td_view_name">是否还在项目里</td>
+							<td class="td_view_value"><input  type="text"
+								class="easyui-validatebox input_140" id="AddppStatus"
+								name="ppStatus"  data-options="panelHeight:'auto',formatter:formatPrejectInStatus"
+								 readonly = "true"/></td>
+						</tr>
+
+						<tr>	
+							<td class="td_view_name">最近一次进入项目日期</td>
+							<td class="td_view_value"><input  type="text"
+								class="easyui-datebox input_140" id="ViewpeoLaterWorkTime"
+								name="peoLaterWorkTime"   readonly = "true"/></td>	
+						</tr>					
+					</table>
+				</form>
+			</div>
+			<div data-options="region:'south',border:false"
+				style="text-align:right;padding:5px 0 0;">
+					<a class="easyui-linkbutton"
+					data-options="iconCls:'icon-cancel'" href="javascript:void(0)"
+					onclick="ViewWindowClose()" style="width:80px">关闭</a>
+			</div>
+		</div>
+	</div>
+	
+</body>
+</html>

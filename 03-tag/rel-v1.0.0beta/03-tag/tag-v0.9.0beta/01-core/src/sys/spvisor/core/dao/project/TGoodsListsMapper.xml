@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="sys.spvisor.core.dao.project.TGoodsListsMapper" >
+  <resultMap id="BaseResultMap" type="sys.spvisor.core.entity.project.TGoodsLists" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="pro_id" property="proId" jdbcType="INTEGER" />
+    <result column="list_serial_number" property="listSerialNumber" jdbcType="INTEGER" />
+    <result column="good_type" property="goodType" jdbcType="VARCHAR" />
+    <result column="good_name" property="goodName" jdbcType="VARCHAR" />
+    <result column="good_specifications" property="goodSpecifications" jdbcType="VARCHAR" />
+    <result column="good_order_num" property="goodOrderNum" jdbcType="INTEGER" />
+    <result column="good_unit" property="goodUnit" jdbcType="VARCHAR" />
+    <result column="good_note" property="goodNote" jdbcType="VARCHAR" />
+    <result column="good_id" property="goodId" jdbcType="INTEGER" />
+    <result column="plan_date" property="planDate" jdbcType="DATE" />
+    <result column="promise_date" property="promiseDate" jdbcType="DATE" />
+    <result column="product_num" property="productNum" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, pro_id, list_serial_number, good_type, good_name, good_specifications, good_order_num, 
+    good_unit, good_note, good_id, plan_date, promise_date, product_num
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="sys.spvisor.core.entity.project.TGoodsListsExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from t_goods_lists
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_goods_lists
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_goods_lists
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="sys.spvisor.core.entity.project.TGoodsListsExample" >
+    delete from t_goods_lists
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="sys.spvisor.core.entity.project.TGoodsLists" useGeneratedKeys="true" keyProperty="id">
+    insert into t_goods_lists (pro_id, list_serial_number, 
+      good_type, good_name, good_specifications, 
+      good_order_num, good_unit, good_note, 
+      good_id, plan_date, promise_date, 
+      product_num)
+    values (#{proId,jdbcType=INTEGER}, #{listSerialNumber,jdbcType=INTEGER}, 
+      #{goodType,jdbcType=VARCHAR}, #{goodName,jdbcType=VARCHAR}, #{goodSpecifications,jdbcType=VARCHAR}, 
+      #{goodOrderNum,jdbcType=INTEGER}, #{goodUnit,jdbcType=VARCHAR}, #{goodNote,jdbcType=VARCHAR}, 
+      #{goodId,jdbcType=INTEGER}, #{planDate,jdbcType=DATE}, #{promiseDate,jdbcType=DATE}, 
+      #{productNum,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="sys.spvisor.core.entity.project.TGoodsLists" >
+    insert into t_goods_lists
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="proId != null" >
+        pro_id,
+      </if>
+      <if test="listSerialNumber != null" >
+        list_serial_number,
+      </if>
+      <if test="goodType != null" >
+        good_type,
+      </if>
+      <if test="goodName != null" >
+        good_name,
+      </if>
+      <if test="goodSpecifications != null" >
+        good_specifications,
+      </if>
+      <if test="goodOrderNum != null" >
+        good_order_num,
+      </if>
+      <if test="goodUnit != null" >
+        good_unit,
+      </if>
+      <if test="goodNote != null" >
+        good_note,
+      </if>
+      <if test="goodId != null" >
+        good_id,
+      </if>
+      <if test="planDate != null" >
+        plan_date,
+      </if>
+      <if test="promiseDate != null" >
+        promise_date,
+      </if>
+      <if test="productNum != null" >
+        product_num,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="proId != null" >
+        #{proId,jdbcType=INTEGER},
+      </if>
+      <if test="listSerialNumber != null" >
+        #{listSerialNumber,jdbcType=INTEGER},
+      </if>
+      <if test="goodType != null" >
+        #{goodType,jdbcType=VARCHAR},
+      </if>
+      <if test="goodName != null" >
+        #{goodName,jdbcType=VARCHAR},
+      </if>
+      <if test="goodSpecifications != null" >
+        #{goodSpecifications,jdbcType=VARCHAR},
+      </if>
+      <if test="goodOrderNum != null" >
+        #{goodOrderNum,jdbcType=INTEGER},
+      </if>
+      <if test="goodUnit != null" >
+        #{goodUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="goodNote != null" >
+        #{goodNote,jdbcType=VARCHAR},
+      </if>
+      <if test="goodId != null" >
+        #{goodId,jdbcType=INTEGER},
+      </if>
+      <if test="planDate != null" >
+        #{planDate,jdbcType=DATE},
+      </if>
+      <if test="promiseDate != null" >
+        #{promiseDate,jdbcType=DATE},
+      </if>
+      <if test="productNum != null" >
+        #{productNum,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="sys.spvisor.core.entity.project.TGoodsListsExample" resultType="java.lang.Integer" >
+    select count(*) from t_goods_lists
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update t_goods_lists
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.proId != null" >
+        pro_id = #{record.proId,jdbcType=INTEGER},
+      </if>
+      <if test="record.listSerialNumber != null" >
+        list_serial_number = #{record.listSerialNumber,jdbcType=INTEGER},
+      </if>
+      <if test="record.goodType != null" >
+        good_type = #{record.goodType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.goodName != null" >
+        good_name = #{record.goodName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.goodSpecifications != null" >
+        good_specifications = #{record.goodSpecifications,jdbcType=VARCHAR},
+      </if>
+      <if test="record.goodOrderNum != null" >
+        good_order_num = #{record.goodOrderNum,jdbcType=INTEGER},
+      </if>
+      <if test="record.goodUnit != null" >
+        good_unit = #{record.goodUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="record.goodNote != null" >
+        good_note = #{record.goodNote,jdbcType=VARCHAR},
+      </if>
+      <if test="record.goodId != null" >
+        good_id = #{record.goodId,jdbcType=INTEGER},
+      </if>
+      <if test="record.planDate != null" >
+        plan_date = #{record.planDate,jdbcType=DATE},
+      </if>
+      <if test="record.promiseDate != null" >
+        promise_date = #{record.promiseDate,jdbcType=DATE},
+      </if>
+      <if test="record.productNum != null" >
+        product_num = #{record.productNum,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update t_goods_lists
+    set id = #{record.id,jdbcType=INTEGER},
+      pro_id = #{record.proId,jdbcType=INTEGER},
+      list_serial_number = #{record.listSerialNumber,jdbcType=INTEGER},
+      good_type = #{record.goodType,jdbcType=VARCHAR},
+      good_name = #{record.goodName,jdbcType=VARCHAR},
+      good_specifications = #{record.goodSpecifications,jdbcType=VARCHAR},
+      good_order_num = #{record.goodOrderNum,jdbcType=INTEGER},
+      good_unit = #{record.goodUnit,jdbcType=VARCHAR},
+      good_note = #{record.goodNote,jdbcType=VARCHAR},
+      good_id = #{record.goodId,jdbcType=INTEGER},
+      plan_date = #{record.planDate,jdbcType=DATE},
+      promise_date = #{record.promiseDate,jdbcType=DATE},
+      product_num = #{record.productNum,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="sys.spvisor.core.entity.project.TGoodsLists" >
+    update t_goods_lists
+    <set >
+      <if test="proId != null" >
+        pro_id = #{proId,jdbcType=INTEGER},
+      </if>
+      <if test="listSerialNumber != null" >
+        list_serial_number = #{listSerialNumber,jdbcType=INTEGER},
+      </if>
+      <if test="goodType != null" >
+        good_type = #{goodType,jdbcType=VARCHAR},
+      </if>
+      <if test="goodName != null" >
+        good_name = #{goodName,jdbcType=VARCHAR},
+      </if>
+      <if test="goodSpecifications != null" >
+        good_specifications = #{goodSpecifications,jdbcType=VARCHAR},
+      </if>
+      <if test="goodOrderNum != null" >
+        good_order_num = #{goodOrderNum,jdbcType=INTEGER},
+      </if>
+      <if test="goodUnit != null" >
+        good_unit = #{goodUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="goodNote != null" >
+        good_note = #{goodNote,jdbcType=VARCHAR},
+      </if>
+      <if test="goodId != null" >
+        good_id = #{goodId,jdbcType=INTEGER},
+      </if>
+      <if test="planDate != null" >
+        plan_date = #{planDate,jdbcType=DATE},
+      </if>
+      <if test="promiseDate != null" >
+        promise_date = #{promiseDate,jdbcType=DATE},
+      </if>
+      <if test="productNum != null" >
+        product_num = #{productNum,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="sys.spvisor.core.entity.project.TGoodsLists" >
+    update t_goods_lists
+    set pro_id = #{proId,jdbcType=INTEGER},
+      list_serial_number = #{listSerialNumber,jdbcType=INTEGER},
+      good_type = #{goodType,jdbcType=VARCHAR},
+      good_name = #{goodName,jdbcType=VARCHAR},
+      good_specifications = #{goodSpecifications,jdbcType=VARCHAR},
+      good_order_num = #{goodOrderNum,jdbcType=INTEGER},
+      good_unit = #{goodUnit,jdbcType=VARCHAR},
+      good_note = #{goodNote,jdbcType=VARCHAR},
+      good_id = #{goodId,jdbcType=INTEGER},
+      plan_date = #{planDate,jdbcType=DATE},
+      promise_date = #{promiseDate,jdbcType=DATE},
+      product_num = #{productNum,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

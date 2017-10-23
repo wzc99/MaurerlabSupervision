@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="sys.spvisor.core.dao.file.FileDao" >
+
+    
+    <resultMap id="FileInfoMap" type="sys.spvisor.core.entity.file.FileInfo" >
+   	<id column="file_id" property="fileId" jdbcType="INTEGER" />
+    <result column="file_name" property="fileName" jdbcType="VARCHAR" />
+    <result column="file_content_introduction" property="fileContentIntroduction" jdbcType="VARCHAR" />
+    <result column="release_organization" property="releaseOrganization" jdbcType="VARCHAR" />
+    <result column="release_date" property="releaseDate" jdbcType="DATE" />
+    <result column="valid_date" property="validDate" jdbcType="DATE" />
+    <result column="post_user_id" property="postUserId" jdbcType="INTEGER" />
+    <result column="post_date" property="postDate" jdbcType="DATE" />
+    <result column="post_path" property="postPath" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+  </resultMap>
+
+<select id="query" parameterType="sys.spvisor.core.criteria.file.FileCriteria" resultMap="FileInfoMap">
+    	select *
+			from t_company_file_manage f
+			<!-- <include refid="queryWhere"></include>	 -->
+			<where>
+					<if test="fileName != null and fileName !=''">
+    	 				and f.file_name like #{fileName} 
+    	 			</if>
+    	 			 <if test="fileContentIntroduction != null and fileContentIntroduction != ''">
+    	 				and f.file_content_introduction like #{fileContentIntroduction} 
+    	 			</if>
+    	 			<if test="releaseOrganization != null and releaseOrganization != ''">
+    	 				and f.release_organization like #{releaseOrganization} 
+    	 			</if> 
+    	 			<if test="type != null and type != ''">
+    	 				and f.type = #{type} 
+    	 			</if>
+    	 	</where>	
+		    order by f.file_id
+		    
+		    <if test="paging == true">
+		    	limit #{limit} offset #{offset}
+		    </if>
+    </select>
+    
+    <select id="queryCount" parameterType="sys.spvisor.core.criteria.file.FileCriteria" resultType="int">
+    	select count(*) from t_company_file_manage f 
+    	<where>
+					<if test="fileName != null and fileName !=''">
+    	 				and f.file_name like #{fileName} 
+    	 			</if>
+    	 			<if test="fileContentIntroduction != null and fileContentIntroduction != ''">
+    	 				and f.file_content_introduction like #{fileContentIntroduction} 
+    	 			</if>
+    	 			<if test="releaseOrganization != null and releaseOrganization != ''">
+    	 				and f.release_organization = #{releaseOrganization} 
+    	 			</if> 
+    	 	</where>	
+		<!-- <include refid="queryWhere"></include> -->
+    </select>
+    
+   <!--  <sql id="queryWhere">
+		<where>
+			<choose>
+		        <when test="fileName != null">  
+		            and f.file_name = #{fileName}  
+		        </when>  
+		        <when test="fileContentIntroduction != null">  
+		            and f.file_content_introduction like  #{fileContentIntroduction}
+		        </when>
+		        <when test="releaseOrganization != null">  
+		            and f.release_organization like  #{releaseOrganization}
+		        </when>   
+		    </choose>
+		</where>
+	</sql> -->
+</mapper>

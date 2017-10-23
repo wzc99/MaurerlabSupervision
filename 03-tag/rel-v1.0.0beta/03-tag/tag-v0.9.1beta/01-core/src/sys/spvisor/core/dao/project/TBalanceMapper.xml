@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="sys.spvisor.core.dao.project.TBalanceMapper" >
+  <resultMap id="BaseResultMap" type="sys.spvisor.core.entity.project.TBalance" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="pro_id" property="proId" jdbcType="INTEGER" />
+    <result column="big_id" property="bigId" jdbcType="INTEGER" />
+    <result column="balance_date" property="balanceDate" jdbcType="DATE" />
+    <result column="sum_money" property="sumMoney" jdbcType="DOUBLE" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, pro_id, big_id, balance_date, sum_money
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="sys.spvisor.core.entity.project.TBalanceExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from t_balance
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from t_balance
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_balance
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByExample" parameterType="sys.spvisor.core.entity.project.TBalanceExample" >
+    delete from t_balance
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="sys.spvisor.core.entity.project.TBalance" useGeneratedKeys="true" keyProperty="id">
+    insert into t_balance ( pro_id, big_id, 
+      balance_date, sum_money)
+    values ( #{proId,jdbcType=INTEGER}, #{bigId,jdbcType=INTEGER}, 
+      #{balanceDate,jdbcType=DATE}, #{sumMoney,jdbcType=DOUBLE})
+  </insert>
+  <insert id="insertSelective" parameterType="sys.spvisor.core.entity.project.TBalance" >
+    insert into t_balance
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="proId != null" >
+        pro_id,
+      </if>
+      <if test="bigId != null" >
+        big_id,
+      </if>
+      <if test="balanceDate != null" >
+        balance_date,
+      </if>
+      <if test="sumMoney != null" >
+        sum_money,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="proId != null" >
+        #{proId,jdbcType=INTEGER},
+      </if>
+      <if test="bigId != null" >
+        #{bigId,jdbcType=INTEGER},
+      </if>
+      <if test="balanceDate != null" >
+        #{balanceDate,jdbcType=DATE},
+      </if>
+      <if test="sumMoney != null" >
+        #{sumMoney,jdbcType=DOUBLE},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="sys.spvisor.core.entity.project.TBalanceExample" resultType="java.lang.Integer" >
+    select count(*) from t_balance
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update t_balance
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=INTEGER},
+      </if>
+      <if test="record.proId != null" >
+        pro_id = #{record.proId,jdbcType=INTEGER},
+      </if>
+      <if test="record.bigId != null" >
+        big_id = #{record.bigId,jdbcType=INTEGER},
+      </if>
+      <if test="record.balanceDate != null" >
+        balance_date = #{record.balanceDate,jdbcType=DATE},
+      </if>
+      <if test="record.sumMoney != null" >
+        sum_money = #{record.sumMoney,jdbcType=DOUBLE},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update t_balance
+    set id = #{record.id,jdbcType=INTEGER},
+      pro_id = #{record.proId,jdbcType=INTEGER},
+      big_id = #{record.bigId,jdbcType=INTEGER},
+      balance_date = #{record.balanceDate,jdbcType=DATE},
+      sum_money = #{record.sumMoney,jdbcType=DOUBLE}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="sys.spvisor.core.entity.project.TBalance" >
+    update t_balance
+    <set >
+      <if test="proId != null" >
+        pro_id = #{proId,jdbcType=INTEGER},
+      </if>
+      <if test="bigId != null" >
+        big_id = #{bigId,jdbcType=INTEGER},
+      </if>
+      <if test="balanceDate != null" >
+        balance_date = #{balanceDate,jdbcType=DATE},
+      </if>
+      <if test="sumMoney != null" >
+        sum_money = #{sumMoney,jdbcType=DOUBLE},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="sys.spvisor.core.entity.project.TBalance" >
+    update t_balance
+    set pro_id = #{proId,jdbcType=INTEGER},
+      big_id = #{bigId,jdbcType=INTEGER},
+      balance_date = #{balanceDate,jdbcType=DATE},
+      sum_money = #{sumMoney,jdbcType=DOUBLE}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

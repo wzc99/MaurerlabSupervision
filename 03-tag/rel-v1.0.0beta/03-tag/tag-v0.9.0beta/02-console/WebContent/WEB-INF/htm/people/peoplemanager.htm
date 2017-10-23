@@ -1,0 +1,962 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+ <head>
+ <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>人员管理</title>
+	
+<link rel="stylesheet" type="text/css" href="../../themes/general.css"  />
+<!-- <link rel="stylesheet" type="text/css" href="../../themes/demo.css" 	 		/> -->
+<link rel="stylesheet" type="text/css" href="../../themes/icon.css" 			/>
+<link rel="stylesheet" type="text/css" href="../../themes/jquery-ui.css" 		/>
+<link rel="stylesheet" type="text/css" href="../../themes/default/easyui.css" 	/>
+<script type="text/javascript" src="../../scripts/jquery-1.8.0.min.js"></script>
+<script type="text/javascript" src="../../scripts/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../../scripts/src/jquery.parser.js"></script>
+<script type="text/javascript" src="../../scripts/locale/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript" src="../../scripts/sessionExpriation.js"></script>
+<script type="text/javascript" src="../../scripts/datagrid-filter.js"></script>
+
+<script type="text/javascript">
+
+$(function() {
+			
+		$('#userWorkStatus').combobox({
+				url : '../../people/getPostStatus.ajax',
+				valueField : 'postStatusId',
+				textField : 'postStatusDes',
+				panelHeight : 'auto',
+
+			});
+		$('#EditUserWorkStatusId').combobox({
+				url : '../../people/getPostStatus.ajax',
+				valueField : 'postStatusId',
+				textField : 'postStatusDes',
+				panelHeight : 'auto',
+
+			});
+			$('#AddUserWorkStatusId').combobox({
+				url : '../../people/getPostStatus.ajax',
+				valueField : 'postStatusId',
+				textField : 'postStatusDes',
+				panelHeight : 'auto',
+				value : "本人待岗",
+
+			});
+           /* 进去后显示所有的人员*/
+	$('#query_result').datagrid({
+			/* collapsible:true, */
+			/* url : '../../people/getAllUser.ajax', */
+			pagination : true,
+/* 			sortName:"peoId", */
+			/* multiSort:true, */
+			showFilterBar:false,
+			striped: true,
+			sortOrder:"asc",
+			remoteSort:false,
+			onDblClickRow : function(rowIndex, rowData) {
+				view(rowData);
+			}
+		});
+
+	
+	var page = $('#query_result').datagrid('getPager');
+	
+	$('#btn_query').bind('click', function(){
+		//在这里，如果日期控件没有选择，那么，。。。。
+		//点查询钮查询时总是以第一页开始 
+		$(page).pagination('select', 1);//主要是用来做分页的，选择一个新页面，从1开始计数
+      	});
+	$('#btn_reset').bind('click', function() {
+			$('#query_form').form('clear');
+			$('#userRoleFlag').combobox('setValue', '0');
+			$('#query_result').datagrid('loadData', {
+				total : 0,
+				rows : []
+			});
+		});
+
+	$(page).pagination({
+			onBeforeRefresh : function() {//刷新按钮点击之前触发，返回 false 就取消刷新动作。
+			},
+			onRefresh : function(pageNumber, pageSize) {//刷新之后触发。
+
+				do_submit(pageNumber, pageSize)
+			},
+			onChangePageSize : function() {//当用户改变页面尺寸时触发。
+			},
+			onSelectPage : function(pageNumber, pageSize) {//当用户选择新的页面时触发。回调函数包含两个参数：pageNumber：新的页码  pageSize：新的页面尺寸
+
+				do_submit(pageNumber, pageSize);
+			}
+		});
+	});
+
+		
+	function do_submit(pageNumber, pageSize) {
+
+		$('#query_form').form('submit', {
+			 url : '../../people/queryPeopleUser.ajax', 
+
+			onSubmit : function(param) {
+				param.paging = true;
+				param.offset = (pageNumber - 1) * pageSize;
+				param.limit = pageSize;
+				return $(this).form('validate');
+			},
+
+			success : function(data) {
+				var obj = $.parseJSON(data);
+				$('#query_result').datagrid('loadData', obj)
+			}
+		});
+		
+	}
+	
+/* 验证规则 */
+	$.extend($.fn.validatebox.defaults.rules, {
+		mobile : {
+			validator : function(value, param) {
+				return /^(?:13\d|15\d|18\d)-?\d{5}(\d{3}|\*{3})$/.test(value);
+			},
+			message : '手机号码不正确'
+		},
+		 
+	});
+	function view(row) {
+		$('#ViewWindow').window('open').window('refresh');
+		if(row.userWorkStatusId=="1"){row.userWorkStatusId="出差"}else if(row.userWorkStatusId=="2"){row.userWorkStatusId="办公室出勤"}else if(row.userWorkStatusId=="3"){row.userWorkStatusId="休假"}else if(row.userWorkStatusId=="4"){row.userWorkStatusId="请假"}else if(row.userWorkStatusId=="5"){row.userWorkStatusId="本人待岗"}else if(row.userWorkStatusId=="6"){row.userWorkStatusId="非本人待岗"}else if(row.userWorkStatusId=="7"){row.userWorkStatusId="离职"}else if(row.userWorkStatusId=="8"){row.userWorkStatusId="备用"};
+		if(row.userRoleFlag=="1"){row.userRoleFlag="公司内部人员"}else if(row.userRoleFlag=="2"){row.userRoleFlag="甲方人员"}else if(row.userRoleFlag=="0"){row.userRoleFlag="全体人员"};
+		$('#query_form_View').form('load', row);
+		/* $('#qualityName').attr('disabled',true); */
+		/* $('#qualityName').validatebox('disabled',true); */
+		/*   $('input').attr("readonly", "readonly");   */
+		/*  $('#qualityEndTime').validatebox("readonly", "readonly"); */
+
+		/* parent.addTabWithIcon("项目详述", "./people/view.html?msgId="+peoId, "icon-list"); */
+	}
+
+	
+	//打开新页面修改
+	
+	function edit(row) {
+		$('#EditWindow').window('open').window('refresh');
+		// if(row.userWorkStatusId=="1"){row.userWorkStatusId="出差"}else if(row.userWorkStatusId=="2"){row.userWorkStatusId="办公室出勤"}else if(row.userWorkStatusId=="3"){row.userWorkStatusId="休假"}else if(row.userWorkStatusId=="4"){row.userWorkStatusId="请假"}else if(row.userWorkStatusId=="2"){row.userWorkStatusId="本人待岗"}else if(row.userWorkStatusId=="3"){row.userWorkStatusId="非本人待岗"}else if(row.userWorkStatusId=="4"){row.userWorkStatusId="离职"}else if(row.userWorkStatusId=="4"){row.userWorkStatusId="备用"};
+		// if(row.userRoleFlag=="1"){row.userRoleFlag="公司内部人员"}else if(row.userRoleFlag=="2"){row.userRoleFlag="甲方人员"}else if(row.userRoleFlag=="0"){row.userRoleFlag="全体人员"};
+		$('#query_form_Edit').form('load', row);
+
+	}
+
+	function EditPeopleData(){
+		
+		var row = $('#query_result').datagrid('getSelected');
+
+		var EditUserLoginName = $("#EditUserLoginName").val();
+		if($("#EditUserName").val() == ""){
+		var EditUserName = "";
+		}else{
+		EditUserName = $("#EditUserName").val();
+		}
+		if($("#EditUserSex").val() == ""){
+		var EditUserSex = "";
+		}else{
+		EditUserSex = $('#EditUserSex').combobox('getValue');
+		}
+ 
+		var EditUserWorkStatusId = $('#EditUserWorkStatusId').combobox('getValue');
+		var EditUserRoleFlag = $('#EditUserRoleFlag').combobox('getValue');
+		var EditUserEducation = $("#EditUserEducation").val();
+		var EditUserMajor = $("#EditUserMajor").val();
+		var EditUserProfessionalQualification = $("#EditUserProfessionalQualification").val();
+		var EditUserProfessionalTitle = $("#EditUserProfessionalTitle").val();
+		var EditUserCareerQualification = $("#EditUserCareerQualification").val();
+		var EditMobile = $("#EditMobile").val();
+		var EditEmail = $("#EditEmail").val();
+		var EditMemo = $("#EditMemo").val();
+		var EditUserIdentityCard = $("#EditUserIdentityCard").val();
+
+
+
+
+
+		var userLoginName = row.userLoginName;
+		var userName = row.userName;
+		var userSex = row.userSex;
+		var userWorkStatusId = row.userWorkStatusId;
+		var userRoleFlag = row.userRoleFlag;
+		var userEducation = row.userEducation;
+		var userMajor = row.userMajor;
+		var userProfessionalQualification = row.userProfessionalQualification;
+		var userProfessionalTitle = row.userProfessionalTitle;
+		var userCareerQualification = row.userCareerQualification;
+		var mobile = row.mobile;
+		var email = row.email;
+		var memo = row.memo;
+		var userIdentityCard = row.userIdentityCard;
+
+
+
+
+
+		/*var flag = false;*/
+		if(EditUserLoginName == row.userLoginName && EditUserName == row.userName && EditUserSex ==  row.userSex && EditUserWorkStatusId== row.userWorkStatusId && EditUserRoleFlag == row.userRoleFlag && EditUserEducation == row.userEducation && EditUserMajor == row.userMajor && EditUserProfessionalQualification == row.userProfessionalQualification  && EditUserProfessionalTitle == row.userProfessionalTitle && EditUserCareerQualification ==  row.userCareerQualification && EditMobile== row.mobile && EditEmail == row.email && EditMemo == row.memo && EditUserIdentityCard == row.userIdentityCard){
+			/*flag = true;
+			alert(flag);*/
+			$.messager.confirm('确认','你没有修改<span style="color:red">  '+row.userName+'  </span>的信息，要退出吗？',function(r){
+				if (r){
+					EditWindowClose();
+				}
+			})
+
+		}else{
+			$('#query_form_Edit').form('submit', {
+			url : '../../people/EditPeopleUserData.ajax',
+			onSubmit : function(param) {
+				if ($(this).form('validate')) {
+					return true;//验证是否为空
+				} else {
+					return false;
+				}
+			},
+
+			success : function(data) {
+				var obj = $.parseJSON(data);//将json字符串转换为object对象
+				if (obj.success) {
+					$.messager.alert('提示', obj.message, 'info', function() {
+					$('#query_form').form('submit', {
+						 url : '../../people/queryPeopleUser.ajax', 
+						success : function(data) {
+							var obj = $.parseJSON(data);
+							$('#query_result').datagrid('loadData', obj)
+						}
+					});
+				
+					EditWindowClose();
+					/*alert("AddPeoJobNumFlag = "+AddPeoJobNumFlag+"-----AddUserLoginNameFlag ="+AddUserLoginNameFlag);*/
+						/* location.reload();//强迫浏览器刷新当前页面 */
+					});
+					
+				} else {
+					$.messager.alert('错误', obj.message, 'error');
+				}
+			}
+		});
+
+		}
+	}
+		
+	function do_view() {
+		var row = $('#query_result').datagrid('getSelected');//返回第一个选中的行
+		if (row == null) {
+			$.messager.alert('Info', '请选择行', 'info');
+			return;
+		}
+		view(row);
+	}
+
+	function do_edit() {
+		var row = $('#query_result').datagrid('getSelected');
+		if (row == null) {
+			$.messager.alert('Info', '请选择行', 'info');
+			return;
+		}
+		edit(row);
+	}
+
+	function do_remove() {
+		var row = $('#query_result').datagrid('getSelected');
+		if (row == null) {
+			$.messager.alert('Info', '请选择行', 'info');
+			return;
+		}
+		RemovePeople(row);
+	}
+
+	function do_renewDuty() {
+		var row = $('#query_result').datagrid('getSelected');
+		if (row == null) {
+			$.messager.alert('Info', '请选择行', 'info');
+			return;
+		}
+		renewDutyWindow(row);
+	}
+
+	
+function formatPeopleWorkStatus(val, row) {
+		if (val == 1 ) {
+			return '<span style="color:green">出差</span>';
+		}else if ( val == 2) {
+			return '<span style="color:green">办公室出勤</span>';
+		}else if ( val == 3) {
+			return '<span style="color:fuchsia">休假</span>';
+		}else if ( val == 4) {
+			return '<span style="color:fuchsia">请假</span>';
+		}else if ( val == 5) {
+			return '<span style="color:blue">本人待岗</span>';
+		}else if ( val == 6) {
+			return '<span style="color:blue">非本人待岗</span>';
+		}else if ( val == 7) {
+			return '<span style="color:red">离职</span>';
+		}else if ( val == 8) {
+			return '<span style="color:orange">备用</span>';
+		}else{
+			return val;
+		}
+	}
+
+	function formatPeopleFlag(val, row) {
+		if (val == 1 ) {
+			return '<span style="color:green">公司内部人员</span>';
+		}else if ( val == 2) {
+			return '<span style="color:blue">甲方人员</span>';
+		}else{
+			return '<span style="color:red">数据库内部错误</span>';
+		}
+	}
+
+
+
+
+	 function RemovePeople(row){
+		$.messager.confirm('确认','您确认想要开除职员<span style="color:red">  '+row.userName+'  </span>吗？',function(r){    
+    		if (r){    
+        		 $.ajax({     
+		        url : '../../people/RemovePeopleData.ajax',//ajax地址待修改
+				type : 'post',
+				dataType : 'JSON',
+				data : {
+					userId : row.userId //给你的目前的名字待修改
+				},
+				error: function(XMLHttpRequest, textStatus, errorThrown) {
+	                    
+	        	},
+				success : function(data) {
+					/* var obj = $.parseJSON(data);//将json字符串转换为object对象 */
+				if (data.success) {
+					 
+					/* location.reload();//强迫浏览器刷新当前页面 */
+					$.messager.alert('提示', data.message, 'info', function() {
+					$('#query_form').form('submit', {
+						 url : '../../people/queryPeopleUser.ajax', 
+						success : function(data) {
+							var obj = $.parseJSON(data);
+							$('#query_result').datagrid('loadData', obj)
+						}
+					});
+						
+					});
+				} else {
+					$.messager.alert('错误', data.message, 'error');
+				}
+				}    
+		}); 
+		} 
+	});
+	} 
+
+	function renewDutyWindow(row){
+		if(row.userWorkStatusId == 3){
+			$.messager.confirm('确认','您确认想要恢复<span style="color:red">  '+row.userName+'  </span>的职员身份吗？',function(r){    
+    		if (r){    
+        		 $.ajax({     
+		        url : '../../people/delePeopleDutyData.ajax',//ajax地址待修改
+				type : 'post',
+				dataType : 'JSON',
+				data : {
+					userId : row.userId //给你的目前的名字待修改
+				},
+				error: function(XMLHttpRequest, textStatus, errorThrown) {
+	                    
+	        	},
+				success : function(data) {
+					/* var obj = $.parseJSON(data);//将json字符串转换为object对象 */
+				if (data.success) {
+					 
+					/* location.reload();//强迫浏览器刷新当前页面 */
+					$.messager.alert('提示', data.message, 'info', function() {
+					$('#query_form').form('submit', {
+						 url : '../../people/queryPeopleUser.ajax', 
+						success : function(data) {
+							var obj = $.parseJSON(data);
+							$('#query_result').datagrid('loadData', obj)
+						}
+					});
+						
+					});
+				} else {
+					$.messager.alert('错误', data.message, 'error');
+				}
+				}    
+		}); 
+		} 
+	});
+		}else {
+			$.messager.alert('错误', '<span style="color:red">  '+row.userName+'  </span>是未离职的职员！', 'error');
+		}
+		
+	}  
+
+
+	var AddUserLoginNameFlag = false;
+	//打开新增人员信息的窗口
+	function AddPeopleWindow() {
+		
+		$('#AddWindow').window('open').window('refresh');
+		$('#query_form_Add').form('clear');
+		$('#AddUserWorkStatusId').combobox('setValue', '5');
+		$('#AddUserRoleFlag').combobox('setValue', '1');
+		$("#AdduserLoginNameyes").css("visibility","hidden");
+		$("#AdduserLoginNameno").css("visibility","hidden");
+		/* $('#AddpeoJobNumyes').tooltip('hide');   */
+
+			$('#AddUserLoginName').change(function(){
+				var AddUserLoginNameVal = $("#AddUserLoginName").val();
+				 $.ajax({     
+				        url : '../../people/JudgeAdduserLoginNameIn.ajax',//ajax地址待修改
+						type : 'post',
+						dataType : 'JSON',
+						data : {
+							userLoginName : AddUserLoginNameVal //给你的目前的名字待修改
+						},
+						error: function(XMLHttpRequest, textStatus, errorThrown) {
+			                    
+			        	},
+						success : function(data) {
+							/* var obj = $.parseJSON(data);//将json字符串转换为object对象 */
+						if (data.success) {
+							AddUserLoginNameFlag = true;
+						$("#AdduserLoginNameyes").css("visibility","visible");
+						$("#AdduserLoginNameno").css("visibility","hidden");
+							
+		
+						} else {
+							AddUserLoginNameFlag = false;
+						$("#AdduserLoginNameyes").css("visibility","hidden");
+						$("#AdduserLoginNameno").css("visibility","visible");
+						
+					}
+					}
+						});
+				})
+		}
+		
+		/*新增人员信息提交*/
+
+	function AddPeopleData() {
+		
+		if(AddUserLoginNameFlag == true){
+		$('#query_form_Add').form('submit', {
+			url : '../../people/AddPeopleUserData.ajax',
+			onSubmit : function(param) {
+				if ($(this).form('validate')) {
+					return true;//验证是否为空
+				} else {
+					return false;
+				}
+			},
+
+			success : function(data) {
+				var obj = $.parseJSON(data);//将json字符串转换为object对象
+				if (obj.success) {
+					$.messager.alert('提示', obj.message, 'info', function() {
+					$('#query_form').form('submit', {
+						 url : '../../people/queryPeopleUser.ajax', 
+						success : function(data) {
+							var obj = $.parseJSON(data);
+							$('#query_result').datagrid('loadData', obj)
+						}
+					});
+					AddUserLoginNameFlag = false;
+					AddWindowClose();
+					// alert("AddPeoJobNumFlag = "+AddPeoJobNumFlag+"-----AddUserLoginNameFlag ="+AddUserLoginNameFlag);
+						/* location.reload();//强迫浏览器刷新当前页面 */
+					});
+				} else {
+					$.messager.alert('错误', obj.message, 'error');
+				}
+			}
+		});
+	}else{
+		$.messager.alert('错误','请检查表单是否有错误项！', 'error');    
+	}
+	} 
+
+
+	//关闭查看人员信息窗口
+	function ViewWindowClose() {
+		/* $('input').removeAttr("readonly"); */
+		$('#ViewWindow').window('close');
+	}
+	//关闭新增人员信息窗口
+	function AddWindowClose() {
+		$('#AddWindow').window('close');
+	}
+	//关闭修改人员信息窗口
+	function EditWindowClose() {
+		$('#EditWindow').window('close');
+	}
+
+/* 身份证的验证 */
+var aCity={11:"北京",12:"天津",13:"河北",14:"山西",15:"内蒙古",21:"辽宁",22:"吉林",23:"黑龙江",31:"上海",32:"江苏",33:"浙江",34:"安徽",35:"福建",36:"江西",37:"山东",41:"河南",42:"湖北",43:"湖南",44:"广东",45:"广西",46:"海南",50:"重庆",51:"四川",52:"贵州",53:"云南",54:"西藏",61:"陕西",62:"甘肃",63:"青海",64:"宁夏",65:"新疆",71:"台湾",81:"香港",82:"澳门",91:"国外"}   
+  
+function isCardID(sId){   
+    var iSum=0 ;  
+    var info="" ;  
+    if(!/^\d{17}(\d|x)$/i.test(sId)) return "你输入的身份证长度或格式错误";   
+    sId=sId.replace(/x$/i,"a");   
+    if(aCity[parseInt(sId.substr(0,2))]==null) return "你的身份证地区非法";   
+    sBirthday=sId.substr(6,4)+"-"+Number(sId.substr(10,2))+"-"+Number(sId.substr(12,2));   
+    var d=new Date(sBirthday.replace(/-/g,"/")) ;  
+    if(sBirthday!=(d.getFullYear()+"-"+ (d.getMonth()+1) + "-" + d.getDate()))return "身份证上的出生日期非法";   
+    for(var i = 17;i>=0;i --) iSum += (Math.pow(2,i) % 11) * parseInt(sId.charAt(17 - i),11) ;  
+    if(iSum%11!=1) return "你输入的身份证号非法";   
+    return true;//aCity[parseInt(sId.substr(0,2))]+","+sBirthday+","+(sId.substr(16,1)%2?"男":"女")   
+}   
+
+	$.extend($.fn.validatebox.defaults.rules, {
+		mobile : {
+			validator : function(value, param) {
+				return /^(?:13\d|15\d|18\d)-?\d{5}(\d{3}|\*{3})$/.test(value);
+			},
+			message : '手机号码不正确'
+		},
+		idcared: {     
+        	validator: function(value,param){    
+            	var flag= isCardID(value);  
+            	return flag==true?true:false;    
+        		},     
+        	message: '不是有效的身份证号码'    
+    	} , 
+    	numsix: {     
+        	validator: function(value,param){    
+            	return /^LZ\d{6}$/.test(value);    
+        		},     
+        	message: '员工编号是六位数字'    
+    	} , 
+	});
+</script>
+  </head>
+ 
+  <body>
+   	
+ <div style="margin: 5px 0"></div>
+<div style="margin: 0 5px">
+<form id="query_form" method="post">
+	<table class="table_view" style="font-size: 12px; background: #F1F1F1;">
+	<tr>
+		<td class="td_view_name_people">员工编号</td>
+		<td class="td_view_value_people"><input class="easyui-validatebox input_140" id="userLoginName" name="userLoginName" /></td>
+		<td class="td_view_name_people">姓名</td>
+		<td class="td_view_value_people" ><input class="easyui-validatebox input_140" type="text" id="userName" name="userName" /></td>
+		
+	</tr>
+
+		
+	<tr>
+ 		<td class="td_view_name_people">岗位状态</td>
+		<td class="td_view_value_people"><input class="easyui-combobox" type="text" id="userWorkStatus" name="userWorkStatusId" /></td>
+		<td class="td_view_name_people">人员类别</td>
+		<td class="td_view_value_people">
+		<select id="userRoleFlag" class="easyui-combobox" name="userRoleFlag" style="width:140px;">
+   			 <option value="0" selected>全部人员</option>
+   			 <option value="1">公司内部人员</option>
+   			  <option value="2">甲方人员</option>
+			</select>
+		<!-- <input class="easyui-combobox" type="text" id="userRoleFlag" name="userRoleFlag" /></td> -->
+		<!-- <td class="td_view_name_people">单位名称</td>							
+		<td class="td_view_value_people"><input class="easyui-validatebox input_140" id="userUnit" name="userUnit" /></td>	
+		<td class="td_view_name_people">职务</td>
+		<td class="td_view_value_people"><input class="easyui-validatebox input_140" type="text" id="roleDesc" name="roleDesc" /></td>	 -->
+	</tr> 
+
+	<tr>
+		<td colspan="6" align="center" class="td_view_name">
+			<div align="center">
+				<a id="btn_query" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"	>查询</a>
+				<a id="btn_reset" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-reset" 	>重置</a>
+			</div>
+		</td>
+	</tr>
+	</table>
+</form>
+</div>
+
+<div style="margin: 10px 0;"></div>
+	<div style="margin: 0 5px">
+		<table title="查询结果" id="query_result"   
+			data-options="singleSelect:true,pagination:true,rownumbers:true,pageNumber:1,pageSize:10,pageList:[1,5,10]"
+			toolbar="#tb" >
+			<thead>
+				<tr>
+					<th field="ck" checkbox="true"></th>
+					<th data-options="field:'userId',width:80,hidden:true,align:'center',sortable:'true'">人员ID</th>
+					<th data-options="field:'userLoginName',width:80,hidden:false,align:'center',sortable:'true'">员工编号</th>					
+					<th data-options="field:'userName',width:80,hidden:false,align:'center',sortable:'true'">姓名</th>
+					<th data-options="field:'userSex',width:100,hidden:false,align:'center',sortable:'true'">性别</th>
+					<th data-options="field:'userWorkStatusId',width:100,hidden:false,align:'center',sortable:'true',formatter:formatPeopleWorkStatus">岗位状态</th>
+					<th data-options="field:'userRoleFlag',width:100,hidden:false,align:'center',sortable:'true',formatter:formatPeopleFlag">人员类别</th>
+					<th data-options="field:'userEducation',width:100,hidden:false,align:'center',sortable:'true'">学历</th>	
+					<th data-options="field:'userMajor',width:100,hidden:false,align:'center',sortable:'true'">专业</th>	
+					<th data-options="field:'userProfessionalQualification',width:100,hidden:false,align:'center',sortable:'true'">专业资质</th>	
+					<th data-options="field:'userProfessionalTitle',width:100,hidden:false,align:'center',sortable:'true'">职称</th>	
+					<th data-options="field:'userCareerQualification',width:100,hidden:false,align:'center',sortable:'true'">职业资格</th>										
+					<th data-options="field:'mobile',width:100,hidden:true,align:'center'">联系电话</th>
+					<th data-options="field:'email',width:150,hidden:false,align:'center'">email</th>
+					<th data-options="field:'userIdentityCard',width:160,hidden:false,align:'center'">身份证号码</th>
+					<th data-options="field:'memo',width:150,hidden:false,align:'center'">备注</th>
+				</tr>
+			</thead>
+		</table>
+
+		<div id="tb">
+			<div id="divBtnAdd" style="float: left">
+				<a href="#" class="easyui-linkbutton" iconCls="icon-add"
+					plain="true" onclick="javascript:AddPeopleWindow()">添加人员信息</a>
+			</div>
+			<div id="divBtnView" style="float:left">
+				<a href="#" class="easyui-linkbutton" iconCls="icon-view"
+					plain="true" onclick="javascript:do_view()">查看人员信息</a>
+			</div>
+			<div id="divBtnEdit" style="float: left">
+				<a href="#" class="easyui-linkbutton" iconCls="icon-edit"
+					plain="true" onclick="javascript:do_edit()">修改人员信息</a>
+			</div>
+			<div id="divBtnEdit" style="float: left">
+				<a href="#" class="easyui-linkbutton" iconCls="icon-cancel"
+					plain="true" onclick="javascript:do_remove()">人员离职按钮 </a>
+			</div>
+			<!-- <div id="divBtnDele" style="float: left">
+				<a href="#" class="easyui-linkbutton" iconCls="icon-remove"
+					plain="true" onclick="javascript:do_renewDuty()">恢复职位</a>
+			</div>  -->
+			
+		</div>
+	</div>
+
+
+	<!-- 查看人员信息窗口 -->
+	<div id="ViewWindow" class="easyui-window" title="查看人员信息"
+		data-options="collapsible:false,closable:false,minimizable:false,maximizable:false,modal:true,closed:true,iconCls:'icon-view'"
+		style="width:700px;height:460px;padding:10px;">
+		<div class="easyui-layout" data-options="fit:true">
+		<div data-options="region:'center'" style="padding:10px;">
+				<form id="query_form_View" method="post">
+					<table class="table_view">
+						
+						<tr>	
+							<td class="td_view_name"  style = "text-align: center"  hidden="true">人员ID</td>
+							<td class="td_view_value" hidden="true"><input
+								class="easyui-validatebox input_140" type="text" data-options="editable:false"
+								id="ViewUserId" name="userId"  readonly = "true"/></td>
+						</tr>
+						<tr>	
+							<td class="td_view_name"  style = "text-align: center"  >员工编号</td>
+							<td class="td_view_value"><input
+								class="easyui-validatebox input_140" type="text" data-options="editable:false"
+								id="ViewUserLoginName" name="userLoginName"  readonly = "true"/></td>
+							<td class="td_view_name"  style = "text-align: center"  >姓名</td>
+							<td class="td_view_value" ><input
+								class="easyui-validatebox input_140" type="text" data-options="editable:false"
+								id="ViewUserName" name="userName"  readonly = "true"/></td>
+						</tr>
+						<tr>	
+							<td class="td_view_name"  style = "text-align: center" >性别</td>
+							<td class="td_view_value"><input
+								class="easyui-validatebox input_140" type="text" data-options="editable:false"
+								id="ViewUserSex" name="userSex"  readonly = "true"/></td>	
+							<td class="td_view_name"  style = "text-align: center" >岗位状态</td>
+							<td class="td_view_value"><input
+								class="easyui-validatebox input_140" type="text" data-options="editable:false"
+								id="ViewUserWorkStatusId" name="userWorkStatusId"  readonly = "true"/></td>	 
+						</tr>
+						
+						<tr>	
+							<td class="td_view_name"  style = "text-align: center" >人员类别</td>
+							<td class="td_view_value" ><input
+								class="easyui-validatebox input_140" type="text" data-options="editable:false"
+								id="ViewUserRoleFlag" name="userRoleFlag"  readonly = "true"/></td>
+							<td class="td_view_name"  style = "text-align: center" >学历</td>
+							<td class="td_view_value" ><input  type="text"
+								class="easyui-validatebox input_140" id="ViewUserEducation"
+								name="userEducation"   readonly = "true"/></td>							
+						</tr>
+
+						<tr>	
+							<td class="td_view_name"  style = "text-align: center" >专业</td>
+							<td class="td_view_value"><input
+								class="easyui-validatebox input_140" type="text" data-options="editable:false"
+								id="ViewUserMajor" name="userMajor"  readonly = "true"/></td>
+							<td class="td_view_name"  style = "text-align: center" >专业资质</td>
+							<td class="td_view_value"><input
+								class="easyui-validatebox input_140" type="text" data-options="editable:false"
+								id="ViewUserProfessionalQualification" name="userProfessionalQualification"  readonly = "true"/></td>
+						</tr>
+						
+						<tr>
+							<td class="td_view_name"  style = "text-align: center" >职称</td>
+							<td class="td_view_value"><input
+								class="easyui-validatebox input_140" type="text" data-options="editable:false"
+								id="ViewUserProfessionalTitle" name="userProfessionalTitle"  readonly = "true"/></td>
+							<td class="td_view_name"  style = "text-align: center" >职业资格</td>
+							<td class="td_view_value"><input
+								class="easyui-validatebox input_140" type="text" data-options="editable:false"
+								id="ViewUserCareerQualification" name="userCareerQualification"  readonly = "true"/></td>	 											
+						</tr>
+
+						<tr>							
+							<td class="td_view_name"  style = "text-align: center" >联系电话</td>
+							<td class="td_view_value"><input  type="text"
+								class="easyui-validatebox input_140" id="ViewMobile"
+								name="mobile" validType="peoContel"  readonly = "true"/></td>
+							<td class="td_view_name"  style = "text-align: center" >Email</td>
+							<td class="td_view_value"><input  type="text"
+								class="easyui-validatebox input_140" id="ViewEmail"
+								name="email" validType="email"  readonly = "true"/></td>			
+						</tr>
+						
+						<tr>
+													
+							<td class="td_view_name"  style = "text-align: center" >备注</td>
+							<td class="td_view_value"><input  type="text"
+								class="easyui-validatebox input_140" id="ViewMemo"
+								name="memo"   readonly = "true"/></td>
+							<td class="td_view_name"  style = "text-align: center" >身份证号码</td>
+							<td class="td_view_value"><input  type="text"
+								class="easyui-validatebox input_140" id="ViewUserIdentityCard"
+								name="userIdentityCard"   readonly = "true"/></td>	
+						</tr>						
+					</table>
+				</form>
+			</div>
+			<div data-options="region:'south',border:false"
+				style="text-align:right;padding:5px 0 0;">
+					<a class="easyui-linkbutton"
+					data-options="iconCls:'icon-cancel'" href="javascript:void(0)"
+					onclick="ViewWindowClose()" style="width:80px">关闭</a>
+			</div>
+		</div>
+	</div>
+
+	<!-- 修改人员信息窗口 -->
+	<div id="EditWindow" class="easyui-window" title="修改人员信息"
+		data-options="collapsible:false,closable:false,minimizable:false,maximizable:false,modal:true,closed:true,iconCls:'icon-Edit'"
+		style="width:700px;height:460px;padding:10px;">
+		<div class="easyui-layout" data-options="fit:true">
+		<div data-options="region:'center'" style="padding:10px;">
+				<form id="query_form_Edit" method="post">
+					<table class="table_view">
+						
+						<tr>	
+							<td class="td_view_name"  style = "text-align: center"  hidden="true">人员ID</td>
+							<td class="td_view_value" hidden="true"><input
+								class="easyui-validatebox input_140" type="text" data-options="editable:false"
+								id="EditUserId" name="userId"  readonly = "true"/></td>
+						</tr>
+						<tr>	
+							<td class="td_view_name"  style = "text-align: center"  >员工编号</td>
+							<td class="td_view_value"><input
+								class="easyui-validatebox input_140" type="text" data-options="editable:false"
+								id="EditUserLoginName" name="userLoginName"  readonly = "true"/></td>
+							<td class="td_view_name"  style = "text-align: center"  >姓名</td>
+							<td class="td_view_value" ><input
+								class="easyui-validatebox input_140" type="text" 
+								id="EditUserName" name="userName"  /></td>
+						</tr>
+						<tr>	
+							<td class="td_view_name"  style = "text-align: center" >性别</td>
+							<td class="td_view_value">
+							<select id="EditUserSex" class="easyui-combobox" name="userSex" style="width:140px;">
+   			 						<option value="男">男</option>
+   			 						<option value="女">女</option>
+							</select></td>	
+							<td class="td_view_name"  style = "text-align: center" >岗位状态</td>
+							<td class="td_view_value"><input
+								class="easyui-validatebox input_140" type="text" 
+								id="EditUserWorkStatusId" name="userWorkStatusId"  /></td>	 
+						</tr>
+						
+						<tr>	
+							<td class="td_view_name"  style = "text-align: center" >人员类别</td>
+							<td class="td_view_value" >
+							<select id="EditUserRoleFlag" class="easyui-combobox" name="userRoleFlag" style="width:140px;">
+   			 						<option value="1">公司内部人员</option>
+   			  						<option value="2">甲方人员</option>
+							</select></td>
+							<td class="td_view_name"  style = "text-align: center" >学历</td>
+							<td class="td_view_value" ><input  type="text"
+								class="easyui-validatebox input_140" id="EditUserEducation"
+								name="userEducation"  /></td>							
+						</tr>
+
+						<tr>	
+							<td class="td_view_name"  style = "text-align: center" >专业</td>
+							<td class="td_view_value"><input
+								class="easyui-validatebox input_140" type="text" 
+								id="EditUserMajor" name="userMajor" /></td>
+							<td class="td_view_name"  style = "text-align: center" >专业资质</td>
+							<td class="td_view_value"><input
+								class="easyui-validatebox input_140" type="text" 
+								id="EditUserProfessionalQualification" name="userProfessionalQualification" /></td>
+						</tr>
+						
+						<tr>
+							<td class="td_view_name"  style = "text-align: center" >职称</td>
+							<td class="td_view_value"><input
+								class="easyui-validatebox input_140" type="text" 
+								id="EditUserProfessionalTitle" name="userProfessionalTitle"  /></td>
+							<td class="td_view_name"  style = "text-align: center" >职业资格</td>
+							<td class="td_view_value"><input
+								class="easyui-validatebox input_140" type="text" 
+								id="EditUserCareerQualification" name="userCareerQualification" /></td>	 											
+						</tr>
+
+						<tr>							
+							<td class="td_view_name"  style = "text-align: center" >联系电话</td>
+							<td class="td_view_value"><input  type="text"
+								class="easyui-validatebox input_140" id="EditMobile"
+								name="mobile" validType="peoContel"  /></td>
+							<td class="td_view_name"  style = "text-align: center" >Email</td>
+							<td class="td_view_value"><input  type="text"
+								class="easyui-validatebox input_140" id="EditEmail"
+								name="email" validType="email"  /></td>			
+						</tr>
+						
+						<tr>
+													
+							<td class="td_view_name"  style = "text-align: center" >备注</td>
+							<td class="td_view_value"><input  type="text"
+								class="easyui-validatebox input_140" id="EditMemo"
+								name="memo"   /></td>
+							<td class="td_view_name"  style = "text-align: center" >身份证号码</td>
+							<td class="td_view_value"><input  type="text"
+								class="easyui-validatebox input_140" id="EditUserIdentityCard"
+								name="userIdentityCard"  /></td>	
+						</tr>			
+					</table>
+				</form>
+			</div>
+			<div data-options="region:'south',border:false"
+				style="text-align:right;padding:5px 0 0;">
+					<a class="easyui-linkbutton"
+					data-options="iconCls:'icon-ok'" href="javascript:void(0)"
+					onclick="EditPeopleData()" style="width:80px">确认</a>
+					<a class="easyui-linkbutton"
+					data-options="iconCls:'icon-cancel'" href="javascript:void(0)"
+					onclick="EditWindowClose()" style="width:80px">取消</a>
+			</div>
+		</div>
+	</div>
+
+	<!-- 新增人员信息窗口 -->
+	<div id="AddWindow" class="easyui-window" title="新增人员信息"
+		data-options="collapsible:false,closable:false,minimizable:false,maximizable:false,modal:true,closed:true,iconCls:'icon-Add'"
+		style="width:700px;height:460px;padding:10px;">
+		<div class="easyui-layout" data-options="fit:true">
+		<div data-options="region:'center'" style="padding:10px;">
+				<form id="query_form_Add" method="post">
+					<table class="table_view">
+						
+						<!-- <tr>	
+							<td class="td_view_name"  style = "text-align: center"  hidden="true">人员ID</td>
+							<td class="td_view_value" hidden="true"><input
+								class="easyui-validatebox input_140" type="text" data-options="editable:false"
+								id="EditUserId" name="userId"  readonly = "true"/></td>
+						</tr> -->
+						<tr>	
+							<td class="td_view_name"  style = "text-align: center"  >员工编号</td>
+							<td class="td_view_value"><input
+								class="easyui-validatebox input_140" type="text" 
+								id="AddUserLoginName" name="userLoginName"  />
+								<span  id="AdduserLoginNameyes" style="position: absolute;color:green;padding:3px;visibility: hidden;"><img src="../../themes/icons/ok.png"/>  </span>  
+								<span id="AdduserLoginNameno" style="position: absolute;color:red;padding:3px;visibility: hidden;"><img src="../../themes/icons/no.png" width=12px height=12px/>已被占用 </span>
+								</td>
+							<td class="td_view_name"  style = "text-align: center"  >姓名</td>
+							<td class="td_view_value" ><input
+								class="easyui-validatebox input_140" type="text" 
+								id="AddUserName" name="userName"  /></td>
+						</tr>
+						<tr>	
+							<td class="td_view_name"  style = "text-align: center" >性别</td>
+							<td class="td_view_value">
+							<select id="AddUserSex" class="easyui-combobox" name="userSex" style="width:140px;">
+   			 						<option value="男">男</option>
+   			 						<option value="女">女</option>
+							</select></td>	
+							<td class="td_view_name"  style = "text-align: center" >岗位状态</td>
+							<td class="td_view_value"><input
+								class="easyui-validatebox input_140" type="text" 
+								id="AddUserWorkStatusId" name="userWorkStatusId"  /></td>	 
+						</tr>
+						
+						<tr>	
+							<td class="td_view_name"  style = "text-align: center" >人员类别</td>
+							<td class="td_view_value" >
+							<select id="AddUserRoleFlag" class="easyui-combobox" name="userRoleFlag" style="width:140px;">
+   			 						<option value="1" selected>公司内部人员</option>
+   			  						<option value="2">甲方人员</option>
+							</select></td>
+							<td class="td_view_name"  style = "text-align: center" >学历</td>
+							<td class="td_view_value" ><input  type="text"
+								class="easyui-validatebox input_140" id="AddUserEducation"
+								name="userEducation"  /></td>							
+						</tr>
+
+						<tr>	
+							<td class="td_view_name"  style = "text-align: center" >专业</td>
+							<td class="td_view_value"><input
+								class="easyui-validatebox input_140" type="text" 
+								id="AddUserMajor" name="userMajor" /></td>
+							<td class="td_view_name"  style = "text-align: center" >专业资质</td>
+							<td class="td_view_value"><input
+								class="easyui-validatebox input_140" type="text" 
+								id="AddUserProfessionalQualification" name="userProfessionalQualification" /></td>
+						</tr>
+						
+						<tr>
+							<td class="td_view_name"  style = "text-align: center" >职称</td>
+							<td class="td_view_value"><input
+								class="easyui-validatebox input_140" type="text" 
+								id="AddUserProfessionalTitle" name="userProfessionalTitle"  /></td>
+							<td class="td_view_name"  style = "text-align: center" >职业资格</td>
+							<td class="td_view_value"><input
+								class="easyui-validatebox input_140" type="text" 
+								id="AddUserCareerQualification" name="userCareerQualification" /></td>	 											
+						</tr>
+
+						<tr>							
+							<td class="td_view_name"  style = "text-align: center" >联系电话</td>
+							<td class="td_view_value"><input  type="text"
+								class="easyui-validatebox input_140" id="AddMobile"
+								name="mobile" validType="peoContel"  /></td>
+							<td class="td_view_name"  style = "text-align: center" >Email</td>
+							<td class="td_view_value"><input  type="text"
+								class="easyui-validatebox input_140" id="AddEmail"
+								name="email" validType="email"  /></td>			
+						</tr>
+						
+						<tr>
+													
+							<td class="td_view_name"  style = "text-align: center" >备注</td>
+							<td class="td_view_value"><input  type="text"
+								class="easyui-validatebox input_140" id="AddMemo"
+								name="memo"   /></td>
+							<td class="td_view_name"  style = "text-align: center" >身份证号码</td>
+							<td class="td_view_value"><input  type="text"
+								class="easyui-validatebox input_140" id="AddUserIdentityCard"
+								name="userIdentityCard"  /></td>	
+						</tr>			
+					</table>
+				</form>
+			</div>
+			<div data-options="region:'south',border:false"
+				style="text-align:right;padding:5px 0 0;">
+					<a class="easyui-linkbutton"
+					data-options="iconCls:'icon-ok'" href="javascript:void(0)"
+					onclick="AddPeopleData()" style="width:80px">确认</a>
+					<a class="easyui-linkbutton"
+					data-options="iconCls:'icon-cancel'" href="javascript:void(0)"
+					onclick="AddWindowClose()" style="width:80px">取消</a>
+			</div>
+		</div>
+	</div>
+  </body>
+</html>

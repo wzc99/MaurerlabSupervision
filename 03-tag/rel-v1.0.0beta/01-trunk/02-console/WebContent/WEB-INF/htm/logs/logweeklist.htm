@@ -1,0 +1,204 @@
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="../../themes/general.css">
+	<link rel="stylesheet" type="text/css" href="../../themes/icon.css">
+	<link rel="stylesheet" type="text/css" href="../../themes/gray/easyui.css">
+
+	<script type="text/javascript" src="../../scripts/jquery-1.8.0.min.js"></script>
+	<script type="text/javascript" src="../../scripts/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="../../scripts/locale/easyui-lang-zh_CN.js"></script>
+	<script type="text/javascript" src="../../scripts/src/jquery.parser.js"></script>
+	<script type="text/javascript" src="../../scripts/general.js"></script>
+	<script type="text/javascript" src="../../scripts/sessionExpriation.js"></script>
+</head>
+<script type="text/javascript">
+	$(function(){
+		var proId = window.parent.projectId;
+		$("#daily_query_result").datagrid({
+			pagination : true,
+			showFilterBar:false,
+			striped: true,
+			sortOrder:"asc",
+			remoteSort:false,
+				onDblClickRow: function(rowIndex, rowData){
+					do_view(1);
+				}
+		});
+		
+		var pg = $("#daily_query_result").datagrid("getPager");
+		if (pg) {
+			$(pg).pagination({		
+				onBeforeRefresh : function() {
+					//alert('before refresh');
+				},
+				onRefresh : function(pageNumber, pageSize) {
+					do_submit(pageNumber, pageSize)
+				},
+				onChangePageSize : function() {
+					//alert('pagesize changed');
+				},
+				onSelectPage : function(pageNumber, pageSize) {
+					do_submit(pageNumber, pageSize);
+				}
+			});
+		}
+		
+			do_submit(1,10); 
+		
+		 function do_submit(pageNumber, pageSize) {
+			var targetForm = '#daily_query_form';
+			$(targetForm).form('submit', {
+				url : '../../journal/listJournal.ajax',
+				onSubmit : function(param) {
+					param.proId=proId;
+					param.type=1;
+					param.status = -1;
+					param.pageSize = pageSize;
+					param.index = pageNumber;
+					return $(this).form('validate');
+				},
+				success : function(data) {
+					var obj = $.parseJSON(data);
+					var myData = {};
+					myData.total = obj.page.totalCount;
+					myData.rows = obj.data;
+					$('#daily_query_result').datagrid('loadData', myData);
+				}
+			});
+		 }
+		 
+		
+	});
+	//格式化时间
+	function formatTime(date) {
+		var unixTimestamp = new Date(date) ;
+		commonTime = unixTimestamp.toLocaleString();
+		return commonTime;
+	}
+	Date.prototype.toLocaleString = function() {
+        //return this.getFullYear() + "年" + (this.getMonth() + 1) + "月" + this.getDate() + "日 " + this.getHours() + "点" + this.getMinutes() + "分" + this.getSeconds() + "秒";
+		return this.getFullYear() + "年" + (this.getMonth() + 1) + "月" + this.getDate() + "日 ";
+  	}
+	
+	//格式化状态
+	function formatStatus(status) {
+		//审核状态，0表示未审核，1表示审核中 2：通过 3：未通过
+		if(status == 0) {
+			return "未审核";
+		}else if(status == 1) {
+			return "审核中";
+		}else if(status == 2) {
+			return "通过";
+		}else if(status == 3) {
+			return "未通过";
+		}else {
+			return "error";
+		}
+	}
+	
+	
+	//格式化年份
+	function formatYear(year) {
+		return year + '年';
+	}
+	
+	//格式化周期
+	function formatWeek(week) {
+		return '第' + week + '周';
+	}
+	
+	
+	//格式化下载
+	function downLoad1(val,row,index) {
+		//http://blog.csdn.net/carlblack1987/article/details/38852187
+		 //function里面的三个参数代表当前字段值，当前行数据对象，行号（行号从0开始）
+		 //alert(row.id);
+		 return '<a href="#" onclick="downHsCode(' + index + ',1)">下载</a>'; 
+	}
+	
+	//格式化预览
+	function preview1(val,row,index) {
+		 return '<a href="#" onclick="preHsCode(' + index + ',1)">预览</a>'; 
+	}
+	
+	function generator(val,row,index) {
+		//$('#daily_query_result').datagrid('selectRow', index);  
+	    /*  var row = $('#daily_query_result').datagrid('getSelected'); */
+		return '<a href="../logs/weekly.htm?proId='+row.pid+'&week='+row.week+'&year='+row.yearInt+'&jTime='+row.jTime+'">重新生成</a>'; 
+		//parent.parent.addTabWithIcon("添加日报","../htm/logs/weekly.htm?proId="+window.parent.projectId)
+	}
+	
+	
+
+	
+	function downHsCode(index,formId) {
+      $('#daily_query_result').datagrid('selectRow', index);  
+      var row = $('#daily_query_result').datagrid('getSelected');  
+      if(!row.file) {
+      	alert("这不是文件类型的消息，没有附件可以下载");
+      }else {
+      	var form = $("<form>");
+          form.attr('style', 'display:none');
+          form.attr('id', 'temp_download_form');
+          form.attr('target', '');
+          form.attr('method', 'post');
+          form.attr('action', '../../file/download.ajax?fileId='+row.file+'&type=1');	//这个需要改类型，改成日志的类型
+          $('body').append(form);
+          form.submit();
+          form.remove();
+      }
+  }  
+	function preHsCode(index,formId) {
+      $('#daily_query_result').datagrid('selectRow', index);  
+      var row = $('#daily_query_result').datagrid('getSelected');
+      if(!row.file) {
+      	alert("这不是文件类型的消息，没有附件可以预览");
+      }else {
+      	window.open('../ViewPDF.html?fileurl='+row.file+'&type=1');	//这个需要改类型，改成日志的类型
+      }
+    	
+  }
+	
+	function addDaily() {
+			/* alert("helloooo"); */
+ 			parent.parent.addTabWithIcon("添加周报","../htm/logs/weekly.htm?proId="+window.parent.projectId)
+	}
+	
+
+</script>
+
+
+		
+		 
+			<form id="daily_query_form" method="post" style="width: 100%;">
+				
+					<table class="easyui-datagrid" title="" id="daily_query_result"
+						data-options="singleSelect:true,pagination:true,rownumbers:true,pageNumber:1,pageSize:10,pageList:[1,5,10]"
+						toolbar="#tb" style="display: block;width: 100%;">
+						<thead>
+							<tr>
+								
+								<th data-options="field:'id',width:40,hidden:true,align:'center'">ID</th>
+								<th data-options="field:'pid',width:100,hidden:true,align:'center'">项目id</th>
+								<th data-options="field:'file',width:100,align:'center'">文件路径</th>
+								<th data-options="field:'yearInt',width:40,hidden:false,align:'center'" formatter="formatYear">年份</th>
+								<th data-options="field:'week',width:40,hidden:false,align:'center'" formatter="formatWeek">周期</th>
+								<th data-options="field:'pname',width:100,hidden:false,align:'center'">项目名称</th>
+								<th data-options="field:'jTime',width:100,hidden:true,align:'center',sortable:'true'" formatter="formatTime">日志日期</th>
+								<th data-options="field:'firstTime',width:100,hidden:false,align:'center'" formatter="formatTime">生成时间</th>
+								<th data-options="field:'lastTime',width:100,hidden:false,align:'center'" formatter="formatTime">修改时间</th>
+								<th data-options="field:'status',width:100,hidden:false,align:'center'" formatter="formatStatus">状态</th>
+								<th data-options="field:'handlerName',width:100,hidden:false,align:'center'">编辑者</th>
+								<th data-options="field:'preview',width:100,hidden:false,align:'center'" formatter="downLoad1">下载</th>
+								<th data-options="field:'download',width:100,hidden:false,align:'center'" formatter="preview1">预览</th>
+								<th data-options="field:'generator',width:100,hidden:false,align:'center'" formatter="generator">重新生成</th>
+							</tr>
+						</thead>
+					</table>
+				
+			</form>
+	 
+	    
+	    <div style="width: 200px;;margin-top:10px;margin-left:50%;">
+	    	<a id="btn_submit" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-add" style=" margin-top: 6px;" onclick="addDaily()" >添加周报</a>
+	    </div>

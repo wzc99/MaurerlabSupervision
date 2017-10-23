@@ -1,0 +1,76 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Insert title here</title>
+<style type="text/css">
+body,html {
+width: 100%;
+height: 100%;
+overflow: hidden;
+}
+</style>
+<script type="text/javascript" src="../scripts/jquery-1.8.0.min.js"></script>
+<script type="text/javascript" src="../scripts/general.js"></script>
+<script type="text/javascript" src="../scripts/pdfobject.js"></script>
+
+</head>
+<body>
+	<div id="pdf1" style="width:100%; height:100%;z-index:3">
+		你的浏览器没有安装Adobe flash或者不支持PDF预览
+		<a  id="download" style="cursor: pointer;">点击我下载预览</a>
+	</div>
+	<img id="myPic" alt="myPic" >
+	<div id="err">
+		您浏览的文件格式不对，请联系管理员！或者直接下载看！
+	</div>
+	<script type="text/javascript"> 
+	window.onload = function() {
+		//这里给路径还要给类型，1表示文件，2表示图片
+		var myUrl = $.getUrlParam('fileurl');
+		var type = $.getUrlParam('type');
+		alert(myUrl);
+		alert(type);
+		$.ajax({//获取项目名称
+			url : '../file/preview.ajax',
+			type : 'post',
+			dataType : 'JSON',
+			cache: false,
+			data : {
+				type : type,
+				fileId:myUrl
+			},
+			error: function(XMLHttpRequest, textStatus, errorThrown) {	                    
+	        },
+			success : function(data) {	
+				/* alert(data.type);
+				alert(data.path); */
+				if(data.type == "pic") {
+					$("#pdf1").hide();
+					$("#err").hide();
+					$("#myPic").attr('src',data.path);
+				}else if(data.type == "pdf"){
+					$("#myPic").hide();
+					$("#err").hide();
+					$("#download").attr('href',data.path);
+					var success = new PDFObject({ url:data.path  ,pdfOpenParams: { scrollbars: '0', toolbar: '0', statusbar: '0'}}).embed("pdf1");
+				} else {
+					$("#pdf1").hide();
+					$("#myPic").hide();
+				}
+			}
+		}); 
+		/* if(type == 2) {
+			$("#pdf1").hide();
+			$("#myPic").attr('src',myUrl);
+		}else {
+			$("#myPic").hide();
+			$("#download").attr('href',myUrl);
+			var success = new PDFObject({ url:myUrl  ,pdfOpenParams: { scrollbars: '0', toolbar: '0', statusbar: '0'}}).embed("pdf1");
+		} */
+		
+	}
+
+	</script>
+</body>
+</html>

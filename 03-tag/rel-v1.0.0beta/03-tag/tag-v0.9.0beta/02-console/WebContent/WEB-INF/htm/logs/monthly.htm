@@ -1,0 +1,143 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<link rel="stylesheet" href="../../themes/gray/easyui.css" />
+		<link rel="stylesheet" href="../../themes/icon.css" />
+		<script type="text/javascript" src="../../scripts/jquery-1.8.0.min.js"></script>
+		<script type="text/javascript" src="../../scripts/jquery.easyui.min.js"></script>
+		<script type="text/javascript" src="../../scripts/locale/easyui-lang-zh_CN.js"></script>
+		<style>
+			#main {
+				width: 960px;
+				height: auto;
+			}
+			
+			.left {
+				width: 700px;
+				height: auto;
+			}
+			
+			.right {
+				width: 250px;
+				height: auto;
+				padding-left: 10px;
+			}
+			
+			.left,
+			.right {
+				float: left;
+			}
+			
+			.daily-my-stu {
+				color: #BCBCBC;
+				font-size: 12px;
+			}
+			
+			.daily-my-content {
+				border: 1px dashed #F00;
+				border-color: #BCBCBC;
+				margin-top: 10px;
+				height: 130px;
+			}
+			/*清除浮动代码*/
+			
+			.clearfloat:after {
+				display: block;
+				clear: both;
+				content: "";
+				visibility: hidden;
+				height: 0
+			}
+			
+			.clearfloat {
+				zoom: 1
+			}
+			/*清除浮动代码结束*/
+			
+			.content-panel-back {
+				width: 960px;
+				height: 40px;
+				background: #EEEEEE;
+			}
+			
+			.input-button {
+				background: #F4F4F4;
+				border: none;
+				overflow: hidden;
+				padding: 8px;
+			}
+			
+			.content-panel-text {
+				width: 955px;
+				height: 60px;
+				border: 1px dashed #F00;
+				border-color: #BCBCBC;
+			}
+		</style>
+
+		<title>Insert title here</title>
+	</head>
+
+	<body onload="wol()">
+		<div id="main" class="clearfloat">
+			<div class="left">
+				<p id="title-time"> XXX 项目月报 ( 2016 年 12月 )</p>
+				<p class="daily-my-stu">提交情况</p>
+				<div class="daily-my-content">
+					<p style="line-height: 80px; margin-left: 20px;font-size: 14px; color: #BBB;">已提交 可进行编辑进行修改！</p>
+				</div>
+			</div>
+			<div class="right">
+				<p>请选择日期</p>
+				<input type="month" id="date-date" onchange="onDateC()" />
+			</div>
+		</div>
+
+		<script>
+			function onDateC() {
+				var mydateInput = document.getElementById("date-date");
+				var titleT = document.getElementById("title-time");
+				var date = new Date($("#date-date").val().replace(/-/g, "/"));
+				var end = new Date();
+				if (date > end) {
+					alert("对不起，您的输入有误！");
+					wol();
+					return false;
+				}
+				var dateString = date.getFullYear() + " 年 " + (date.getMonth() + 1) + "月 )" ;
+				
+				titleT.innerText = "XXX 项目月报 ( " + dateString ;
+			}
+		</script>
+		<script>
+			function wol() {
+				var mydateInput = document.getElementById("date-date");
+				var titleT = document.getElementById("title-time");
+				var date = new Date();
+				var dateString = date.getFullYear() + "-" + (date.getMonth() + 1) ;
+				mydateInput.value = dateString;
+				
+				titleT.innerText = "XXX 项目月报 ( " + date.getFullYear() + " 年 " + (date.getMonth() + 1) + "月 )";
+			}
+		</script>
+		<hr align="left" style=" height:2px;border:none;border-top:2px dotted #F0F0F0;width: 960px; margin-top: 60px;" />
+
+		<div class="content-panel-back">
+			<div class="left" style="line-height: 40px;">
+				工作月报
+			</div>
+			<div class="right" >
+				<input class="input-button" type="button" value="生成月报" style="line-height: 22px;"/>
+			</div>
+		</div>
+		<div class="content-panel-text">
+			<input class="input-button" type="button" value="上传附件" style="line-height: 22px;margin: 10px;"/>
+
+		</div>
+
+		</div>
+	</body>
+
+</html>

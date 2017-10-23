@@ -1,0 +1,307 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>问题处理</title>
+	
+<link rel="stylesheet" type="text/css" href="../../themes/general.css"  />
+<link rel="stylesheet" type="text/css" href="../../themes/icon.css" 			/>
+<link rel="stylesheet" type="text/css" href="../../themes/jquery-ui.css" 		/>
+<link rel="stylesheet" type="text/css" href="../../themes/default/easyui.css" 	/>
+<script type="text/javascript" src="../../scripts/jquery-1.8.0.min.js"></script>
+<script type="text/javascript" src="../../scripts/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../../scripts/src/jquery.parser.js"></script>
+<script type="text/javascript" src="../../scripts/locale/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript" src="../../scripts/sessionExpriation.js"></script>
+<script type="text/javascript" src="../../scripts/general.js"></script>
+
+<style type="text/css">	
+#findDate{
+	border: 1px solid #95B8E7;
+	border-radius: 5px 5px 5px 5px;
+	height: 25px;
+}
+#rectifyDate{
+		border: 1px solid #95B8E7;
+	border-radius: 5px 5px 5px 5px;
+	height: 25px;
+}
+.inbe{
+	border: 1px solid #95B8E7;
+	border-radius: 5px 5px 5px 5px;
+	height: 25px;
+}
+</style>
+<script type="text/javascript">
+	//上传数据的删除
+	function delTr(tempTdId){//删除
+		var obj  = $("#" + tempTdId);
+		$(obj).parent().parent().remove();  
+	}
+	$(function() {
+		var qusId = $.getUrlParam('qusId');
+		var projectId = $.getUrlParam('proId');
+		//ajax从后台获取数据
+		$.ajax({//问题信息,从后台获取数据
+			url : '../../question/viewQuestion.ajax',
+			type : 'post',
+			dataType : 'JSON',
+			cache: false,
+			data : {
+				qusId : qusId 
+			},
+			error: function(XMLHttpRequest, textStatus, errorThrown) {	                   
+	        },
+			success : function(data) {
+				init_view(data);
+			}
+		});
+		function init_view(data) {
+			if(data == null){
+				$.messager.alert('Error', '该数据已经关闭', 'error');
+			}
+			/* alert(data.findTime);
+			alert(data.qusId); */
+			$("#qusId").val(data.qusId);
+			$("#projectId").val(data.proId);//业主单位
+			$("#findDate").datebox("setValue", data.findTime);//发现时间
+			$("#productServiceDesc").val(data.quesDescription);//问题概述
+			$("#quesNoSuitBasis").val(data.quesNoSuitBasis);//不符合依据
+			$("#rectifyDate").datebox("setValue", data.updateTime);//整改时间
+			$("#updateProcessDescription").val(data.updateProcessDescription);//整改过程概述
+		   
+		}
+		
+		//显示项目名称的ajax
+		$.ajax({
+			url : '../../project/getProjectName.ajax',
+			type : 'post',
+			dataType : 'JSON',
+			cache: false,
+			data : {
+				projectId : projectId,
+			},
+			error: function(XMLHttpRequest, textStatus, errorThrown) {	                    
+	        },
+			success : function(data) {			
+				$('#projectName').text(data.projectName);//待修改，这里是在页面最开始填入项目名称的
+			}
+		});
+		
+		$('#findDate').datebox({
+			onSelect: function(date){
+				
+			},
+			required:true
+		}); 
+		$('#rectifyDate').datebox({
+			onSelect: function(date){
+				
+			},
+			required:true
+		}); 
+		//显示问题的图片
+		$.ajax({
+			url : '../../question/viewQuestionPic.ajax?qusId='+qusId,
+			type : 'post',
+			dataType : 'JSON',
+			cache: false,
+			data : {
+			},
+			error: function(XMLHttpRequest, textStatus, errorThrown) {	                   
+	        },
+			success : function(data) {
+				init_view_pic(data);
+			}
+		});
+		function init_view_pic(data){
+			   
+			var list = data.tFileForm;
+			 $('.picOrigin').each(function(index,element){
+					/* alert(index); */
+					if (list[index].fileFormFilename == null) {
+			    		$(this).text("未上传");
+			    	}
+			    	else{
+			    		$(this).text(list[index].fileFormFilename);
+			    	}
+					$('.picName').eq(index).val(list[index].fileFormName);
+					 //$('.picOriginCaoZuo').eq(index).html("<a href='#'>查看</a><pre>    </pre><a href='#'>下载</a>");
+					$('.picOriginCaoZuo').eq(index).html('<pre>'+'<a href="../ViewPDF.html?fileurl=' + list[index].fileFormId + '&type='+1+'" target="_blank">预览</a>          <a href="javascript:do_download(' + list[index].fileFormId + ','+1+')">下载</a>' + '</pre>');
+				});
+			
+		
+		}
+		
+		//显示问题的文件
+		$.ajax({
+			url : '../../question/viewQuestionFile.ajax?qusId='+qusId,
+			type : 'post',
+			dataType : 'JSON',
+			cache: false,
+			data : {
+			},
+			error: function(XMLHttpRequest, textStatus, errorThrown) {	                   
+	        },
+			success : function(data) {
+				init_file(data);
+			}
+		}); 
+		 function init_file(data){
+		    //文件部分
+		    fileInfoIndex = data.length;
+		    /* //注意这里需要修改，fileInfoIndex应从总的文件个数开始增加
+			//如果长度大于5个那说明需要增加几行
+			//前5个，有就写上原始文件名称，没有就不写 */
+			var list = data.tFileForm;
+			$('.origin').each(function(index,element){
+				if (list[index].fileFormFilename == null) {
+		    		$(this).text("未上传");
+		    	}
+		    	else{
+		    		$(this).text(list[index].fileFormFilename);
+		    		$('.originCaoZuo').eq(index).html('<pre>' + '<a href="../ViewPDF.html?fileurl=' + list[index].fileFormId + '&type='+1+'" target="_blank">预览</a>          <a href="javascript:do_download(' + list[index].fileFormId + ','+1+')">下载</a>' + '</pre>');
+		    	}
+				
+			});
+		
+			if (fileInfoIndex>5) {
+				for (var i = 5; i < fileInfoIndex; i++) {
+				    $str='';
+			        $str+='<tr>';
+			        $str+='<td><input type="text" name="fileName" value="'+list[i].fileFormName+'" 		id="fileName'+ i+1 +'" 		size="50"/></td>';
+					$str+='<td align="center"><span  name="fileOrginName"  class="origin" 	id="fileOrginName'+ i+1 +'">'+list[i].fileFormFilename+'</span></td>';
+					$str+='<td align="center" ><span class="originCaoZuo"><a href="#">查看</a><pre>    </pre><a href="#">下载</a></span></td>';
+				    
+				    $str+='</tr>';				    
+				    $("#fileInfoTab").append($str);
+				}
+			}
+		} 
+		
+	});	
+	 
+	function do_download(projectPlanFileId,type) {//下载
+		var form = $("<form>");
+	    form.attr('style', 'display:none');
+	    form.attr('id', 'temp_download_form');
+	    form.attr('target', '');
+	    form.attr('method', 'post');
+	    form.attr('action', '../../file/download.ajax?fileId='+projectPlanFileId+'&type='+type);
+	    $('body').append(form);
+	    form.submit();
+	    form.remove();
+	}
+	</script>
+</head>
+
+<body>
+<form id="new_form" method="post" enctype="multipart/form-data">
+	<input type="hidden" name="projectId"   		id="projectId" 	value="" />
+	<input type="hidden" name="qusId"   		id="qusId" 	value="" />
+	<input type="hidden" name="fileNametotal" 	id="fileName_total" value="" />
+	<input type="hidden" name="picNameTotal" 		id="picName_total" 		value="" />
+	<span>子项目名称：</span><span id="projectName"></span>
+	<table class="table_new">
+		<tr>
+			<td class="td_new_subtitle" colspan="2" ><strong>发现问题</strong></td>
+		</tr>
+		<tr>
+			<td class="td_new_name">发现时间<span class="red">*</span></td>
+			<td class="td_new_value">
+				<input type="text" name="findTime" id="findDate" readonly class="inbe" /></td>			
+		</tr>
+		<tr>
+			<td class="td_new_name">问题概述<span class="red">*</span></td>
+			<td class="td_new_value"><textarea name="quesDescription" id="productServiceDesc" style="height: 60px" cols="105" data-options="required:true,validType:'length[2,200]'" class="easyui-validatebox" readonly></textarea></td>
+		</tr>
+		<tr>
+			<td class="td_new_name">不符合依据<span class="red">*</span></td>
+			<td class="td_new_value"><textarea name="quesNoSuitBasis" id="quesNoSuitBasis" style="height: 60px" cols="105" data-options="required:true,validType:'length[2,200]'" class="easyui-validatebox" readonly></textarea></td>
+		</tr>
+		<tr>
+			<td class="td_new_name">整改时间<span class="red">*</span></td>
+			<td class="td_new_value">
+				<input type="text" name="updateTime" id="rectifyDate" readonly/></td>
+		</tr>
+		<tr>
+			<td class="td_new_name">整改过程概述<span class="red">*</span></td>
+			<td class="td_new_value"><textarea name="updateProcessDescription" id="updateProcessDescription" style="height: 60px" cols="105" data-options="required:true,validType:'length[2,200]'" readonly class="easyui-validatebox"></textarea></td>
+		</tr>
+	</table>
+	</br>
+	<table class="table_new" id="picInfoTab">
+		<tr>
+			<td class="td_new_subtitle" colspan="3" ><strong>相关图片</strong></td>
+		</tr>
+		<tr>
+			<td align="center" style="width: 35%;"><strong>图片描述</strong></td>
+			<td align="center" style="width: 35%;"><strong>上传的文件名称</strong></td>
+			<td align="center" style="width: 30%;"><strong>操作</strong></td>
+		</tr>
+		<tr>
+			<td><input type="text" 	id="picName1" 		name="picName" 	value="" 	size="50" class="picName inbe" readonly/></td>
+			<td align="center" ><span class="picOrigin"></span></td>
+			<td align="center"><span class="picOriginCaoZuo"></span></td>
+		</tr>
+		<tr>
+			<td><input type="text" 	id="picName2" 		name="picName" 	value="" 	size="50" class="picName inbe" readonly/></td>
+			<td align="center" ><span class="picOrigin"></span></td>
+			<td align="center"><span class="picOriginCaoZuo"></span></td>
+		</tr>
+		<tr>
+			<td><input type="text" 	id="picName3" 		name="picName" 	value="" 	size="50" class="picName inbe" readonly/></td>
+			<td align="center" ><span class="picOrigin"></span></td>
+			<td align="center"><span class="picOriginCaoZuo"></span></td>
+		</tr>
+		<tr>
+			<td><input type="text" 	id="picName4" 		name="picName" 	value="" 	size="50" class="picName inbe" readonly/></td>
+			<td align="center" ><span class="picOrigin"></span></td>
+			<td align="center"><span class="picOriginCaoZuo"></span></td>
+		</tr>
+		
+	</table>
+	<br>
+	<table class="table_new" id="fileInfoTab">
+		<tr>
+			<td class="td_new_subtitle" colspan="3" ><strong>相关文件</strong></td>
+		</tr>
+		<tr>
+			<td align="center" style="width: 35%;"><strong>名称</strong></td>
+			<td align="center" style="width: 35%;"><strong>已上传文件名</strong></td>
+			<td align="center" style="width: 30%;"><strong>操作</strong></td>
+			
+		</tr>
+		<tr>
+			<td><input type="text" 	id="fileName1" 		name="fileName" 	value="暂停令" 	size="50" readonly class="inbe"/></td>
+			<td align="center" ><span class="origin"></span></td>
+			<td align="center" ><span class="originCaoZuo"></span></td>
+		</tr>
+		<tr>
+			<td><input type="text" 	id="fileName2" 		name="fileName" 	value="监理备忘录" 	size="50" readonly class="inbe"/></td>
+			<td align="center" ><span class="origin"></span></td>
+			<td align="center" ><span class="originCaoZuo"></span></td>
+			
+		</tr>
+		<tr>
+			<td><input type="text" 	id="fileName3" 		name="fileName" 	value="工作联络函" size="50" readonly class="inbe"/></td>
+			<td align="center" ><span class="origin"></span></td>
+			<td align="center" ><span class="originCaoZuo"></span></td>
+			
+		</tr>
+		<tr>
+			<td><input type="text"  id="fileName4"	 	name="fileName" 	value="监理工程师通知单" 		size="50" 	readonly class="inbe"/></td>
+			<td align="center" ><span class="origin"></span></td>
+			<td align="center" ><span class="originCaoZuo"></span></td>
+		</tr>
+		<tr>
+			<td><input type="text" 	id="fileName5" 		name="fileName" 	value="专题汇报" 		size="50" 	readonly class="inbe"/></td>
+			<td align="center" ><span class="origin"></span></td>
+			<td align="center" ><span class="originCaoZuo"></span></td>
+		</tr>
+	</table>
+	<br>
+	
+</form>
+
+</body>
+</html>

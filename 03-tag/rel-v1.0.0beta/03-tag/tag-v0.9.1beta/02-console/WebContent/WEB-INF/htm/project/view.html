@@ -1,0 +1,1601 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Project View</title>
+
+<link rel="stylesheet" type="text/css" href="../../themes/general.css"/>
+<link rel="stylesheet" type="text/css" href="../../themes/icon.css"/>
+<link rel="stylesheet" type="text/css" href="../../themes/default/easyui.css"/>
+<link rel="stylesheet" type="text/css" href="../../themes/jqueryTabs.css" />
+<link rel="stylesheet" type="text/css" href="../../themes/jquery-ui.css" />
+<link rel="stylesheet" type="text/css" href="../../themes/jquery-ui-1.9.2.custom.css" />
+
+<script type="text/javascript" src="../../scripts/jquery-1.8.0.min.js"></script>
+<script type="text/javascript" src="../../scripts/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../../scripts/src/jquery.parser.js"></script>
+<script type="text/javascript" src="../../scripts/locale/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript" src="../../scripts/general.js"></script>
+<script type="text/javascript" src="../../scripts/sessionExpriation.js"></script>
+<script type="text/javascript" src="../../scripts/jqUI/jquery-ui-1.9.2.custom.js"></script>
+<style type="text/css">
+	.SchBorder{	
+		border: 1px solid #A8A8A8;
+		width: 60px;
+		height: 18px;
+		padding-left:60px; 
+	}
+</style>
+
+<script type="text/javascript">
+var projectId = $.getUrlParam('proId');
+$(function() {
+   
+	$( "#tabs" ).tabs();
+	var projectId = $.getUrlParam('proId');
+	$("#projectId").val(projectId);
+	var urlValue = '../../project/viewProject.ajax';
+	
+	
+	$.ajax({//委托信息
+		url : urlValue,
+		type : 'post',
+		dataType : 'JSON',
+		cache: false,
+		data : {
+			proId : projectId 
+		},
+		error: function(XMLHttpRequest, textStatus, errorThrown) {
+            //alert(XMLHttpRequest.status);
+        },
+		success : function(data) {
+			init_view(data);
+		}
+	});
+	$.ajax({//委托信息的文件信息
+		url : '../../project/getEntrustFileInfo.ajax',
+		type : 'post',
+		dataType : 'JSON',
+		cache: false,
+		data : {
+			proId : projectId,
+		},
+		error: function(XMLHttpRequest, textStatus, errorThrown) {
+           //alert(XMLHttpRequest.status);
+        },
+		success : function(projectStartInfoData) {
+			var ss = "#projectEntrustFileTab"
+			init_file(projectStartInfoData,ss);
+		}
+	});
+	$.ajax({//委托信息--判断编辑按钮是否可用
+		url : '../../ana/checkPermission.ajax',
+		type : 'post',
+		dataType : 'JSON',
+		data : {
+			//msgId : projectId,
+			permissionCode : 'Modify_Entrust'
+		},
+		
+		success : function(data) {
+			 if (data.success) {
+				 //alert("您有权限修改委托信息");
+				$('#btn_edit_entrust').show();
+			} else {
+				//alert("您没有权限修改委托信息");
+				$('#btn_edit_entrust').hide();
+			} 
+		} 
+	});
+	/*$.ajax({//项目概况
+		url : '../../XXX/getProjectById.ajax',//ajax地址待修改。。。
+		type : 'post',
+		dataType : 'JSON',
+		cache: false,
+		data : {
+			proId : projectId 
+		},
+		error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alert(XMLHttpRequest.status);
+        },
+		success : function(data) {
+			init_view_project(data);
+		}
+	});*/
+	$.ajax({//项目策划--人员信息
+		url : '../../plan/getChiefAndManager.ajax',
+		type : 'post',
+		dataType : 'JSON',
+		cache: false,
+		data : {
+			proId : projectId 
+		},
+		error: function(XMLHttpRequest, textStatus, errorThrown) {
+            //alert(XMLHttpRequest.status);
+        },
+		success : function(data) {
+			init_view_projectPlan(data);
+		}
+	});
+	$.ajax({//项目策划--文件信息
+		url : '../../plan/getPlanFileInfo.ajax',
+		type : 'post',
+		dataType : 'JSON',
+		cache: false,
+		data : {
+			proId : projectId,
+		},
+		error: function(XMLHttpRequest, textStatus, errorThrown) {
+            //alert(XMLHttpRequest.status);
+        },
+		success : function(tPlanForm) {			
+			var ss = "#projectPlanFileTab"
+			init_file(tPlanForm,ss);
+		}
+	}); 
+	$.ajax({//项目策划--判断编辑按钮是否可用
+		url : '../../ana/checkPermission.ajax',
+		type : 'post',
+		dataType : 'JSON',
+		data : {
+			//proId : projectId
+			permissionCode : 'Modify_Planning'
+		},
+		success : function(data) {
+			 if (data.success) {
+				$('#btn_edit_plan').show();
+			} else {
+				$('#btn_edit_plan').hide();
+			} 
+		} 
+	});
+	$.ajax({//人员派遣交底--人员信息
+		url : '../../dispatch/getGroupLeaderAndMemberByProjectId.ajax',//ajax地址待修改。。。
+		type : 'post',
+		dataType : 'JSON',
+		cache: false,
+		data : {
+			projectId : projectId 
+		},
+		error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    //alert(XMLHttpRequest.status);
+        },
+		success : function(data) {
+			init_view_projectStaff(data);
+		}
+	});
+	$.ajax({//人员派遣交底--文件信息
+		url : '../../dispatch/getDispatchFileInfo.ajax',
+		type : 'post',
+		dataType : 'JSON',
+		cache: false,
+		data : {
+			proId : projectId,
+		},
+		error: function(XMLHttpRequest, textStatus, errorThrown) {
+                   // alert(XMLHttpRequest.status);
+        },
+		success : function(tPlanForm) {			
+			var ss = "#projectStaffFileTab"
+			init_file(tPlanForm,ss);
+		}
+	}); 
+	$.ajax({//派遣单信息
+		url : '../../dispatch/getSendCardInfo.ajax',
+		type : 'post',
+		dataType : 'JSON',
+		cache: false,
+		data : {
+			projectId : projectId 
+		},
+		error: function(XMLHttpRequest, textStatus, errorThrown) {
+                   
+        },
+		success : function(data) {
+			init_dispatch_data(data);
+		}
+	});
+	$.ajax({//人员派遣交底--判断编辑按钮是否可用
+		url : '../../ana/xxx.ajax',//待修改
+		type : 'post',
+		dataType : 'JSON',
+		data : {
+			msgId : projectId 
+		},
+		success : function(data) {
+			 if (data.success) {
+				$('#btn_edit_staff').show();
+			} else {
+				$('#btn_edit_staff').hide();
+			} 
+		} 
+	});
+	$.ajax({//开工报审的文件信息 物资清单也在这里
+		url : '../../work/initBeginWorkByProId.ajax',
+		type : 'post',
+		dataType : 'JSON',
+		cache: false,
+		data : {
+			proId : projectId,
+		},
+		error: function(XMLHttpRequest, textStatus, errorThrown) {
+                
+        },
+		success : function(projectStartInfoData) {
+			 ss = "#projectStartFileTab"
+			init_file(projectStartInfoData,ss);
+		}
+	});
+	
+	$.ajax({//开工报审的文件信息 物资清单也在这里
+		url : '../../work/getTypeName.ajax',
+		type : 'post',
+		dataType : 'JSON',
+		cache: false,
+		data : {
+			proId : projectId,
+		},
+		error: function(XMLHttpRequest, textStatus, errorThrown) {
+                
+        },
+		success : function(projectStartInfoData) {
+			alert(projectStartInfoData.subclass);
+			//给一个子类的所有数据
+			if(projectStartInfoData.subclass != null){
+				$("#chooseSubClass").text(projectStartInfoData.subclass);
+			}
+			
+		}
+	});
+	
+	$.ajax({//开工报审--生产厂质量体系文件审核记录
+		url : '../../work/initTQualityFileRecoder.ajax',
+		type : 'post',
+		dataType : 'JSON',
+		cache: false,
+		data : {
+			proId : projectId,
+		},
+		error: function(XMLHttpRequest, textStatus, errorThrown) {
+        },
+		success : function(data) {
+			init_file1(data);
+		}
+	});
+	$.ajax({//开工报审--生产厂人员资质审查记录
+		url : '../../work/initTQualityPeopleRecoder.ajax',
+		type : 'post',
+		dataType : 'JSON',
+		cache: false,
+		data : {
+			proId : projectId,
+		},
+		error: function(XMLHttpRequest, textStatus, errorThrown) {
+        },
+		success : function(data) {
+			init_file2(data);
+		}
+	});
+	$.ajax({//开工报审--生产厂设备仪器检定审查记录
+		url : '../../work/initTQualityCheckRecoder.ajax',
+		type : 'post',
+		dataType : 'JSON',
+		cache: false,
+		data : {
+			proId : projectId,
+		},
+		error: function(XMLHttpRequest, textStatus, errorThrown) {
+        },
+		success : function(data) {
+			init_file3(data);
+		}
+	});
+/*	$.ajax({//开工报审--判断编辑按钮是否可用
+		url : '../../ana/xxx.ajax',//待修改
+		type : 'post',
+		dataType : 'JSON',
+		data : {
+			proId : projectId 
+		},
+		success : function(data) {
+			 if (data.success) {
+				$('#btn_edit_start').show();
+			} else {
+				$('#btn_edit_start').hide();
+			} 
+		} 
+	});*/
+
+	$.ajax({//进度控制--
+		url : '../../schedule/accumulateSchedule.ajax',
+		type : 'post',
+		dataType : 'JSON',
+		cache: false,
+		data : {
+			projectId : projectId,
+		},
+		error: function(XMLHttpRequest, textStatus, errorThrown) {
+                   // alert(XMLHttpRequest.status);
+        },
+		success : function(data) {			
+			init_schedule(data);
+		}
+	}); 
+	/*$.ajax({//进度控制--判断编辑按钮是否可用
+		url : '../../ana/xxx.ajax',//待修改
+		type : 'post',
+		dataType : 'JSON',
+		data : {
+			msgId : projectId 
+		},
+		success : function(data) {
+			 if (data.success) {
+				$('#btn_add_sch').show();
+				$('#btn_search_sch').show();
+			} else {
+				$('#btn_add_sch').hide();
+				$('#btn_search_sch').hide();
+			} 
+		} 
+	});*/
+	$.ajax({//质量控制----注意：所有的name都没改。。。。。。
+		url : '../../test/viewResult.ajax',
+		type : 'post',
+		dataType : 'JSON',
+		cache: false,
+		data : {
+			proId : projectId,
+		},
+		error: function(XMLHttpRequest, textStatus, errorThrown) {
+                 //   alert(XMLHttpRequest.status);
+        },
+		success : function(data) {
+			init_projectQulityFileInfo(data);
+		}
+	});
+	$.ajax({//问题处理
+		url : '../../question/findQuestionsByProId.ajax',
+		type : 'post',
+		dataType : 'JSON',
+		cache: false,
+		data : {
+			proId : projectId,
+		},
+		error: function(XMLHttpRequest, textStatus, errorThrown) {
+                 //   alert(XMLHttpRequest.status);
+        },
+		success : function(data) {
+			//alert(data);
+			init_projectIssueFileInfo(data);
+		}
+	});
+
+	/*$.ajax({//问题处理--判断编辑按钮是否可用
+		url : '../../ana/xxx.ajax',//待修改
+		type : 'post',
+		dataType : 'JSON',
+		data : {
+			proId : projectId 
+		},
+		success : function(data) {
+			 if (data.success) {
+				$('#btn_edit_issue').show();
+			} else {
+				$('#btn_edit_issue').hide();
+			} 
+		} 
+	});*/
+	$.ajax({//完工资料的文件信息
+		url : '../../file/selectByProId.ajax',
+		type : 'post',
+		dataType : 'JSON',
+		cache: false,
+		data : {
+			proId : projectId,
+		},
+		error: function(XMLHttpRequest, textStatus, errorThrown) {
+                   // alert(XMLHttpRequest.status);
+        },
+		success : function(data) {
+			init_projectFinishFileInfo(data);
+		}
+	});
+	
+	//测试--进度
+	/*var id="ss"+1;
+	var table=$('<table class="table_new" id="'+id+'">');
+    table.prependTo($("#tabs-5"));
+    for(var j=0;j<4;j++){//类中的一行
+    	var tempVal = "dou,quxiao,meme,daoliao,shijian,dou";//取到一个类中一行的数据,数据以逗号分隔
+    	$str='';
+  		$str+='<tr>';
+    	$(tempVal.split(",")).each(function (i,dom) {
+    		$str+='<td>'+dom+'</td>';
+        });
+  	    $str+='</tr>';
+  	    var tem="#"+id;
+  	    $(tem).append($str);
+    }*/
+	
+
+});
+//委托信息--文本数据
+function init_view(data) {
+	if(data == null){
+		$.messager.alert('Error', '该数据已经关闭', 'error');
+	}
+	if(data.project.proEndtime == null){
+		$("#endDate").text();//预计结束日期
+	}
+	else{
+		$("#endDate").text(data.project.proEndtime);
+	}
+	
+	var testStr = data.project.proProducttype + '';
+	var type = testStr.split(",");
+	var typeStr = '';
+	for(var i=0;i<type.length;i++) {
+		if(type[i] == '1') {
+			typeStr+="输送管,";
+		}
+		if(type[i] == '2') {
+			typeStr+="弯管,";
+		}
+		if(type[i] == '3') {
+			typeStr+="输送管或弯管防腐保温,";
+		}
+		if(type[i] == '4') {
+			typeStr+="石油专用管,";
+		}
+		if(type[i] == '5') {
+			typeStr+="管件法兰,";
+		}
+		if(type[i] == '6') {
+			typeStr+="阀门,";
+		}
+		if(type[i] == '7') {
+			typeStr+="设备,";
+		}
+		if(type[i] == '8') {
+			typeStr+="钻具,";
+		}
+		if(type[i] == '9') {
+			typeStr+="绝缘接头,";
+		}
+	
+	}
+	typeStr = typeStr.slice(0,typeStr.length-1);
+	
+	$("#reportFrequency").text(data.project.proReportRate);//汇报频次
+	$("#ownerCompany").text(data.project.proUnit);//业主单位
+	$("#projectName").text(data.project.proBigProjectName);//项目名称
+	$("#subProjectName").text(data.project.projectName);//项目名称
+	$("#entrustDate").text(data.project.proEntrustTime);//委托日期
+	$("#entrustCode").text(data.project.proNum);//委托单号
+	$("#ownerContacts").text(data.project.proConpeople);//业主联系人
+	$("#ownerTel").text(data.project.proConntel);//联系电话
+	$("#supervisorGoods").text(data.project.proGoods);//监造物资
+	$("#supervisorWay").text(data.project.proType);//监造类型
+	$("#entrustNum").text(data.project.proGoodsnum);//委托数量
+	$("#manufacture").text(data.project.proFactory);//生产厂家
+	$("#manufactureContact").text(data.project.proFactoryconnpeople);//厂家联系人
+	$("#telePhone").text(data.project.proFactoryconntel);//联系电话
+	$("#supervisorGist").text(data.project.proBasis);//简历依据
+	$("#reportMode").text(data.project.proReportway);//回报方式
+	$("#reportDate").text(data.project.proReporttime);//汇报时间	
+	
+	$("#reportFileName").text(data.project.proReportfilename);//汇报文件命名
+	$("#checkbox").text(typeStr);//产品类型 
+	$("#createProjectPerson").text(data.userName);//创建项目人员 
+	$("#createProjectDate").text(data.project.proCreateTime);//项目创建时间
+	$("#projectFresh").text(data.project.proLastUpdateTime);//最新更新时间
+	//项目概况
+	$("#ownerCompany1").text(data.project.proUnit);//业主单位
+	$("#projectName1").text(data.project.projectName);//项目名称
+	$("#entrustDate1").text(data.project.begintime);//委托日期
+	$("#entrustCode1").text(data.project.proNum);//委托单号
+	$("#ownerContacts1").text(data.project.proConpeople);//业主联系人
+	$("#ownerTel1").text(data.project.proConntel);//联系电话
+	$("#supervisorGoods1").text(data.project.proGoods);//监造物资
+	$("#supervisorWay1").text(data.project.proType);//监造类型
+	$("#entrustNum1").text(data.project.proGoodsnum);//委托数量
+	$("#manufacture1").text(data.project.proFactory);//生产厂家
+	$("#manufactureContact1").text(data.project.proFactoryconnpeople);//厂家联系人
+	$("#telePhone1").text(data.project.proFactoryconntel);//联系电话
+	
+}
+//文件显示，通用部分--委托信息、项目策划、人员派遣、开工报审
+function init_file(data,fileId){
+	if(data != null && data.length > 0){		
+		for(var i = 0; i < data.length; i++){
+			var name = data.tFileForm[i].fileFormFilename;
+			var date = dateChange(data.tFileForm[i].fileFormDate);
+			var people = data.tFileForm[i].fileFormPeople;
+			var status = data.tFileForm[i].fileFormCurrentStatus;
+			var download = "下载";
+			var preview = "预览";
+			if (data.tFileForm[i].fileFormFilename == null) {
+				name = "未上传";
+				date = "";
+				people = "";
+				status = "";
+				download = "";
+				preview = "";
+			}
+			
+			if(status == null)
+	    		status = "";
+	    	else if(status == "D")
+	    		status = "已上传";
+	    	else if(status == "W")
+	    		status = "待审核";
+	    	else if(status == "N")
+	    		status = "审核未通过";
+	    	else if(status == "P")
+	    		status = "审核通过";
+			
+			$str='';
+	        $str+='<tr>';
+			$str+='<td align="center" width="250px">'+ data.tFileForm[i].fileFormName + '</td>';
+			$str+='<td align="center" width="250px">' + name + '</td>';
+			$str+='<td align="center" width="120px"> ' + date + '</td>';
+			$str+='<td align="center" width="120px"> ' +  people + '</td>';//名字待修改
+			$str+='<td align="center" width="80px"> ' +  status + '</td>';//审核状态
+			//$str+='<td align="center" width="80px"><a href="javascript:do_preview(' + data.tFileForm[i].fileFormId + ','+1+')">'+preview+' </a> </td>';//审核状态
+			$str+='<td align="center" width="80px"><a href="../ViewPDF.html?fileurl=' + data.tFileForm[i].fileFormId + '&type='+1+'" target="_blank">'+preview+' </a> </td>';
+			$str+='<td align="center" width="80px"><a href="javascript:do_download(' + data.tFileForm[i].fileFormId + ','+1+')">'+download+'</a></td>';//审核状态
+		    $str+='</tr>';
+		    $(fileId).append($str);
+		}
+	}
+}
+function init_file1(data){
+	if(data != null && data.length > 0){		
+		for(var i = 0; i < data.length; i++){
+			var certificate = data.tFileForm[i].designName;//资质证书/工艺文件/设计图纸名称
+			var version = data.tFileForm[i].numVersion;//编号/版本
+			var company = data.tFileForm[i].unit;//发证/编制单位
+			var validPeriodWork = data.tFileForm[i].validDate;//有效期
+			var name = data.tFileForm[i].fileName;//文件名称
+			var date = dateChange(data.tFileForm[i].uploadTime);//上传时间
+			var download = "下载";
+			var preview = "预览";
+			
+			$str='';
+	        $str+='<tr>';
+			$str+='<td align="center" width="200px">'+ certificate + '</td>';
+			$str+='<td align="center" width="120px">' + version + '</td>';
+			$str+='<td align="center" width="150px"> ' + company + '</td>';
+			$str+='<td align="center" width="120px"> ' +  validPeriodWork + '</td>';
+			$str+='<td align="center" width="150px"> ' +  name + '</td>';
+			$str+='<td align="center" width="80px"> ' +  date + '</td>';
+			//$str+='<td align="center" width="80px"><a href="javascript:do_preview(' + data.tFileForm[i].id + ','+1+')">'+preview+' </a> </td>';//审核状态
+			$str+='<td align="center" width="80px"><a href="../ViewPDF.html?fileurl=' + data.tFileForm[i].id + '&type='+4+'" target="_blank">'+preview+' </a> </td>';
+			$str+='<td align="center" width="80px"><a href="javascript:do_download(' + data.tFileForm[i].id + ','+4+')">'+download+'</a></td>';//审核状态
+		    $str+='</tr>';
+		    $("#projectSystemTab").append($str);
+		}
+	}
+}
+function init_file2(data){
+	if(data != null && data.length > 0){		
+		for(var i = 0; i < data.length; i++){
+			var name = data.tFileForm[i].userName;//姓名
+			var post = data.tFileForm[i].job;//岗位
+			var certificateName = data.tFileForm[i].zhengshuName;//证书名称
+			var numbering = data.tFileForm[i].num;//编号
+			var issuingUnit = data.tFileForm[i].licenseUnit;//发证单位
+			var validPeriodPeople = data.tFileForm[i].validDate;//有效期
+			var filename = data.tFileForm[i].fileName;//文件名称
+			var date = dateChange(data.tFileForm[i].postTime);//上传时间
+			var download = "下载";
+			var preview = "预览";
+			
+			$str='';
+	        $str+='<tr>';
+			$str+='<td align="center" width="80px">'+ name + '</td>';
+			$str+='<td align="center" width="80px">' + post + '</td>';
+			$str+='<td align="center" width="120px"> ' + certificateName + '</td>';
+			$str+='<td align="center" width="120px"> ' + numbering + '</td>';
+			$str+='<td align="center" width="150px"> ' + issuingUnit + '</td>';
+			$str+='<td align="center" width="80px"> ' +  validPeriodPeople + '</td>';
+			$str+='<td align="center" width="150px"> ' +  filename + '</td>';
+			$str+='<td align="center" width="80px"> ' +  date + '</td>';
+			//$str+='<td align="center" width="80px"><a href="javascript:do_preview(' + data.tFileForm[i].fileFormId +','+1+ ')">'+preview+' </a> </td>';//审核状态
+			$str+='<td align="center" width="80px"><a href="../ViewPDF.html?fileurl=' + data.tFileForm[i].id + '&type='+3+'" target="_blank">'+preview+' </a> </td>';
+			$str+='<td align="center" width="80px"><a href="javascript:do_download(' + data.tFileForm[i].id +','+3+ ')">'+download+'</a></td>';//审核状态
+		    $str+='</tr>';
+		    $("#projectStaffTab").append($str);
+		}
+	}
+}
+function init_file3(data){
+	if(data != null && data.length > 0){		
+		for(var i = 0; i < data.length; i++){
+			var equipName = data.tFileForm[i].deviceName;//设备名称
+			var equipID = data.tFileForm[i].deviceNo;//编号
+			var runningCondition = data.tFileForm[i].yunxingQingkuang;//运行状况
+			var manufacturer = data.tFileForm[i].productFactory;//生产厂家
+			var certificateNumber = data.tFileForm[i].bookNo;//检定证书号 
+			var validPeriodEquip = data.tFileForm[i].validDate;//有效期
+			var filename = data.tFileForm[i].fileName;//
+			var date = dateChange(data.tFileForm[i].postTime);//上传时间
+			var download = "下载";
+			var preview = "预览";
+			
+			$str='';
+	        $str+='<tr>';
+			$str+='<td align="center" width="200px">'+ equipName + '</td>';
+			$str+='<td align="center" width="100px">' + equipID + '</td>';
+			$str+='<td align="center" width="120px"> ' + runningCondition + '</td>';
+			$str+='<td align="center" width="150px"> ' + manufacturer + '</td>';
+			$str+='<td align="center" width="80px"> ' + certificateNumber + '</td>';
+			$str+='<td align="center" width="80px"> ' +  validPeriodEquip + '</td>';
+			$str+='<td align="center" width="150px"> ' +  filename + '</td>';
+			$str+='<td align="center" width="80px"> ' +  date + '</td>';
+			//$str+='<td align="center" width="80px"><a href="javascript:do_preview(' + data.tFileForm[i].fileFormId +','+1+ ')">'+preview+' </a> </td>';//审核状态
+			$str+='<td align="center" width="80px"><a href="../ViewPDF.html?fileurl=' + data.tFileForm[i].id + '&type='+5+'" target="_blank">'+preview+' </a> </td>';
+			$str+='<td align="center" width="80px"><a href="javascript:do_download(' + data.tFileForm[i].id +','+5+ ')">'+download+'</a></td>';//审核状态
+		    $str+='</tr>';
+		    $("#projectEquipTab").append($str);
+		}
+	}
+}
+//完工资料--显示文件
+function init_projectFinishFileInfo(data){
+	console.log(data);
+	if(data != null && data.length > 0){		
+		for(var i = 0; i < data.length; i++){//一行显示两个
+			var name0 = data.tFileForm[i].fileFormName;//文件名称
+			var file0 = data.tFileForm[i].fileFormFilename;	//上传文件名称
+			var sum0 = 0;	//文件数量
+			if(file0) {
+				sum0 = 1;
+			}
+			var name1 = "";
+			var sum1 = "";
+			if(i < data.length-1){
+				var name1 = data.tFileForm[i+1].fileFormName;//文件名称
+				var file1 = data.tFileForm[i+1].fileFormFilename;	//上传文件名称
+				var sum1 = 0;//文件数量	
+				if(file1) {
+					sum1 = 1;
+				}
+			}
+			
+			$str='';
+	        $str+='<tr>';
+			$str+='<td align="center" width="200px">'+ name0 + '</td>';
+			$str+='<td align="center" width="250px">'+ file0 + '</td>';
+			$str+='<td align="center" width="100px">' + sum0 + '</td>';
+			$str+='<td align="center" width="200px">' + name1 + '</td>';
+			$str+='<td align="center" width="250px">'+ file1 + '</td>';
+			$str+='<td align="center" width="100px">' +  sum1 + '</td>';
+		    $str+='</tr>';
+		    $("#projectFinishFileTab").append($str);
+		    i=i+1;
+		}
+	}
+}
+//项目概况的字段
+function init_view_project(data){
+	if(data == null){
+		$.messager.alert('Error', '该数据已经关闭', 'error');
+	}
+	$("#qualityPlanNum").text(data.prop_unit);
+	$("#qualityPlanStatus").text(data.prop_unit);
+	$("#supervisorDetailNum").text(data.prop_unit);
+	$("#supervisorDetailStatus").text(data.prop_unit);
+
+	$("#dispatchDate").text(data.prop_unit);
+	$("#factoryDate").text(data.prop_unit);
+	$("#projectManager1").text(data.prop_unit);
+	$("#projectManagerTel").text(data.prop_unit);
+	$("#supervisorGroupLeader").text(data.prop_unit);
+	$("#supervisorGroupLeadertel").text(data.prop_unit);
+	$("#supervisorMember").text(data.prop_unit);
+	$("#personnelChanges").text(data.prop_unit);
+
+	$("#currentCompletionRatio").text(data.prop_unit);
+	$("#plannedFinishDate").text(data.prop_unit);
+	$("#projectEndDate").text(data.prop_unit);
+	$("#existingProblems").text(data.prop_unit);
+
+	$("#HSESituation").text(data.prop_unit);
+
+	$("#reportNum").text(data.prop_unit);
+	$("#reportCompletionStatus").text(data.prop_unit);
+	$("#archiveNum").text(data.prop_unit);
+	$("#archiveCompletionStatus").text(data.prop_unit);
+
+	$("#contractNum").text(data.prop_unit);
+	$("#contractMoney").text(data.prop_unit);
+	$("#settlementRequirements").text(data.prop_unit);
+	$("#settlementMoney").text(data.prop_unit);
+	$("#reportSubmissionDate").text(data.prop_unit);
+	$("#settlementStatus").text(data.prop_unit);
+}
+//委托信息--这两个函数是做修改的 所以所以这个按钮还需要通过后台数据来隐藏和显示
+function do_edit_entrusting(id){
+	parent.addTabWithIcon("修改委托信息", "./project/editEntrusting.htm?projectId="+id, "icon-tip");
+}
+function edit_entrusting(){
+	var projectId = $.getUrlParam('proId');
+	do_edit_entrusting(projectId);
+}
+//项目策划--这两个函数是做修改的 所以所以这个按钮还需要通过后台数据来隐藏和显示
+function do_edit_planning(id){
+	parent.addTabWithIcon("项目策划", "./project/editPlanning.htm?projectId="+id, "icon-tip");
+}
+function edit_planning(){
+	var projectId = $.getUrlParam('proId');
+	do_edit_planning(projectId);
+}
+//人员派遣交底
+function do_edit_staffing(id){
+	parent.addTabWithIcon("修改人员派遣交底", "./project/editStaff.htm?projectId="+id, "icon-tip");
+}
+function edit_staffing(){
+	var projectId = $.getUrlParam('proId');
+	do_edit_staffing(projectId);
+}
+function generate_dispatchForm(){
+	var projectId = $.getUrlParam('proId');
+	parent.parent.open("../../dispatch/generateDispatchForm.ajax?projectId="+projectId);
+	//parent.addTabWithIcon("下载派遣单", "../../dispatch/generateDispatchForm.ajax?projectId="+projectId, "icon-tip");
+}
+
+//开工报审--这两个函数是做修改的 所以所以这个按钮还需要通过后台数据来隐藏和显示
+function do_edit_starting(id){
+	parent.addTabWithIcon("开工报审", "./project/editWork.htm?projectId="+id);
+}
+function edit_starting(){
+	var projectId = $.getUrlParam('proId');
+	do_edit_starting(projectId);
+}
+//开工报审--选择子类--
+function do_edit_children(id){
+	parent.addTabWithIcon("选择子类", "./project/editChildren.htm?projectId="+id);
+}
+function edit_children(){
+	var projectId = $.getUrlParam('proId');
+	do_edit_children(projectId);
+}
+//开工报审--物资清单--
+function do_edit_goods(id){
+	parent.addTabWithIcon("物资清单", "./project/editGoods.htm?projectId="+id);
+}
+function edit_goods(){
+	var projectId = $.getUrlParam('proId');
+	do_edit_goods(projectId);
+}
+//进度控制--新增进度
+function do_add_schedule(id){
+	parent.addTabWithIcon("新增进度", "./project/addSchedule2.htm?projectId="+id, "icon-add");
+}
+function add_schedule(){
+	var projectId = $.getUrlParam('proId');
+	do_add_schedule(projectId);
+}
+//质量控制--新增质量控制
+function do_add_quality(id){
+	parent.addTabWithIcon("新增质量控制", "./project/addQuality.htm?projectId="+id, "icon-add");
+}
+function add_quality(){
+	var projectId = $.getUrlParam('proId');
+	do_add_quality(projectId);
+}
+//进度控制--搜索进度
+function do_search_schedule(id){
+	parent.addTabWithIcon("搜索进度", "./project/searchSchedule.htm?projectId="+id, "icon-add");
+}
+function search_schedule(){
+	var projectId = $.getUrlParam('proId');
+	do_search_schedule(projectId);
+}
+//问题处理
+function do_edit_issue(id){
+	parent.addTabWithIcon("问题处理", "./project/editIssue.htm?projectId="+id, "icon-tip");
+}
+function edit_issue(){
+	var projectId = $.getUrlParam('proId');
+	do_edit_issue(projectId);
+}
+//完工资料--这两个函数是做修改的 所以所以这个按钮还需要通过后台数据来隐藏和显示
+/*function do_edit_finish(id){
+	parent.addTabWithIcon("完工资料", "./project/editFinish.htm?projectId="+id, "icon-tip");
+}
+function edit_finish(){
+	var projectId = $.getUrlParam('proId');
+	do_edit_finish(projectId);
+}*/
+
+
+//项目策划--的人员信息
+function init_view_projectPlan(data){
+	if(data == null){
+		$.messager.alert('Error', '该数据已经关闭', 'error');
+	}
+	$("#projectChief").text(data.projectChief);
+	$("#projectManager").text(data.projectManager);
+}
+//项目策划--这里是上传文件的动态增加
+
+//人员派遣交底--人员及派遣单
+function init_view_projectStaff(data){
+	if(data == null){
+		$.messager.alert('Error', '该数据已经关闭', 'error');
+	}	
+	$("#projectGroupLeader").text(data.groupLeader)//项目组长
+	$("#projectMember").text(data.members)//项目组员
+
+}
+
+function init_dispatch_data(data){
+	if(data == null){
+			$.messager.alert('Error', '该数据已经关闭', 'error');
+	}	
+	$("#projectName2").text(data.project.projectName);//项目名称
+	$("#projectClass").text(data.project.proType);//项目类别
+	$("#ownerCompany2").text(data.project.proUnit);//业主单位				
+	$("#ownerTel2").text(data.project.proConntel);//联系电话
+	$("#proNum2").text(data.project.proNum);
+	$("#supervisorGoods2").text(data.project.proGoods);//监造物资		
+	$("#entrustNum2").text(data.project.proGoodsnum);//委托数量
+	$("#supervisorGist2").text(data.project.proBasis);//监理依据
+	$("#manufacture2").text(data.project.proFactory);//生产厂家
+	$("#telePhone2").text(data.project.proFactoryconntel);//联系电话
+	$("#reportMode2").text(data.project.proReportway);//回报方式
+	$("#reportFrequency2").text(data.project.proReportRate);//汇报频次
+	if(data.projectManager != null){
+	    $("#projectChief2").text(data.projectManager.userName); //项目经理
+		$("#pMProfessionalQualification").text(data.projectManager.userProfessionalQualification);
+	    $("#projectChiefTel2").text(data.projectManager.mobile); //联系方式
+	}
+	if(data.sendCard != null){
+		$("#projectDispatchID").text(data.sendCard.tSendNumStr);//派遣单编号???
+		$("#qualityPlan2").text(data.sendCard.tSendQualityPlan);//质量计划
+		$("#goOff2").text(data.sendCard.tSendGoTime);//出发时间
+		$("#jobContent").val();//工作内容
+		$("#submissions").val();//结束后提交材料
+		$("#remarks").val();//备注
+		$("#chief2").text(data.tManagerLeader.userName);//主管领导
+		$("#chiefTel2").text(data.tManagerLeader.mobile);
+		$("#compiler").text(data.tBianzhi.userName);
+		$("#approvers").text(data.tShenpi.userName);
+		
+	}		
+	
+	if(data.groupLeader != null){
+		$("#projectGroup2").text(data.groupLeader.userName);//组长
+		$("#gLProfessionalQualification").text(data.groupLeader.userProfessionalQualification);
+		$("#projectGroupTel2").text(data.groupLeader.mobile);//联系方式
+	}
+	
+	$("#projectMember2").text(data.members);//组员
+}
+
+//进度控制--生成进度控制累计表格
+function init_schedule(data){
+	var num = data.length
+	
+	for(var i=num-1;i>=0;i--){//
+		var id="ss"+i;
+		var table=$('<table class="table_new" id="'+id+'">');
+	    table.prependTo($("#tabs-5"));
+	    
+	    //alert(data[i].goodsLists.goodType);
+	    $str='';
+	  	$str+='<tr><td><strong>产品名称</strong></td><td><strong>产品名称2</strong></td><td><strong>产品规格</strong></td>';
+	  	if(data[i].bigTypeId==7){//设备
+	  		$str+='<td><strong>产品编号</strong></td>';
+	  	}
+	  	$str+='<td><strong>订货数量</strong></td>';
+	  	$str+='<td><strong>单位</strong></td>';
+	  	var length=data[i].scheduleTableList.length;
+	  	var list=data[i].scheduleTableList;
+	    for(var j=0;j<length;j++){//
+	    	$str+='<td><strong>'+list[j].nodeName+'</strong></td>';//节点名字
+	    	/* $(tempVal.split(",")).each(function (i,dom) {
+	    		$str+='<td>'+dom+'</td>';
+	        }); */
+	    } 
+	    $str+='<td><strong>累计完成比例(%)</strong></td>';
+	    $str+='<td><strong>计划完成日期</strong></td>';
+	    $str+='<td><strong>约定完成日期</strong></td>';
+	    $str+='</tr>';
+  	    var tem="#"+id;
+  	    $(tem).append($str);
+	    $str='';
+	    $str+='<tr><td>'+data[i].goodsLists.goodType+'</td><td>'+data[i].goodsLists.goodName+'</td><td>'+data[i].goodsLists.goodSpecifications+'</td>';
+	    if(data[i].bigTypeId==7){//设备
+	  		$str+='<td>'+data[i].goodsLists.productNum+'</td>';
+	  	}
+	    $str+='<td>'+data[i].goodsLists.goodOrderNum+'</td>';
+	    $str+='<td>'+data[i].goodsLists.goodUnit+'</td>';
+	    for(var j=0;j<length;j++){//
+	    	var unitNum = list[j].value.length;
+	    	$str+='<td>';
+	        for(var k=0;k<unitNum;k++){
+	    	   $str+=list[j].value[k];//value
+	    	   if(list[j].unit[k].length < 5)//未开始、正在进行、已完成单位不显示
+	    	        $str+=list[j].unit[k];//单位
+	        }
+	        $str+='</td>';
+	  	    
+	    } 
+	    $str+='<td>'+data[i].completeRate+'</td>';
+	    $str+='<td>'+data[i].goodsLists.planDate+'</td>';
+	    $str+='<td>'+data[i].goodsLists.promiseDate+'</td>';
+	    $str+='</tr>';
+  	    var tem="#"+id;
+  	    $(tem).append($str);
+	}
+	$('<div><strong>累计完成情况：</strong><div>').prependTo($("#tabs-5"));
+}
+//质量控制
+var myQId = [];
+function init_projectQulityFileInfo(data){
+	if(data != null && data.size > 0){
+		for(var i = 0; i < data.size; i++){//name 待修改
+			var id = data.lists[i].qid;
+			console.log(id);
+			myQId.push(id);
+			/* var myJson = {
+					id:id,
+					proId:data.lists[i].proId
+			};
+			console.log(myJson); */
+			$str='';
+	        $str+='<tr>';
+			$str+='<td align="center" width="100px">' + data.lists[i].date + '</td>';//日期/班次
+			$str+='<td align="center" width="200px">' + data.lists[i].people + '</td>';//填写人
+			//$str+='<td align="center" width="80px"><a href="editQuality.htm?QId='+data.lists[i].qid+'&proId='+data.lists[i].proId+'">修改</a></td>';//操作，查看和修改
+			$str+='<td align="center" width="80px"><a href="javascript:void(0);" onclick="viewQulity('+i+','+data.lists[i].proId+')">查看</a></td>';//操作，查看和修改
+		    $str+='</tr>';
+		    $("#projectQulityFileTab").append($str);
+		}
+	}
+}
+//问题处理
+function init_projectIssueFileInfo(data){
+	if(data != null && data.size > 0){
+		for(var i = 0; i < data.size; i++){//name 待修改
+			var findDate = dateChange(data.lists[i].findTime);
+			var endDate = dateChange(data.lists[i].updateTime);
+			$str='';
+	        $str+='<tr>';
+			$str+='<td align="center" width="100px">' + findDate + '</td>';//发现时间
+			$str+='<td align="center" width="200px">' + data.lists[i].quesDescription + '</td>';//问题概述
+			$str+='<td align="center" width="200px">' + data.lists[i].quesNoSuitBasis + '</td>';//不符合依据
+			$str+='<td align="center" width="100px">' + endDate + '</td>';//整改时间
+			$str+='<td align="center" width="300px">' + data.lists[i].updateProcessDescription + '</td>';//整改过程概述
+			$str+='<td align="center" width="80px">' + data.lists[i].userName + '</td>';//提交人
+			$str+='<td align="center" width="80px"><a href="javascript:viewQuestion('+data.lists[i].qusId+','+data.lists[i].proId+');">查看</a><pre>    </pre><a href="javascript:editQuestion('+data.lists[i].qusId+','+data.lists[i].proId+');">修改</a></td>';//操作，查看和修改
+		    $str+='</tr>';
+		    $("#projectIssueFileTab").append($str);
+		}
+	}
+}
+function viewQuestion(qusId,proId) {
+	parent.addTabWithIcon("查看问题", "./project/viewQuestion.htm?qusId="+qusId+"&proId="+proId, "icon-tip");
+}
+function editQuestion(qusId,proId) {
+	parent.addTabWithIcon("修改问题", "./project/editQuestion.htm?qusId="+qusId+"&proId="+proId, "icon-tip");
+}
+function viewQulity(index,proId) {
+	parent.addTabWithIcon("查看质量控制", "./project/editQuality.htm?QId="+myQId[index]+"&proId="+proId, "icon-tip");
+}
+
+function do_download(projectPlanFileId,type) {//下载
+	alert("我的类型"+type);
+	var form = $("<form>");
+    form.attr('style', 'display:none');
+    form.attr('id', 'temp_download_form');
+    form.attr('target', '');
+    form.attr('method', 'post');
+    form.attr('action', '../../file/download.ajax?fileId='+projectPlanFileId+'&type='+type);
+    $('body').append(form);
+    form.submit();
+    form.remove();
+}
+function do_preview(projectPlanFileId,type) {//预览。。。代码要修改哦，不是这个代码
+	var form = $("<form>");
+    form.attr('style', 'display:none');
+    form.attr('id', 'temp_download_form');
+    form.attr('target', '');
+    form.attr('method', 'post');
+    form.attr('action', '../../file/preview.ajax?fileId='+projectPlanFileId+'&type='+type);
+    $('body').append(form);
+    form.submit();
+    
+    form.remove();
+}
+
+function dateChange(ss){
+	if(ss==null ||ss=='') {
+		return '';
+	}
+	var dd = new Date(ss);
+	var YY = dd.getFullYear();      
+	var MM = dd.getMonth() + 1;     
+	var DD = dd.getDate(); 
+	var d = YY + "-" + MM + "-" + DD;
+	return d;
+}
+</script>
+</head>
+<body>
+	<div id="tabs">
+		<ul>
+			<li><a href="#tabs-1">委托信息	</a></li>
+			<li><a href="#tabs-8">项目概况	</a></li>
+			<li><a href="#tabs-2">项目策划	</a></li>
+			<li><a href="#tabs-3">人员派遣交底</a></li>
+			<li><a href="#tabs-4">开工报审	</a></li>
+			<li><a href="#tabs-5">项目进度	</a></li>
+			<li><a href="#tabs-6">质量控制	</a></li>
+			<li><a href="#tabs-7">问题处理	</a></li>
+			<li><a href="#tabs-9">完工资料	</a></li>
+			<li><a href="#tabs-10">项目日报</a></li>
+			<li><a href="#tabs-11">项目周报</a></li>
+		</ul>
+	<div id="tabs-1">
+		<table class="table_view">
+			<tr>
+				<td class="td_new_name">业主单位</td>
+				<td class="td_new_value"><span id="ownerCompany"></span></td>
+				<td class="td_view_name">委托日期</td>
+				<td class="td_view_value"><span id="entrustDate"></span></td>				
+			</tr>
+			<tr>
+				<td class="td_new_name">项目名称</td>
+				<td class="td_new_value"><span id="projectName"></span></td>
+				<td class="td_new_name">子项目名称</td>
+				<td class="td_new_value"><span id="subProjectName"></span></td>				
+			</tr>
+			<tr>
+				<td class="td_new_name">结束日期</td>
+				<td class="td_view_value"><span id="endDate"></span></td>
+				<td class="td_view_name">委托单号</td>
+				<td class="td_view_value" ><span id="entrustCode"></span></td>
+			</tr>
+			<tr>
+				<td class="td_view_name">业主联系人</td>
+				<td class="td_view_value"><span id="ownerContacts"></span></td>
+				<td class="td_view_name">联系电话</td>
+				<td class="td_view_value"><span id="ownerTel"></span></td>
+			</tr>
+			<tr>
+				<td class="td_view_name">监造物资</td>
+				<td class="td_view_value" ><span id="supervisorGoods"></span></td>
+				<td class="td_view_name">委托数量</td>
+				<td class="td_view_value"><span id="entrustNum"></span></td>
+			</tr>
+			<tr>
+				<td class="td_view_name">监造类型</td>
+				<td class="td_view_value" ><span id="supervisorWay"></span></td>
+				<td class="td_view_name">生产厂家</td>
+				<td class="td_view_value" ><span id="manufacture"></span></td>
+			</tr>
+			<tr>
+				<td class="td_view_name">厂家联系人</td>
+				<td class="td_view_value"><span id="manufactureContact"></span></td>
+				<td class="td_view_name">联系电话</td>
+				<td class="td_view_value" ><span id="telePhone"></span></td>
+			</tr>
+			<tr>
+				<td class="td_new_name">监理依据</td>
+				<td class="td_view_value"><span id="supervisorGist"></span></td>
+				<td class="td_new_name">汇报文件命名</td>
+				<td class="td_view_value"><span id="reportFileName"></span></td>
+			</tr>
+			<tr>
+				<td class="td_new_name">汇报方式</td>
+				<td class="td_view_value"><span id="reportMode"></span></td>
+				<td class="td_new_name">汇报时间</td>
+				<td class="td_view_value"><span id="reportDate"></span></td>
+			</tr>
+			<tr>
+				<td class="td_new_name">汇报频次</td>
+				<td class="td_view_value" colspan="3"><span id="reportFrequency"></span></td>
+			</tr>
+			<tr>
+				<td class="td_new_name">产品类别</td>
+				<td class="td_view_value" colspan="3"><span id="checkbox"></span></td>
+			</tr>
+			<tr>
+				<td class="td_new_name">创建项目人员</td>
+				<td class="td_view_value" ><span id="createProjectPerson"></span></td>
+				<td class="td_new_name">项目创建时间</td>
+				<td class="td_view_value"><span id="createProjectDate"></span></td>
+			</tr>
+			<tr>
+				<td class="td_new_name">最新更新时间</td>
+				<td class="td_view_value" colspan="3"><span id="projectFresh"></span></td>
+			</tr>		
+		</table>
+		<table class="table_view2" id="projectEntrustFileTab">
+				<tr>
+					<td align="center" width="250px"><strong>文件名称	</strong></td>
+					<td align="center" width="250px"><strong>备注	</strong></td>
+					<td align="center" width="120px"><strong>上传时间	</strong></td>
+					<td align="center" width="120px"><strong>上传人  	</strong></td>
+					<td align="center" width="80px"><strong>审核状态 	</strong></td>
+					<td align="center" width="80px"><strong>预览  	</strong></td>
+					<td align="center" width="80px"><strong>下载 	</strong></td>
+				</tr>
+		</table>
+		<div align="center">
+			<a id="btn_edit_entrust" href="javascript:edit_entrusting()" class="easyui-linkbutton" iconCls="icon-tip">修改</a>
+			
+		</div>
+	</div>
+	
+	<div id="tabs-8">
+		<table class="table_view">
+			<tr>
+				<td class="td_view_name"><center>项目状态</center> </td>
+				<td class="td_view_value" colspan="4"><span id="projectStatus"></span></td>
+			</tr>
+			<tr>
+				<td rowspan="6"><center>业主委托信息</center></td>
+				<td class="td_view_name">业主单位</td>
+				<td class="td_view_value" ><span id="ownerCompany1"></span></td>
+				<td class="td_view_name">项目名称</td>
+				<td class="td_view_value" ><span id="projectName1"></span></td>
+			</tr>
+			<tr>
+				<td class="td_view_name">委托日期</td>
+				<td class="td_view_value"><span id="entrustDate1"></span></td>
+				<td class="td_view_name">委托单号</td>
+				<td class="td_view_value" ><span id="entrustCode1"></span></td>
+			</tr>
+			<tr>
+				<td class="td_view_name">业主联系人</td>
+				<td class="td_view_value"><span id="ownerContacts1"></span></td>
+				<td class="td_view_name">联系电话</td>
+				<td class="td_view_value"><span id="ownerTel1"></span></td>
+			</tr>
+			<tr>
+				<td class="td_view_name">监造物资</td>
+				<td class="td_view_value" ><span id="supervisorGoods1"></span></td>
+				<td class="td_view_name">委托数量</td>
+				<td class="td_view_value"><span id="entrustNum1"></span></td>
+			</tr>
+			<tr>
+				<td class="td_view_name">监造类型</td>
+				<td class="td_view_value" ><span id="supervisorWay1"></span></td>
+				<td class="td_view_name">生产厂家</td>
+				<td class="td_view_value" ><span id="manufacture1"></span></td>
+			</tr>
+			<tr>
+				<td class="td_view_name">厂家联系人</td>
+				<td class="td_view_value"><span id="manufactureContact1"></span></td>
+				<td class="td_view_name">联系电话</td>
+				<td class="td_view_value" ><span id="telePhone1"></span></td>
+			</tr>
+			<tr>
+				<td rowspan="2"><center>服务策划信息</center></td>
+				<td class="td_view_name">质量计划编号</td>
+				<td class="td_view_value"><span id="qualityPlanNum"></span></td>
+				<td class="td_view_name">完成状态</td>
+				<td class="td_view_value" ><span id="qualityPlanStatus"></span></td>
+			</tr>
+			<tr>
+				<td class="td_view_name">监理细则编号</td>
+				<td class="td_view_value"><span id="supervisorDetailNum"></span></td>
+				<td class="td_view_name">完成状态</td>
+				<td class="td_view_value" ><span id="supervisorDetailStatus"></span></td>
+			</tr>			
+			<tr>
+				<td rowspan="5"><center>人员派遣信息</center></td>
+				<td class="td_view_name">派遣日期</td>
+				<td class="td_view_value"><span id="dispatchDate"></span></td>
+				<td class="td_view_name">进厂日期</td>
+				<td class="td_view_value" ><span id="factoryDate"></span></td>
+			</tr>
+			<tr>
+				<td class="td_view_name">项目经理</td>
+				<td class="td_view_value"><span id="projectManager1"></span></td>
+				<td class="td_view_name">联系方式</td>
+				<td class="td_view_value" ><span id="projectManagerTel"></span></td>
+			</tr>
+			<tr>
+				<td class="td_view_name">监造组长</td>
+				<td class="td_view_value"><span id="supervisorGroupLeader"></span></td>
+				<td class="td_view_name">联系方式</td>
+				<td class="td_view_value" ><span id="supervisorGroupLeadertel"></span></td>	
+			</tr>
+			<tr>
+				<td class="td_view_name" >监理员</td>
+				<td class="td_view_value" colspan="3"><span id="supervisorMember"></span></td>
+			</tr>
+			<tr>
+				<td class="td_view_name">人员变更情况</td>
+				<td class="td_view_value" colspan="3"><span id="personnelChanges"></span></td>
+			</tr>
+
+			<tr>
+				<td rowspan="2"><center>项目进度</center> </td>
+				<td class="td_view_name">目前完成比例</td>
+				<td class="td_view_value"><span id="currentCompletionRatio"></span></td>
+				<td class="td_view_name">计划完成日期</td>
+				<td class="td_view_value"><span id="plannedFinishDate"></span></td>
+			</tr>
+			<tr>
+				<td class="td_view_name">项目结束日期</td>
+				<td class="td_view_value"><span id="projectEndDate"></span></td>
+				<td class="td_view_name">存在问题</td>
+				<td class="td_view_value"><span id="existingProblems"></span></td>
+			</tr>
+			<tr>
+				<td ><center>HSE情况</center></td>
+				<td class="td_view_value" colspan="4"><span id="HSESituation"></span></td>
+			</tr>
+			<tr>
+				<td rowspan="2"><center>归档资料</center></td>
+				<td class="td_view_name">报告编号</td>
+				<td class="td_view_value"><span id="reportNum"></span></td>
+				<td class="td_view_name">完成状态</td>
+				<td class="td_view_value"><span id="reportCompletionStatus"></span></td>
+			</tr>
+			<tr>
+				<td class="td_view_name">归档编号</td>
+				<td class="td_view_value"><span id="archiveNum"></span></td>
+				<td class="td_view_name">完成状态</td>
+				<td class="td_view_value"><span id="archiveCompletionStatus"></span></td>
+			</tr>
+			<tr>
+				<td rowspan="3"><center>结算</center></td>
+				<td class="td_view_name">合同编号</td>
+				<td class="td_view_value"><span id="contractNum"></span></td>
+				<td class="td_view_name">合同金额</td>
+				<td class="td_view_value"><span id="contractMoney"></span></td>
+			</tr>
+			<tr>
+				<td class="td_view_name">结算要求</td>
+				<td class="td_view_value"><span id="settlementRequirements"></span></td>
+				<td class="td_view_name">结算金额</td>
+				<td class="td_view_value"><span id="settlementMoney"></span></td>
+			</tr>
+			<tr>
+				<td class="td_view_name">报告提交日期</td>
+				<td class="td_view_value"><span id="reportSubmissionDate"></span></td>
+				<td class="td_view_name">结算状态</td>
+				<td class="td_view_value"><span id="settlementStatus"></span></td>
+			</tr>
+		</table>
+	</div>
+	
+	<div id="tabs-2">
+		<table class="table_view">
+			<tr>
+				<td class="td_new_name">项目总监</td>
+				<td class="td_new_value"><span id="projectChief"></span></td>	
+				<td class="td_new_name">项目经理</td>
+				<td class="td_new_value"><span id="projectManager"></span></td>	
+			</tr>
+		</table>
+		<br/>
+		<table class="table_view2" id="projectPlanFileTab">
+			<tr>
+				<td align="center" width="250px"><strong>文件名称	</strong></td>
+				<td align="center" width="300px"><strong>备注		</strong></td>
+				<td align="center" width="120px"><strong>上传时间	</strong></td>
+				<td align="center" width="120px"><strong>上传人  	</strong></td>
+				<td align="center" width="80px"><strong>审核状态 	</strong></td>
+				<td align="center" width="80px"><strong>预览  	</strong></td>
+				<td align="center" width="80px"><strong>下载 	</strong></td>
+			</tr>
+		</table>
+		<div align="center">
+			<a id="btn_edit_plan" href="javascript:edit_planning()" class="easyui-linkbutton" iconCls="icon-tip">编辑</a>
+		</div>
+	</div>
+	<!--人员派遣-->
+	<div id="tabs-3">
+		<table class="table_view">
+			<tr>
+				<td class="td_new_name">监理组长</td>
+				<td class="td_new_value" colspan="3"><span id="projectGroupLeader"></span></td>	
+			</tr>
+			<tr>
+				<td class="td_new_name">监理员</td>
+				<td class="td_new_value" colspan="3"><span id="projectMember"></span></td>	
+			</tr>
+	<!-- 		<tr>
+				<td class="td_new_name" rowspan="3"><center>人员变更</center></td>
+				<td class="td_new_name">增加</td>
+				<td class="td_new_value" colspan="2"><span id="addPerson"></span></td>	
+			</tr>
+			<tr>
+				<td class="td_new_name">裁剪</td>
+				<td class="td_new_value" colspan="2"><span id="cutPerson"></span></td>	
+			</tr>
+			<tr>
+				<td class="td_new_name">替换</td>
+				<td class="td_new_value" colspan="2"><span id="changePerson"></span></td>	
+			</tr>		 -->
+		</table>
+		<br/>
+		<table class="table_view2" id="projectStaffFileTab">
+			<tr>
+				<td align="center" width="250px"><strong>文件名称	</strong></td>
+				<td align="center" width="250px"><strong>备注	</strong></td>
+				<td align="center" width="120px"><strong>上传时间	</strong></td>
+				<td align="center" width="120px"><strong>上传人  	</strong></td>
+				<td align="center" width="80px"><strong>审核状态 	</strong></td>
+				<td align="center" width="80px"><strong>预览  	</strong></td>
+				<td align="center" width="80px"><strong>下载 	</strong></td>
+			</tr>
+		</table>
+		<br/>
+		<table class="table_new">
+			<tr>
+				<td class="td_new_subtitle" colspan="7" ><strong>派遣单</strong></td>
+			</tr>
+			<tr>
+				<td class="td_new_name">编号</td>
+				<td class="td_new_value" colspan="6"><span id="projectDispatchID"></span></td>	
+			</tr>
+			<tr>
+				<td class="td_new_name">项目名称</td>
+				<td class="td_new_value" colspan="2"><span id="projectName2"></span></td>						
+				<td class="td_new_name">监造类别</td>
+				<td class="td_new_value" colspan="3"><span id="projectClass"></span></td>			
+			</tr>
+			<tr>
+				<td class="td_new_name">业主单位</td>
+				<td class="td_new_value" colspan="2"><span id="ownerCompany2"></span></td>
+				<td class="td_new_name">联系方式</td>
+				<td class="td_new_value" colspan="3"><span id="ownerTel2"></span></td>
+			</tr>
+			<tr>
+				<td class="td_new_name">委托单号</td>
+			    <td class="td_new_value" colspan="2"><span id="proNum2"></span></td>
+				<td class="td_new_name">监造物资</td>
+				<td class="td_new_value" colspan="3"><span id="supervisorGoods2"></span></td>
+			</tr>
+			<tr>
+			    <td class="td_new_name">委托数量</td>
+				<td class="td_new_value" colspan="2"><span id="entrustNum2"></span></td>
+				<td class="td_new_name">监理依据</td>
+				<td class="td_new_value" colspan="3"><span id="supervisorGist2"></span></td>
+			</tr>
+			<tr>
+				<td class="td_new_name">生产厂家</td>
+				<td class="td_new_value" colspan="2"><span id="manufacture2"></span></td>
+				<td class="td_new_name">厂家联系方式</td>
+				<td class="td_new_value" colspan="3"><span id="telePhone2"></span></td>
+			</tr>
+			<tr>
+				<td class="td_new_name">质量计划</td>
+				<td class="td_new_value" colspan="6"><span id="qualityPlan2"></span></td>
+			</tr>
+			<tr>
+				<td class="td_new_name">携带技术资料</td>
+				<td class="td_new_value" colspan="6"><span id="carryData2">标准技术文件</span></td>			
+			</tr>
+			<tr>
+				<td class="td_new_name" rowspan="3">监理人员</td>
+				<td class="td_new_name">项目经理</td>
+				<td class="td_new_value" width="15%"><span id="projectChief2"></span></td>
+				<td class="td_new_name">执业资质</td>
+			    <td class="td_new_value" width="15%"><span id="pMProfessionalQualification"></span></td>
+				<td class="td_new_name">联系方式</td>
+				<td class="td_new_value"><span id="projectChiefTel2"></span></td>
+			</tr>
+			<tr>
+				<td class="td_new_name">组长（HSE）</td>
+				<td class="td_new_value" width="15%"><span id="projectGroup2"></span></td>
+				<td class="td_new_name">执业资质</td>
+			    <td class="td_new_value"><span id="gLProfessionalQualification"></span></td>						
+				<td class="td_new_name">联系方式</td>
+				<td class="td_new_value"><span id="projectGroupTel2"></span></td>
+			</tr>
+			<tr>
+				<td class="td_new_name">组员（执业资质）</td>
+				<td class="td_new_value" colspan="5"><span id="projectMember2"></span></td>				
+			</tr>
+			<tr>
+				<td class="td_new_name">出发时间</td>
+				<td class="td_new_value" colspan="6"><span id="goOff2"></span></td>			
+			</tr>
+			<tr>
+				<td class="td_new_name">工作内容</td>
+				<td class="td_new_value" colspan="6"><span id="jobContent2">工厂质量体系审核、原材料检验、生产检验过程中产品外观质量、几何尺寸、水压试验、无损检验、力学性能试验、标识、包装和发运等工序的见证监督。</span></td>
+			</tr>
+			<tr>
+				<td class="td_new_name">汇报频次</td>
+				<td class="td_new_value" colspan="2"><span id="reportFrequency2"></span></td>		
+				<td class="td_new_name">汇报方式</td>
+				<td class="td_new_value" colspan="3"><span id="reportMode2"></span></td>		
+			</tr>
+			<tr>
+				<td class="td_new_name">主管领导</td>
+				<td class="td_new_value" colspan="2"><span id="chief2"></span></td>
+				<td class="td_new_name">联系电话</td>
+				<td class="td_new_value" colspan="3"><span id="chiefTel2"></span></td>			
+			</tr>
+			<tr>
+				<td class="td_new_name">工作结束后需提交材料</td>
+				<td class="td_new_value" colspan="6"><span id="submissions2">
+1、根据监理资料规范要求MR-ZJ-2017-01提交要求（□方案1  ■方案2  □方案3）提交；
+2、监造资料及监造总结报告在项目完成后一周内提交项目经理；
+3、项目经理在收到监造资料和监理总结报告后一周内提交资料室。						
+				</span></td>		
+			</tr>
+			<tr>
+				<td class="td_new_name">备注</td>
+				<td class="td_new_value" colspan="6"><span id="remarks2">
+1、日/周报命名：监理日/周（2017.××.××）-项目简称-生产单位名称+产品名称+（西安摩尔）；
+2、日报汇报时间：监理组长每天10:00前向项目经理发送前日日报，项目经理与次日12:00前发送业主；
+3、监理组长入厂3日内完成监理细则发项目经理，项目经理两日内审核完成发送尚汉青shq_working@163.com。
+				</span></td>
+			</tr>
+			<tr>
+				<td class="td_new_name">编制人</td>
+				<td class="td_new_value" colspan="2"><span id="compiler"></span></td>
+				<td class="td_new_name">审批人</td>
+				<td class="td_new_value" colspan="3"><span id="approvers"></span></td>
+			</tr>
+		</table>
+		<div align="center">
+			<a id="btn_edit_staff" href="javascript:edit_staffing()" class="easyui-linkbutton" iconCls="icon-tip">修改</a>
+			<a id="btn_edit_staff" href="javascript:generate_dispatchForm()" class="easyui-linkbutton" iconCls="icon-tip">生成派遣单</a>
+		</div>
+	</div>
+	<!-- 完工资料 -->
+	<div id="tabs-4">
+		<table class="table_new">
+			<tr>
+				<td class="td_new_subtitle" colspan="6" ><strong>子类</strong></td>
+			</tr>
+			<tr>
+				<td align="center" width="100px"><strong>子类	</strong></td>
+				<td align="center" width="500px"><span id="chooseSubClass"></span></td>
+			</tr>
+		</table>
+		</br>
+		<table class="table_new" id="projectStartFileTab">
+			<tr>
+				<td class="td_new_subtitle" colspan="7" ><strong>文件信息</strong></td>
+			</tr>
+			<tr>
+				<td align="center" width="250px"><strong>文件名称	</strong></td>
+				<td align="center" width="250px"><strong>备注		</strong></td>
+				<td align="center" width="120px"><strong>上传时间	</strong></td>
+				<td align="center" width="120px"><strong>上传人  	</strong></td>
+				<td align="center" width="80px"><strong>审核状态 	</strong></td>
+				<td align="center" width="80px"><strong>预览  	</strong></td>
+				<td align="center" width="80px"><strong>下载 	</strong></td>
+			</tr>
+		</table>
+		</br>
+		<table class="table_new" id="projectSystemTab">
+			<tr>
+				<td class="td_new_subtitle" colspan="8" ><strong>生产厂质量体系文件审核记录</strong></td>
+			</tr>
+			<tr>
+				<td align="center" width="200px"><strong>资质证书/工艺文件/设计图纸名称	</strong></td>
+				<td align="center" width="120px"><strong>编号/版本	</strong></td>
+				<td align="center" width="150px"><strong>发证/编制单位	</strong></td>
+				<td align="center" width="120px"><strong>有效期 	</strong></td>
+				<td align="center" width="150px"><strong>文件名称 	</strong></td>
+				<td align="center" width="80px"><strong>上传时间 	</strong></td>
+				<td align="center" width="80px"><strong>预览  	</strong></td>
+				<td align="center" width="80px"><strong>下载 	</strong></td>
+			</tr>
+		</table>
+		</br>
+		<table class="table_new" id="projectStaffTab">
+			<tr>
+				<td class="td_new_subtitle" colspan="10" ><strong>生产厂人员资质审查记录</strong></td>
+			</tr>
+			<tr>
+				<td align="center" width="80px"><strong>姓名	</strong></td>
+				<td align="center" width="80px"><strong>岗位		</strong></td>
+				<td align="center" width="120px"><strong>证书名称	</strong></td>
+				<td align="center" width="120px"><strong>编号  	</strong></td>
+				<td align="center" width="150px"><strong>发证单位 	</strong></td>
+				<td align="center" width="80px"><strong>有效期 	</strong></td>
+				<td align="center" width="150px"><strong>文件名称 	</strong></td>
+				<td align="center" width="80px"><strong>上传时间 	</strong></td>
+				<td align="center" width="80px"><strong>预览  	</strong></td>
+				<td align="center" width="80px"><strong>下载 	</strong></td>
+			</tr>
+		</table>
+		</br>
+		<table class="table_new" id="projectEquipTab">
+			<tr>
+				<td class="td_new_subtitle" colspan="10" ><strong>生产厂设备仪器检定审查记录</strong></td>
+			</tr>
+			<tr>
+				<td align="center" width="120px"><strong>设备名称	</strong></td>
+				<td align="center" width="100px"><strong>编号		</strong></td>
+				<td align="center" width="120px"><strong>运行状况	</strong></td>
+				<td align="center" width="150px"><strong>生产厂家  	</strong></td>
+				<td align="center" width="80px"><strong>检定证书号 	</strong></td>
+				<td align="center" width="80px"><strong>有效期 	</strong></td>
+				<td align="center" width="150px"><strong>文件名称 	</strong></td>
+				<td align="center" width="80px"><strong>上传时间 	</strong></td>
+				<td align="center" width="80px"><strong>预览  	    </strong></td>
+				<td align="center" width="80px"><strong>下载 		</strong></td>
+			</tr>
+		</table>
+		</br>
+		<div align="center">
+			<a id="btn_edit_start" href="javascript:edit_children()" class="easyui-linkbutton" iconCls="icon-tip">选择子类</a>&nbsp;&nbsp;
+			<a id="btn_edit_start" href="javascript:edit_goods()" 	 class="easyui-linkbutton" iconCls="icon-edit"	>填写物资清单</a>&nbsp;&nbsp;
+			<a id="btn_edit_start" href="javascript:edit_starting()" class="easyui-linkbutton" iconCls="icon-add">上传文件</a>	
+		</div>
+	</div>
+	<!--项目进度-->
+	<div id="tabs-5">
+		
+		<div align="center">
+			<a id="btn_add_sch" href="javascript:add_schedule()" class="easyui-linkbutton" iconCls="icon-add">新&nbsp;&nbsp;增</a>&nbsp;&nbsp;&nbsp;&nbsp;
+			<a id="btn_search_sch" href="javascript:search_schedule()" class="easyui-linkbutton" iconCls="icon-search">查看记录</a>
+		</div>
+	</div>
+	
+	<div id="tabs-6">
+		<table class="table_view2"  id="projectQulityFileTab">
+			<tr>
+				<td align="center" width="100px">日期/班次</td>
+				<td align="center" width="200px">填写人</td>
+				<td align="center" width="80px">查看修改</td>
+			</tr>
+		</table>
+			<div align="center">
+			<a id="btn_add_sch" href="javascript:add_quality()" class="easyui-linkbutton" iconCls="icon-add">新&nbsp;&nbsp;增</a>&nbsp;&nbsp;&nbsp;&nbsp;
+		</div>
+		
+	</div>
+	
+	<div id="tabs-7">
+		<table class="table_view2" id="projectIssueFileTab">
+			<tr>
+				<td align="center" width="500px" colspan="3"><strong>发现问题	</strong></td>
+				<td align="center" width="400px" colspan="2"><strong>整改措施	</strong></td>
+				<td align="center" width="80px" rowspan="2"><strong>提交人员</strong></td>
+				<td align="center" width="100px" rowspan="2"><strong>操作</strong></td>
+			</tr>
+			<tr>
+				<td align="center" width="100px">发现时间</td>
+				<td align="center" width="200px">问题概述</td>
+				<td align="center" width="200px">不符合依据</td>
+				<td align="center" width="100px">整改时间</td>
+				<td align="center" width="300px">整改过程概述</td>
+			</tr>
+		</table>
+		<div align="center">
+			<a id="btn_edit_issue" href="javascript:edit_issue()" class="easyui-linkbutton" iconCls="icon-add"	>新增</a>	
+		</div>
+	</div>
+
+	<div id="tabs-9">
+		<table class="table_view2" id="projectFinishFileTab">
+			<td align="center" width="200px"><strong>资料名称	</strong></td>
+			<td align="center" width="250px"><strong>上传文件名称	</strong></td>
+			<td align="center" width="100px"><strong>数量	    </strong></td>
+			<td align="center" width="200px"><strong>资料名称	</strong></td>
+			<td align="center" width="250px"><strong>上传文件名称	</strong></td>
+			<td align="center" width="100px"><strong>数量 	</strong></td>
+		</table>
+		<!-- <div align="center">
+			<a id="btn_edit" href="javascript:edit_finish()" class="easyui-linkbutton" iconCls="icon-tip"	>编辑</a>	
+		</div>-->
+	</div>
+	<div id="tabs-10">
+		<iframe src="../logs/logDailyList.htm" width="100%" height="500px" style="overflow: auto;border:0;">
+		</iframe>
+	</div>
+	<div id="tabs-11">
+		<iframe src="../logs/logweeklist.htm" width="100%" height="500px" style="overflow: auto;border:0;">
+		</iframe>
+	</div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,555 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>修改委托信息</title>
+	
+<link rel="stylesheet" type="text/css" href="../../themes/general.css"  />
+<link rel="stylesheet" type="text/css" href="../../themes/icon.css" 			/>
+<link rel="stylesheet" type="text/css" href="../../themes/jquery-ui.css" 		/>
+<link rel="stylesheet" type="text/css" href="../../themes/default/easyui.css" 	/>
+<script type="text/javascript" src="../../scripts/jquery-1.8.0.min.js"></script>
+<script type="text/javascript" src="../../scripts/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="../../scripts/src/jquery.parser.js"></script>
+<script type="text/javascript" src="../../scripts/locale/easyui-lang-zh_CN.js"></script>
+<script type="text/javascript" src="../../scripts/sessionExpriation.js"></script>
+<script type="text/javascript" src="../../scripts/general.js"></script>
+
+<style type="text/css">	
+.easyui-validatebox{
+	border: 1px solid #95B8E7;
+	border-radius: 5px 5px 5px 5px;
+	height: 25px;
+}
+#operatingStatus{
+	border: 1px solid #95B8E7;
+	border-radius: 5px 5px 5px 5px;
+	height: 25px;
+}
+</style>
+	<script type="text/javascript">
+	$(function() {
+		//监造类型的下拉框没有用easyui的自己加的样式
+		var projectId = $.getUrlParam('projectId');
+		//ajax从后台获取数据
+		$.ajax({//委托信息,从后台获取数据
+			url : '../../project/viewProject.ajax',
+			type : 'post',
+			dataType : 'JSON',
+			cache: false,
+			data : {
+				proId : projectId 
+			},
+			error: function(XMLHttpRequest, textStatus, errorThrown) {	                   
+	        },
+			success : function(data) {
+				init_view(data);
+			}
+		});
+		
+		$.ajax({//委托文件信息,从后台获取数据
+			url : '../../project/getEntrustFileInfo.ajax',
+			type : 'post',
+			dataType : 'JSON',
+			cache: false,
+			data : {
+				proId : projectId 
+			},
+			error: function(XMLHttpRequest, textStatus, errorThrown) {
+	                   
+	        },
+			success : function(data) {
+				init_file(data);
+			}
+		});
+		
+		$('#new_form').form({//提交表单的验证
+			url : '../../project/modifyEntrusting.ajax?proId='+projectId,
+			onSubmit : function() {	
+				recordFileName();
+				dealDate();
+				var checkNum=0;
+				$('input[name="tProject.proProducttype"]').each(function () { //查找表单中所有此名称的checkbox
+	                     if (this.checked) checkNum++;
+	            });
+				if(checkNum==0){
+					alert("请选择产品类型");
+					return false;
+				}
+				if ($(this).form('validate')) {
+					return true;//验证是否为空
+				} else {
+					return false;
+				}
+			},
+			success : function(data) {				
+				var obj = $.parseJSON(data);//将json字符串转换为object对象
+				if (obj.success) {
+					$.messager.alert('提示', obj.message, 'info', function(){
+						 /* location.reload();//强迫浏览器刷新当前页面  */
+						
+						 //刷新项目详述页面
+						 href="./project/view.html?proId="+projectId;
+						 alert(href);
+						var content = '<iframe scrolling="auto" frameborder="0"  src="'+href+'" style="width:100%;height:100%;"></iframe>';  
+					    var tt = parent.$('#tabs');  	   
+					    if (tt.tabs('exists', "项目详述")){//如果tab已经存在,则选中该tab，并更新内容          
+					        tt.tabs('select', "项目详述");  
+					        var tab =parent.$('#tabs').tabs('getSelected'); 
+					        parent.$('#tabs').tabs('update', {
+					        	tab: tab,
+					        	options: {
+					        		content:content
+					        	}
+					        });
+					    }
+					    //关闭当前页面
+					 	parent.$('#tabs').tabs('close','修改委托信息');
+					});
+				}
+				 else {
+					$.messager.alert('错误', obj.message, 'error');
+					}
+			}
+								
+		});
+		
+
+		//事件绑定，点击提交就提交表单
+		$('#btn_submit').bind('click', function() {
+			$("#new_form").submit();
+		});
+
+		//委托日期 使用databox 主要是判断注册日期是否大于现在的日期
+		$('#entrustDate').datebox({
+			onSelect: function(date){
+				var entrustDate = $('#entrustDate').datebox('getValue');
+				var endDate = $('#endDate').datebox('getValue');
+				if(Date.parse(endDate) - Date.parse(entrustDate)<=0){
+					$.messager.alert('错误', '结束日期必须晚于开始日期', 'error');
+					$('#entrustDate').datebox('setValue', '');	
+				} 
+			},
+			required:true
+		}); 
+
+		//结束日期 使用databox 主要是判断注册日期是否大于现在的日期
+		$('#endDate').datebox({
+			onSelect: function(date){
+				var endDate = $('#endDate').datebox('getValue');
+				var startDate = $('#entrustDate').datebox('getValue');
+				if(compareDate(endDate) <= 0){
+					$.messager.alert('错误', '结束日期必须晚于当前日期', 'error');
+					$('#endDate').datebox('setValue', '');	
+				} 
+				else if (Date.parse(endDate) - Date.parse(startDate)<=0) {
+					$.messager.alert('错误', '结束日期必须晚于开始日期', 'error');
+					$('#endDate').datebox('setValue', '');
+				}
+			},
+			
+		});
+		//项目开始日期
+		$('#proStartTime').datebox({
+			onSelect: function(date){
+				if(compareDate(endDate) <= 0){
+					$('#proStartTime').datebox('setValue', '');	
+				} 
+				else if (Date.parse(endDate) - Date.parse(startDate)<=0) {
+					$('#proStartTime').datebox('setValue', '');
+				}
+			},
+			
+		});
+
+		
+		var fileInfoIndex = 6;//从第6个开始,但是也有其他情况
+		function init_view(data) {
+			if(data == null){
+				$.messager.alert('Error', '该数据已经关闭', 'error');
+			}
+			alert(data.project.proEntrustTime);
+			$("#ownerCompany").val(data.project.proUnit);//业主单位
+			$('#bigProjectName').combobox('setValue',data.project.proBigProjectName);
+			$("#projectName").val(data.project.projectName);//项目名称
+			alert(data.project.proEntrustTime);
+			$("#entrustDate").datebox("setValue", data.project.proEntrustTime);//委托日期
+			$("#entrustCode").val(data.project.proNum);//委托单号
+			$("#ownerContacts").val(data.project.proConpeople);//业主联系人
+			
+			$("#ownerTel").val(data.project.proConntel);//联系电话
+			$("#supervisorGoods").val(data.project.proGoods);//监造物资
+			
+			$("#operatingStatus option[value="+data.project.proType+"]").attr("selected", true);
+			$("#entrustNum").val(data.project.proGoodsnum);//委托数量
+			$("#manufacture").val(data.project.proFactory);//生产厂家
+			$("#manufactureContact").val(data.project.proFactoryconnpeople);//厂家联系人
+			$("#telePhone").val(data.project.proFactoryconntel);//联系电话
+			$("#supervisorGist").val(data.project.proBasis);//简历依据
+			$("#reportMode").val(data.project.proReportway);//回报方式
+			$("#reportDate").val(data.project.proReporttime);//汇报时间
+			$("#reportFrequency").val(data.project.proReportRate);//汇报频次
+			$("#endDate").datebox("setValue", data.project.proEndtime);
+			$("#reportFileName").val(data.project.proReportfilename);//汇报文件命名
+			$("#proStartTime").datebox("setValue", data.project.proStartTime);//项目开始日期
+
+		   var str = data.project.proProducttype+'';  
+		    //异步获取选中记录中包含的lsid分类集合，遍历集合，如果集合中的值与checkbox的value值相同，则选中  
+		    $(str.split(",")).each(function (i,dom){  
+		        $(":checkbox[value='"+dom+"']").prop("checked",true);  
+		    }); 
+		}
+		
+		function init_file(data){
+		    //文件部分
+		    fileInfoIndex = data.length;//注意这里需要修改，fileInfoIndex应从总的文件个数开始增加
+			//如果长度大于5个那说明需要增加几行
+			//前5个，有就写上原始文件名称，没有就不写
+			var list = data.tFileForm;
+		    
+			$('.origin').each(function(index,element){
+				if (list[index].fileFormFilename == null) {//待修改，原始文件名
+		    		$(this).text("未上传");
+		    	}
+		    	else{
+		    		$(this).text(list[index].fileFormFilename)
+		    	}
+			});
+		
+			if (fileInfoIndex>5) {
+				for (var i = 5; i < fileInfoIndex; i++) {
+					var tempDelFileInfoId = "fileInfoTab" + i;
+				    $str='';
+			        $str+='<tr>';
+			        $str+='<td><input type="text" name="fileName" value="'+list[i].fileFormName+'" 		id="fileName'+ i+1 +'" 		size="50"/></td>';
+			        $str+='<td><input type="file" name="fileUpload"  	id="fileUpload'+ i+1 +'"  /></td>';
+					$str+='<td align="center"><span  name="fileOrginName"  class="origin" 	id="fileOrginName'+ i+1 +'">'+list[i].fileFormFilename+'</span></td>';
+				    $str+='<td align="center"><a id="'+tempDelFileInfoId+'" href="javascript:delTr(\''+tempDelFileInfoId+'\')" >删除</a></td>';
+				    $str+='</tr>';				    
+				    $("#fileInfoTab").append($str);
+				}
+			}
+		}
+
+		
+		$("#addFileUpload").click(function(){
+			var tempDelFileInfoId = "fileInfoTab" + ++fileInfoIndex;
+		    $str='';
+	        $str+='<tr>';
+	        $str+='<td><input type="text" name="fileName" 				id="fileName'+fileInfoIndex+'" 		size="50"/></td>';
+	        $str+='<td><input type="file" name="fileUpload"  			id="fileUpload'+fileInfoIndex+'"  /></td>';
+			$str+='<td><span  name="fileOrginName"  class="origin" 		id="fileOrginName'+fileInfoIndex+'"></span></td>';
+		    $str+='<td align="center"><a id="'+tempDelFileInfoId+'" 	href="javascript:delTr(\''+tempDelFileInfoId+'\')" >删除</a></td>';
+		    $str+='</tr>';
+		    
+		    $("#fileInfoTab").append($str);
+		});
+		//扩展easyui表单的验证  验证整数的
+		$.extend($.fn.validatebox.defaults.rules, {  
+			checkNum: {  
+	            validator: function(value, param) {  
+	                return /^([0-9]+)$/.test(value);  
+	            },  
+	            message: '请输入整数'  
+	        }
+		});
+
+		//下拉菜单内容定义 项目名称
+		 $('#bigProjectName').combobox({
+		    url:'../../project/getAllBigProjectName.ajax',//待修改
+		    valueField:'bigProjectName',//待修改
+		    textField:'bigProjectName',//待修改
+		});  
+		//业主内容改变后动态添加其他内容
+		$('#ownerCompany').change(function(){
+			var ownerCompanyName=$("#ownerCompany").val();
+		    $.ajax({     
+		        url : '../../project/viewProjectByUnitName.ajax',//ajax地址待修改
+				type : 'post',
+				dataType : 'JSON',
+				cache: false,
+				data : {
+					unitName : ownerCompanyName //给你的目前的名字待修改
+				},
+				error: function(XMLHttpRequest, textStatus, errorThrown) {
+	                    
+	        	},
+				success : function(data) {
+					/* think_other(data); */
+				}
+			});
+	});	
+
+});	
+
+
+	function recordFileName(){//表单提交时验证 最后上传的那部分
+		var fileNames = document.getElementsByName("fileName");//取得标签名为filename的标签对象
+		var fileNameIndex 	= '';
+		var fileNameVal 	= '';
+		for(var k = 0; k < fileNames.length; k++){
+			var tempFileNameObject 	= 	fileNames[k];
+			var currentFileNameId 	= 	tempFileNameObject.id;
+			fileNameVal 			+= 	document.getElementById(currentFileNameId).value + "&";
+		}
+		//将所有的filename的值以&连接传入fileName_total
+		document.getElementById("fileName_total").value = fileNameVal;
+	}
+	function myformatter(date){  
+	    var y = date.getFullYear();  
+	    var m = date.getMonth()+1;  
+	    var d = date.getDate();  
+	    return y+'-'+(m<10?('0'+m):m)+'-'+(d<10?('0'+d):d);  
+	} 
+	function dealDate() {
+		//设置时间  
+		 var endDate=$("#endDate").datebox("getValue"); 
+		if(endDate == null || endDate == '') {
+			 var curr_time = new Date(1900,0);   
+			 $("#endDate").datebox("setValue",myformatter(curr_time)); 
+		}
+		 var proStartTime=$("#proStartTime").datebox("getValue"); 
+			if(proStartTime == null || proStartTime == '') {
+				 var curr_time = new Date(1900,0);   
+				 $("#proStartTime").datebox("setValue",myformatter(curr_time));
+			}
+	 }
+//联想到其他信息
+	/* function think_other(data){	
+		$("#ownerContacts").val(data.proConpeople);//业主联系人
+		$("#ownerTel").val(data.proConntel);//联系电话
+		$("#supervisorGoods").val(data.prpGoods);//监造物资
+		$("#supervisorWay").val(data.proType);//监造类型
+		
+		$("#manufacture").val(data.proFactory);//生产厂家
+		$("#manufactureContact").val(data.proFactoryconnpeople);//厂家联系人
+		$("#telePhone").val(data.proFactoryconntel);//联系电话
+		$("#supervisorGist").val(data.proBasis);//简历依据
+		$("#reportMode").val(data.proReportway);//回报方式
+		$("#reportDate").val(data.proReporttime);//汇报时间
+		
+		$("#reportFileName").val(val.proReportfilename);//汇报文件命名
+		
+	} */
+
+	function text_length() {
+ 		var length = 2000;
+        var content_len = $("#announContent").val().length;//得到要求字数
+        var in_len = length-content_len;
+        // 当用户输入的字数大于制定的数时，让提交按钮失效
+        // 小于制定的字数，就可以提交
+        if(in_len >=0){
+          $("#result").html("您已输入"+content_len+"个字,还可以输入的字数是<span>"+in_len+"</span>").children("span").css({"color":"blue"});
+          // 可以继续执行其他操作
+        }else{
+          input_len=content_len-length;
+          $("#result").html("您输入的字数超过了<span>"+input_len+"</span>").children("span").css({"color":"red"});
+          return false;
+        }
+    }
+	//文档就绪后激活函数
+	$(document).ready(function(){
+	   $("#announContent").keyup(function(){//绑定事件，文档就绪后
+	         text_length() ;
+	    });
+    });
+	//日期比对的
+	function compareDate(selectDate){
+		var myDate = new Date();
+		var YY = myDate.getFullYear();      
+		var MM = myDate.getMonth() + 1;     
+		var DD = myDate.getDate();     		
+		if(MM < 10){
+			MM = "0" + MM;
+		}		
+		if(DD < 10){
+			DD = "0" + DD;
+		}		
+		var currentDate = YY + "-" + MM + "-" + DD;
+		var result = Date.parse(selectDate) - Date.parse(currentDate);
+		return result;
+	}
+	//上传数据的删除
+	function delTr(tempTdId){//删除
+		var obj  = $("#" + tempTdId);
+		$(obj).parent().parent().remove();  
+	}
+	</script>
+</head>
+
+<body>
+<form id="new_form" method="post" enctype="multipart/form-data">
+<input type="hidden" name="fileNameTotal" 		id="fileName_total" 		value="" />
+	<table class="table_new">
+		<tr>
+			<td class="td_new_subtitle" colspan="4" ><strong>委托信息</strong></td>
+		</tr>
+		<tr>
+			<td class="td_new_name">业主单位<span class="red">*</span></td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_240" type="text"  data-options="required:true,validType:'length[2,100]'" id="ownerCompany" name="tProject.proUnit" />
+			</td>
+			<td class="td_new_name">委托日期<span class="red">*</span></td>
+			<td class="td_new_value">
+				<input type="text" name="tProject.proEntrustTime" id="entrustDate" /></td>
+		</tr>
+		<tr>
+			<td class="td_new_name">项目名称<span class="red">*</span></td>
+			<td class="td_new_value">
+			<input type="text" class="easyui-combobox" id="bigProjectName" name="bigProName" data-options="panelHeight:'auto'" 
+				editable="true" />
+			</td>
+			<td class="td_new_name">子项目名称<span class="red">*</span></td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_240" type="text" data-options="required:true" id="projectName" name="tProject.projectName" />
+			</td>
+		</tr>
+		<tr>
+			<td class="td_new_name">结束日期&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+			<td class="td_new_value">
+				<input type="text" name="tProject.proEndtime" id="endDate" /></td>
+			<td class="td_new_name">委托单号<span class="red">*</span></td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_140" type="text" data-options="validType:'length[2,100]'" id="entrustCode" name="tProject.proNum" />
+			</td>
+		</tr>
+		<tr>
+			<td class="td_new_name">业主联系人<span class="red">*</span></td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_140" type="text" data-options="validType:'length[2,50]'" id="ownerContacts" name="tProject.proConpeople" />
+			</td>
+			<td class="td_new_name">联系电话<span class="red">*</span></td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_140" type="text" data-options="validType:'length[2,50]'" id="ownerTel" name="tProject.proConntel" />
+			</td>
+		</tr>
+		<tr>
+			<td class="td_new_name">监造物资<span class="red">*</span></td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_360" type="text"  id="supervisorGoods" name="tProject.proGoods" />
+			</td>
+			<td class="td_new_name">委托数量&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_140" type="text" data-options="validType:'length[2,100]'" id="entrustNum" name="tProject.proGoodsnum" />
+			</td>
+		</tr>
+		<tr>
+			<td class="td_new_name">监造类型&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+			<td class="td_new_value">
+			<select  id="operatingStatus" name="tProject.proType" data-options="panelHeight:'auto'" editable="true" style="width: 140px">
+				<option value="A级监造">A级监造</option>
+				<option value="B级监造">B级监造</option>
+				<option value="C级监造">C级监造</option>
+			</select>
+		
+			</td>
+			<td class="td_new_name">生产厂家&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_360" type="text" data-options="validType:'length[2,100]'" id="manufacture" name="tProject.proFactory" />
+			</td>
+		</tr>
+		<tr>
+			<td class="td_new_name">厂家联系人<span class="red">*</span></td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_140" type="text" data-options="validType:'length[2,50]'" id="manufactureContact" name="tProject.proFactoryconnpeople" />
+			</td>
+			<td class="td_new_name">联系电话<span class="red">*</span></td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_140" type="text" data-options="validType:'length[2,50]'" id="telePhone" name="tProject.proFactoryconntel" />
+			</td>
+		</tr>
+		<tr>
+			<td class="td_new_name">监理依据&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_360" type="text" data-options="validType:'length[2,50]'" id="supervisorGist" name="tProject.proBasis" />
+			</td>
+			<td class="td_new_name">汇报文件命名&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_360" type="text" data-options="validType:'length[2,50]'" id="reportFileName" name="tProject.proReportfilename" />
+			</td>
+		</tr>
+		<tr>
+			<td class="td_new_name">汇报方式&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_140" type="text" data-options="validType:'length[2,50]'" id="reportMode" name="tProject.proReportway" />
+			</td>
+			<td class="td_new_name">汇报时间&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_360" type="text" data-options="validType:'length[2,50]'" id="reportDate" name="tProject.proReporttime" />
+			</td>
+		</tr>
+		<tr>
+			<td class="td_new_name">汇报频次&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_140" type="text" data-options="validType:'length[2,50]'" id="reportFrequency" name="tProject.proReportRate" />
+			</td>
+			<td class="td_new_name">项目开始日期&nbsp;&nbsp;&nbsp;</td>
+			<td class="td_new_value">
+				<input type="text" data-options="validType:'length[2,50]'" name="tProject.proStartTime" id="proStartTime" />
+			</td>
+
+		</tr>
+		<tr>
+			<td class="td_new_name">产品类别<span class="red">*</span></td>
+			<td class="td_new_value" colspan="3" rowspan="2" data-options="required:true">
+				<span><input type="checkbox" id="checkbox1" name="tProject.proProducttype" class="easyui-validatebox" value="1" />输送管&nbsp;</span>
+				<span><input type="checkbox" id="checkbox2" name="tProject.proProducttype" class="easyui-validatebox" value="2" />弯管&nbsp;</span>
+				<span><input type="checkbox" id="checkbox3" name="tProject.proProducttype" class="easyui-validatebox" value="3" />输送管或防腐保温&nbsp;</span>
+				<span><input type="checkbox" id="checkbox4" name="tProject.proProducttype" class="easyui-validatebox" value="4" />石油专用管&nbsp;</span>
+				<span><input type="checkbox" id="checkbox5" name="tProject.proProducttype" class="easyui-validatebox" value="5" />管件、法兰&nbsp;</span>
+				<span><input type="checkbox" id="checkbox6" name="tProject.proProducttype" class="easyui-validatebox" value="6" />阀门&nbsp;</span>				
+				<span><input type="checkbox" id="checkbox7" name="tProject.proProducttype" class="easyui-validatebox" value="7" />设备&nbsp;</span>
+				<span><input type="checkbox" id="checkbox8" name="tProject.proProducttype" class="easyui-validatebox" value="8" />钻具&nbsp;</span>				
+				<span><input type="checkbox" id="checkbox9" name="tProject.proProducttype" class="easyui-validatebox" value="9" />绝缘接头&nbsp;</span>				
+			</td>   
+		</tr>		
+	</table>
+	<table class="table_new" id="fileInfoTab">		
+		<tr>
+			<td align="center" width="80px"><strong>名称</strong></td>
+			<td align="center" width="60px"><strong>上传</strong></td>
+			<td align="center" width="150px"><strong>已上传文件名</strong></td>
+			<td align="center" width="40px"><a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addFileUpload"></a></td>
+		</tr>
+		<tr>
+			<td><input type="text" 	id="fileName1" 		name="fileName" 	value="监造委托书" 	size="50" readonly/></td>
+			<td><input type="file" 	id="fileUpload1" 	name="fileUpload1"  /></td>
+			<td align="center" ><span class="origin"></span></td>
+			<td align="center">&nbsp;</td>
+		</tr>
+		<tr>
+			<td><input type="text" 	id="fileName2" 		name="fileName" 	value="监理服务合同" 	size="50" readonly/></td>
+			<td><input type="file" 	id="fileUpload2" 	name="fileUpload2" 	 /></td>
+			<td align="center" ><span class="origin"></span></td>
+			<td align="center">&nbsp;</td>
+		</tr>
+		<tr>
+			<td><input type="text" 	id="fileName3" 		name="fileName" 	value="监理委托单" size="50" readonly/></td>
+			<td><input type="file" 	id="fileUpload3" 	name="fileUpload3"  /></td>
+			<td align="center" ><span class="origin"></span></td>
+			<td align="center">&nbsp;</td>
+		</tr>
+		<tr>
+			<td><input type="text"  id="fileName4"	 	name="fileName" 	value="监理物资清单" size="50" 	readonly/></td>
+			<td><input type="file"  id="fileUpload4" 	name="fileUpload4" 	 /></td>
+			<td align="center" ><span class="origin"></span></td>
+			<td align="center">&nbsp;</td>
+		</tr>
+		<tr>
+			<td><input type="text" 	id="fileName5" 		name="fileName" 	value="技术协议" 		size="50" 	readonly/></td>
+			<td><input type="file" 	id="fileUpload5" 	name="fileUpload5" 	 /></td>
+			<td align="center" ><span class="origin"></span></td>
+			<td align="center">&nbsp;</td>
+		</tr>
+		
+	</table>
+	</br>
+	<table class="table_new">
+	<tr>
+		<td align="center" width="100%"><a id="btn_submit" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok">确认提交</a></td>
+	</tr>
+	</table>
+	
+</form>
+
+</body>
+</html>

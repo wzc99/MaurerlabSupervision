@@ -1,0 +1,205 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>填写进度</title>
+	
+<link rel="stylesheet" type="text/css" href="../../themes/general.css"  />
+<link rel="stylesheet" type="text/css" href="../../themes/icon.css" 			/>
+<link rel="stylesheet" type="text/css" href="../../themes/jquery-ui.css" 		/>
+<link rel="stylesheet" type="text/css" href="../../themes/default/easyui.css" 	/>
+	<script type="text/javascript" src="../../scripts/jquery-1.8.0.min.js"></script>
+	<script type="text/javascript" src="../../scripts/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="../../scripts/locale/easyui-lang-zh_CN.js"></script>
+	<script type="text/javascript" src="../../scripts/src/jquery.parser.js"></script>
+	<script type="text/javascript" src="../../scripts/general.js"></script>
+	<script type="text/javascript" src="../../scripts/sessionExpriation.js"></script>
+<style type="text/css">	
+.inbe{
+	border: 1px solid #95B8E7;
+	border-radius: 5px 5px 5px 5px;
+	height: 25px;
+}
+#tableWork td{
+	padding-left:0;
+	padding-right:0;	
+}
+select{
+	border: 1px solid #95B8E7;
+	border-radius: 5px 5px 5px 5px;
+	height: 25px;
+}
+</style>
+<script type="text/javascript">
+	$(function() {
+		//项目的id作为隐藏值保存在表单中
+		var projectId = $.getUrlParam('projectId');
+		$('[id^="new_form"]').form({
+		url : "../../test/testResult.ajax",
+		onSubmit : function() {				
+		},
+		success : function(data) {
+			var obj = $.parseJSON(data);//将json字符串转换为object对象
+			if (obj.success) {
+				
+			} else {
+				
+			}
+		}
+	}); 
+		 
+	$('#btn_submit').bind('click', function() {
+		$('[id^="new_form"]').submit();
+	}); 
+		//阀体外观尺寸
+		var faTiWaiGuanIndex = 2;
+		$("#addFaTiWaiGuan").click(function(){
+			var tempDelFileInfoId = "fileInfoTab" + ++faTiWaiGuanIndex;
+		    $str='';
+	        $str+='<tr>';
+	        $str+='<td align="center"><input class="input_100 easyui-validatebox" type="text" name="mamenwaiguan_l1" /></td>';
+	        $str+='<td align="center"><input class="input_100 easyui-validatebox" type="text" name="mamenwaiguan_l2" /></td>';
+			$str+='<td align="center"><input class="input_100 easyui-validatebox" type="text" name="mamenwaiguan_l3" /></td>';
+			$str+='<td align="center"><input class="input_100 easyui-validatebox" type="text" name="mamenwaiguan_l4" /></td>';
+			$str+='<td align="center"><input class="input_100 easyui-validatebox" type="text" name="mamenwaiguan_l5" /></td>';
+		    $str+='<td align="center"><a id="'+tempDelFileInfoId+'" 	href="javascript:delTr(\''+tempDelFileInfoId+'\')" >删除</a></td>';
+		    $str+='</tr>';
+		    $("#faTiWaiGuan").before($str);
+		});
+		//焊接
+		var hanJieIndex = 2;
+		$("#addHanJie").click(function(){
+			var tempDelFileInfoId = "fileInfoTab" + ++hanJieIndex;
+		    $str='';
+	        $str+='<tr>';
+	        $str+='<td align="center"><input class="input_80 easyui-validatebox" type="text" name="famenhanjie_l1" /></td>';
+	        $str+='<td align="center"><input class="input_80 easyui-validatebox" type="text" name="famenhanjie_l2" /></td>';
+			$str+='<td align="center"><input class="input_80 easyui-validatebox" type="text" name="famenhanjie_l3" /></td>';
+			$str+='<td align="center"><input class="input_80 easyui-validatebox" type="text" name="famenhanjie_l4" /></td>';
+			$str+='<td align="center"><input class="input_80 easyui-validatebox" type="text" name="famenhanjie_l5" /></td>';
+			$str+='<td align="center"><select><option value="符合" name="famenhanjie_l6">符合</option><option value="不符合" name="famenhanjie_l6">不符合</option></select></td>';
+			$str+='<td align="center"><input class="input_80 easyui-validatebox" type="text" name="famenhanjie_l7" /></td>';
+			$str+='<td align="center"><input class="input_80 easyui-validatebox" type="text" name="famenhanjie_l8" /></td>';
+			$str+='<td align="center"><input class="input_80 easyui-validatebox" type="text" name="famenhanjie_l9" /></td>';
+		    $str+='<td align="center"><a id="'+tempDelFileInfoId+'" 	href="javascript:delTr(\''+tempDelFileInfoId+'\')" >删除</a></td>';
+		    $str+='</tr>';
+		    $("#hanJie").before($str);
+		});
+});
+	function delTr(tempTdId){//删除
+		var obj  = $("#" + tempTdId);
+		$(obj).parent().parent().remove();  
+	}
+	</script>
+</head>
+
+<body>
+<form id="new_form1" method="post" enctype="multipart/form-data">
+	<table class="table_new2"  class="valve" id="table1">
+		<tr>
+			<td class="td_new_subtitle" colspan="6" ><strong>阀体外观尺寸<input type="hidden" value="阀体外观尺寸" name="wanguan_fatiwaiguan"/></strong></td>
+		</tr>
+		<tr>
+			<td align="center">规格型号</td>
+			<td align="center" colspan="2">
+				<input class="easyui-validatebox input_180" type="text" name="mamenwaiguan_a1" />
+			</td>
+			<td align="center">抽检数量</td>
+			<td align="center" colspan="2">
+				<input class="easyui-validatebox input_180" type="text" name="mamenwaiguan_a2" />
+			</td>
+		</tr>
+		<tr>
+			<td align="center" rowspan="2">编号</td>
+			<td align="center" colspan="5">检查项目</td>
+		</tr>
+		<tr>
+			<td align="center"><input class="input_100 easyui-validatebox" type="text" name="mamenwaiguan_b1" /></td>
+			<td align="center"><input class="input_100 easyui-validatebox" type="text" name="mamenwaiguan_b2" /></td>
+			<td align="center"><input class="input_100 easyui-validatebox" type="text" name="mamenwaiguan_b3" /></td>
+			<td align="center">外观质量</td>
+			<td align="center" width="100px"><a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addFaTiWaiGuan"></a></td>
+		</tr>
+		<tr>
+			<td align="center"><input class="input_100 easyui-validatebox" type="text" name="mamenwaiguan_l1" /></td>
+			<td align="center"><input class="input_100 easyui-validatebox" type="text" name="mamenwaiguan_l2" /></td>
+			<td align="center"><input class="input_100 easyui-validatebox" type="text" name="mamenwaiguan_l3" /></td>
+			<td align="center"><input class="input_100 easyui-validatebox" type="text" name="mamenwaiguan_l4" /></td>
+			<td align="center"><input class="input_100 easyui-validatebox" type="text" name="mamenwaiguan_l5" /></td>
+			<td align="center"></td>
+		</tr>	
+		<tr id="faTiWaiGuan">
+			<td align="center">标准要求</td>
+			<td align="center"><input class="input_100 easyui-validatebox" type="text" name="mamenwaiguan_c1" /></td>
+			<td align="center"><input class="input_100 easyui-validatebox" type="text" name="mamenwaiguan_c2" /></td>
+			<td align="center"><input class="input_100 easyui-validatebox" type="text" name="mamenwaiguan_c3" /></td>
+			<td align="center"><input class="input_100 easyui-validatebox" type="text" name="mamenwaiguan_c4" /></td>
+			<td align="center" width="100px"></td>
+		</tr>
+		<tr>
+			<td align="center">结论</td>
+			<td  colspan="5"><input class="input_360 easyui-validatebox" type="text" name="mamenwaiguan_d1" /></td>
+			
+		</tr>
+	</table>
+</form>
+
+<!-- 焊接 -->
+<form id="new_form2" method="post" enctype="multipart/form-data">
+	<table class="table_new2"  class="valve equipment">
+		<tr>
+			<td class="td_new_subtitle" colspan="10"><strong>焊接</strong></td>
+		</tr>
+		<tr>
+			<td align="center">焊接设备</td>
+			<td align="center" colspan="4"><input  type="radio" name="famenhanjie_a1" value="正常"/>正常&nbsp;&nbsp;&nbsp;<input  type="radio" name="famenhanjie_a1" value="不正常"/>不正常</td>
+			<td align="center">焊接人员</td>
+			<td align="center" colspan="4"><input  type="radio" name="famenhanjie_a2" value="符合"/>符合&nbsp;&nbsp;&nbsp;<input  type="radio" name="famenhanjie_a2" value="不符合"/>不符合</td>
+		</tr>
+		<tr>
+			<td align="center">焊接材料</td>
+			<td align="center" colspan="4"><input  type="radio" name="famenhanjie_a3" value="符合"/>符合&nbsp;&nbsp;&nbsp;<input  type="radio" name="famenhanjie_a3" value="不符合"/>不符合</td>
+			<td align="center">工艺文件</td>
+			<td align="center" colspan="4"><input  type="radio" name="famenhanjie_a4" value="符合"/>符合&nbsp;&nbsp;&nbsp;<input  type="radio" name="famenhanjie_a4" value="不符合"/>不符合</td>
+		</tr>
+		<tr>
+			<td align="center" colspan="10">成型焊接外观尺寸检查情况</td>
+		</tr>
+		<tr>
+			<td align="center">见证时间</td>
+			<td align="center">物资名称</td>
+			<td align="center">物资规格</td>
+			<td align="center">焊接部位</td>
+			<td align="center">焊接方法</td>
+			<td align="center">焊接参数</td>
+			<td align="center">焊缝错边（mm）</td>
+			<td align="center">焊缝高度（mm）</td>
+			<td align="center">焊缝外观</td>
+			<td align="center" width="40px"><a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addHanJie"></a></td>
+		</tr>
+		<tr>
+			<td align="center"><input class="input_80 easyui-validatebox" type="text" name="famenhanjie_l1" /></td>
+			<td align="center"><input class="input_80 easyui-validatebox" type="text" name="famenhanjie_l2" /></td>
+			<td align="center"><input class="input_80 easyui-validatebox" type="text" name="famenhanjie_l3" /></td>
+			<td align="center"><input class="input_80 easyui-validatebox" type="text" name="famenhanjie_l4" /></td>
+			<td align="center"><input class="input_80 easyui-validatebox" type="text" name="famenhanjie_l5" /></td>
+			<td align="center"><select><option value="符合" name="famenhanjie_l6">符合</option><option value="不符合" name="famenhanjie_l6">不符合</option></select></td>
+			<td align="center"><input class="input_80 easyui-validatebox" type="text" name="famenhanjie_l7" /></td>
+			<td align="center"><input class="input_80 easyui-validatebox" type="text" name="famenhanjie_l8" /></td>
+			<td align="center"><input class="input_80 easyui-validatebox" type="text" name="famenhanjie_l9" /></td>
+			<td align="center" ></td>
+		</tr>
+		<tr id="hanJie">
+			<td align="center">结论</td>
+			<td  colspan="9"><input class="input_360 easyui-validatebox" type="text" name="famenhanjie_d1" /></td>
+		</tr>
+	</table>
+	
+	<table class="table_new">
+		<tr>
+			<td align="center" width="100%"><a id="btn_submit" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok">确认提交</a></td>
+		</tr>
+	</table>
+</form>
+
+</body>
+</html>

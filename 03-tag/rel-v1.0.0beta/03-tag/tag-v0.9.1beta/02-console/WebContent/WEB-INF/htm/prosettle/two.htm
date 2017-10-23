@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>未读消息列表</title>
+
+
+<link rel="stylesheet" type="text/css" href="../../themes/icon.css"/>
+<link rel="stylesheet" type="text/css" href="../../themes/demo.css"/>
+<link rel="stylesheet" type="text/css" href="../../themes/default/easyui.css"/>
+
+<script type="text/javascript" src="../../scripts/jquery-1.8.0.min.js"></script>
+<script type="text/javascript" src="../../scripts/jquery.easyui.min.js"></script>
+<style type="text/css">
+
+		#myBack {
+			width: 100%;
+			height: 100%;
+			z-index:2;
+	    	background: #FFEFDB;
+	   		position: absolute;
+	    	top: 0px;
+		}
+		#close {
+			position: fixed;
+			top: 10px;
+			right: 20px;
+		}
+		#myBack button {
+			border-radius: 5px;
+			border: 1px solid #CAE1FF;
+			width: 100px;height: 30px;font-size: 20px;color:#473C8B;
+			background: #CAE1FF;
+			font-weight: bold;
+			cursor: pointer;
+		}
+		#viewMyMessage {
+		position: relative;
+		left: 10%;
+		top: 40px;
+		width: 80%;
+		background-color: white;
+		overflow: auto;
+		min-height: 500px;
+		max-height: 600px;
+		border: 1px solid #FFF;border-radius: 10px;
+	}
+	#viewMyMessage div {
+		border-bottom: 1px solid black;
+	}
+	#myBack span {
+		display: inline-block;
+		height: 50px;
+		line-height: 50px;
+	}
+	.explain {
+		width: 30%;
+		text-align: right;
+		color: black;
+		font-weight: bold;
+		font-size: 20px;
+		padding: 10px;
+	 }
+	 .exp_value {
+	 	width: 50%;
+	 	text-align: left;
+	 	font-weight: bold;
+		font-size: 20px;
+		color: green;
+	 }
+	 #already_read {
+	 	position: relative;
+	 	left: 20%;
+	 	width: 15%;
+	 	background: #CDB79E;
+	 }
+	 #ignore {
+	 	position: relative;
+	 	left: 40%;
+	 	width: 15%;
+	 	background: #CDB79E;
+	 } 
+</style>
+
+<script type="text/javascript">
+$(function(){
+	//双击得到的查询结果的某一行后调用view()函数
+	$('#query_result').datagrid({//easyui的函数，数据表格，也就是查看选中的那一行，跳转至view()函数
+		onDblClickRow: function(rowIndex, rowData){//绑定表格单击事件，当用户双击一行时触发，参数包括： rowIndex：被双击行的索引，从 0 开始。rowData：被双击行对应的记录。
+			view(rowData["bigProjectId"]);
+		}
+	});
+	var page = $('#query_result').datagrid('getPager');	//得到这些数据，用datagrid 做分页显示的时候datagrid分页 有一个附加的分页控件，只需后台获取分页控件自动提交的两个参数rows每页显示的记录数和page;//当前第几页
+	//然后读取相应页数的记录，和总记录数total一块返回即可
+	//点击查询按钮
+	$('#btn_query').bind('click', function(){
+		//在这里，如果日期控件没有选择，那么，。。。。
+		//点查询钮查询时总是以第一页开始 
+		$(page).pagination('select', 1);//主要是用来做分页的，选择一个新页面，从1开始计数
+		//do_submit(1,10);
+      	});
+	//重置按钮
+	$('#btn_reset').bind('click', function(){  
+		$('#query_form').form('clear'); 
+		$('#query_result').datagrid('loadData',{total:0,rows:[]});//加载本地数据，旧的行会被移除
+      	});
+	
+	init_view_by_permission();//函数声明，后面有详解
+	
+	$(page).pagination({  
+	 	onBeforeRefresh : function() {//刷新按钮点击之前触发，返回 false 就取消刷新动作。
+		},
+		onRefresh : function(pageNumber, pageSize) {//刷新之后触发。
+			do_submit(pageNumber, pageSize)
+		},
+		onChangePageSize : function() {//当用户改变页面尺寸时触发。
+		},
+		onSelectPage : function(pageNumber, pageSize) {//当用户选择新的页面时触发。回调函数包含两个参数：pageNumber：新的页码  pageSize：新的页面尺寸
+			do_submit(pageNumber, pageSize);
+		}
+	});  
+
+});
+function myformatter(date){  
+    var y = date.getFullYear();  
+    var m = date.getMonth()+1;  
+    var d = date.getDate();  
+    return y+'-'+(m<10?('0'+m):m)+'-'+(d<10?('0'+d):d);  
+} 
+function dealDate() {
+	//设置时间  
+	 
+	 /* var proStartTime=$("#proStartTime").datebox("getValue"); 
+		if(proStartTime == null || proStartTime == '') {
+			 var curr_time = new Date(1900,0);   
+			 $("#proStartTime").datebox("setValue",myformatter(curr_time));
+		} */
+ }
+	
+function do_submit(pageNumber,pageSize){//使用ajax来进行真正的查询
+	$('#query_form').form('submit',{
+		url:'../../bigproject/queryBigProject.ajax',
+		onSubmit:function(param){
+			dealDate();
+			param.paging = true;
+			param.pageSize = pageSize;
+			param.index = pageNumber;
+			return $(this).form('validate');
+		},
+		success:function(data){
+			var obj = $.parseJSON(data);
+			alert(obj.message);
+			$('#query_result').datagrid('loadData',obj);
+		}
+	});
+}
+//打开新页面查看		
+function view (msgId) {
+	parent.addTabWithIcon("项目结算列表", "./prosettle/one.htm?bigProId="+msgId, "icon-list");
+}
+
+function do_view() {
+	var row = $('#query_result').datagrid('getSelections');
+	if(row.length > 1){
+		$.messager.alert('Info', '查看只能选择一行', 'info');
+		$('#query_result').datagrid('clearSelections');
+		return;
+	}
+	if(row == null){
+		$.messager.alert('Info', '请选择行', 'info');
+		return;
+	}
+	view(row.bigProjectId);
+}
+	
+	
+function init_view_by_permission() {
+	$.ajax({
+		url : '../../ana/checkPermission.ajax',//待修改
+		type : 'get',
+		dataType : 'JSON',
+		data : {
+			permissionCode : 'PROJECT_VIEW'
+		},
+		success : function(data) {
+			/* if (data.success) {
+				$('#divBtnView').show();
+			} else {
+				$('#divBtnView').hide();
+			} */
+		}
+	});	
+}
+</script>
+
+
+
+</head>
+<body>
+
+	<div style="margin: 5px 0"></div>
+<div style="margin-left:30px; padding:20px; border:1px solid #42c4f2; background: #F1F1F1;width:500px;">
+<form id="query_form" method="post" >
+	<table class="table_view" style="font-size: 14px;">
+	<tr>
+		<td class="td_view_name_1">大项目名称</td>
+		<td class="td_view_value_1"><input class="easyui-validatebox input_70" type="text" id="bigName" name="proBigProjectName" /></td>
+		<td class="td_view_name_1">创建人</td>
+		<td class="td_view_value_1" ><input class="easyui-validatebox input_70" type="text" id="userName" name="proNum" /></td>
+		
+	</tr>
+	
+	<tr>
+		<td colspan="8" align="center" class="td_view_name">
+			<div align="center">
+				<a id="btn_query" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-search"	>查询</a>
+				<a id="btn_reset" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-reset" 	>重置</a>
+			</div>
+		</td>
+	</tr>
+	</table>
+</form>
+</div>
+
+	<div style="margin: 10px 0;"></div>
+	<div style="margin: 0 5px">
+	
+	    <div title="全部" style="padding:20px;">
+				<div style="margin: 0 5px">
+					<table class="easyui-datagrid" title="" id="query_result"
+						data-options="singleSelect:true,pagination:true,rownumbers:true,pageNumber:1,pageSize:10,pageList:[1,5,10]"
+						toolbar="#tb">
+						<thead>
+							<tr>
+								
+								<th data-options="field:'bigProjectId',width:100,align:'center'">大项目ID</th>
+								<th data-options="field:'bigProjectName',width:250,hidden:false,align:'center'">大项目名称</th>
+								<th data-options="field:'bigProjectCreateTime',width:250,hidden:false,align:'center',sortable:'true'" >大项目创建时间</th>
+								<th data-options="field:'bigProjectCreatePeople',width:250,hidden:false,align:'center',sortable:'true'">大项目创建人</th>
+								
+								
+							</tr>
+						</thead>
+					</table>
+		
+					
+		
+				</div>
+			
+	    </div>
+
+	</div>
+
+	
+</body>

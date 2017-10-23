@@ -1,0 +1,158 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>New project</title>
+	
+<link rel="stylesheet" type="text/css" href="../../themes/general.css" 			/>
+<link rel="stylesheet" type="text/css" href="../../themes/icon.css" 			/>
+<link rel="stylesheet" type="text/css" href="../../themes/jquery-ui.css" 		/>
+<link rel="stylesheet" type="text/css" href="../../themes/default/easyui.css" 	/>
+<script type="text/javascript" src="../../scripts/jquery-1.8.0.min.js"			></script>
+<script type="text/javascript" src="../../scripts/jquery.easyui.min.js"			></script>
+<script type="text/javascript" src="../../scripts/jqUI/jquery-ui-1.9.2.custom.js"></script>
+<script type="text/javascript" src="../../scripts/jqUI/jquery-ui.min.js"		></script>
+<script type="text/javascript" src="../../scripts/src/jquery.parser.js"			></script>
+<script type="text/javascript" src="../../scripts/locale/easyui-lang-zh_CN.js"	></script>
+<script type="text/javascript" src="../../scripts/general.js"					></script>
+<script type="text/javascript" src="../../scripts/sessionExpriation.js"			></script>
+
+	<script type="text/javascript">
+	$(function() {
+		var projectId = $.getUrlParam('projectId');
+		$("#projectId").val(projectId);
+		$('#new_form').form({
+			url : '../../company/addProject.ajax',
+			onSubmit : function() {							
+				recordFileName();
+				if ($(this).form('validate')) {
+					return true;//验证是否为空
+				} else {
+					return false;
+				}
+			},
+			success : function(data) {
+				var obj = $.parseJSON(data);//将json字符串转换为object对象
+				if (obj.success) {
+					$.messager.alert('提示', obj.message, 'info', function(){
+						location.reload();//强迫浏览器刷新当前页面
+					});
+				} else {
+					$.messager.alert('错误', obj.message, 'error');
+				}
+			}
+		});
+
+		//事件绑定，点击提交就提交表单
+		$('#btn_submit').bind('click', function() {
+			$("#new_form").submit();
+		});		
+	});	
+	
+
+	//表单提交时验证 最后上传的那部分
+	function recordFileName(){
+		var fileNames = document.getElementsByName("fileName");//取得标签名为filename的标签对象
+		var fileNameIndex 	= '';
+		var fileNameVal 	= '';
+		for(var k = 0; k < fileNames.length; k++){
+			var tempFileNameObject 	= 	fileNames[k];
+			var currentFileNameId 	= 	tempFileNameObject.id;
+			var fileNameTot = document.getElementById(currentFileNameId).value
+			if (fileNameTot.length != 0) {fileNameVal  += 	fileNameTot + "&";}	
+		}
+		//将所有的filename的值以&连接传入fileName_total
+		document.getElementById("fileName_total").value = fileNameVal;
+	}
+
+	//检查最后的内容是否为空
+	/*function checkFile(){
+		var form  = document.getElementById("new_form");
+		for (var i=0;i<form.elements.length;i++){ 
+			var e = form.elements[i];
+			if(e.type=='file' && e.value.length == 0){
+				$.messager.alert('提示', '表单上传内容不能为空', 'info');
+				return false;
+			}
+		} 	
+		return true;
+	}*/
+
+	</script>
+</head>
+
+<body>
+<form id="new_form" method="post" enctype="multipart/form-data">
+	<input type="hidden" name="projectId"   		id="projectId" 	value="" />
+	<input type="hidden" name="fileName_total" 	id="fileName_total" value="" />
+	<br/>
+	<table class="table_new" id="fileInfoTab">
+	<tr>
+			<td class="td_new_subtitle" colspan="2" ><strong>完工资料</strong></td>
+		</tr>
+		<tr>
+			<td align="center" width="80px"><strong>名称</strong></td>
+			<td align="center" width="60px"><strong>上传</strong></td>
+			
+		</tr>
+		<tr>
+			<td><input type="text" 	id="fileName1" 		name="fileName" 	value="资料提交目录" 	size="50" readonly/></td>
+			<td><input type="file" 	id="fileUpload1" 	name="fileUpload1"  /></td>
+			
+		</tr>
+		<tr>
+			<td><input type="text" 	id="fileName2" 		name="fileName" 	value="完工报告报审表" 	size="50" readonly/></td>
+			<td><input type="file" 	id="fileUpload2" 	name="fileUpload2"  /></td>
+			
+		</tr>
+		<tr>
+			<td><input type="text" 	id="fileName3" 		name="fileName" 	value="工程交工证明书" size="50" readonly/></td>
+			<td><input type="file" 	id="fileUpload3" 	name="fileUpload3" 	 /></td>
+			
+		</tr>
+		<tr>
+			<td><input type="text"  id="fileName4"	 	name="fileName" 	value="产品监造证明书" 		size="50" 	readonly/></td>
+			<td><input type="file"  id="fileUpload4" 	name="fileUpload4" 	 /></td>
+			
+		</tr>
+		<tr>
+			<td><input type="text" 	id="fileName5" 		name="fileName" 	value="驻厂监造报告" 		size="50" 	readonly/></td>
+			<td><input type="file" 	id="fileUpload5" 	name="fileUpload5" 	 /></td>
+			
+		</tr>
+		<tr>
+			<td><input type="text" 	id="fileName6" 		name="fileName" 	value="出厂验收报告" 		size="50" 	readonly/></td>
+			<td><input type="file" 	id="fileUpload6" 	name="fileUpload6" 	/></td>
+			
+		</tr>
+		<tr>
+			<td><input type="text" 	id="fileName7" 		name="fileName" 	value="服务评价报告" 		size="50" 	readonly/></td>
+			<td><input type="file" 	id="fileUpload7" 	name="fileUpload7"	/></td>
+			
+		</tr>
+		<tr>
+			<td><input type="text" 	id="fileName8" 		name="fileName" 	value="HSE文件" 		size="50" 	readonly/></td>
+			<td><input type="file" 	id="fileUpload8" 	name="fileUpload8" 	/></td>
+			
+		</tr>
+		<tr>
+			<td><input type="text" 	id="fileName9" 		name="fileName" 	value="项目交接清单" 		size="50" 	readonly/></td>
+			<td><input type="file" 	id="fileUpload9" 	name="fileUpload9" 	/></td>
+			
+		</tr>
+		<tr>
+			<td><input type="text" 	id="fileName10" 		name="fileName" 	value="被监理单位生产能力评价表" 		size="50" 	readonly/></td>
+			<td><input type="file" 	id="fileUpload10" 	name="fileUpload10" 	/></td>
+			
+		</tr>
+	</table>
+	</br>
+	<table class="table_new">
+	<tr>
+		<td align="center" width="100%"><a id="btn_submit" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok">确认提交</a></td>
+	</tr>
+	</table>
+	
+</form>
+
+</body>
+</html>

@@ -1,0 +1,1103 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>新增进度控制</title>
+	
+<link rel="stylesheet" type="text/css" href="../../themes/general.css" 			/>
+<link rel="stylesheet" type="text/css" href="../../themes/icon.css" 			/>
+<link rel="stylesheet" type="text/css" href="../../themes/jquery-ui.css" 		/>
+<link rel="stylesheet" type="text/css" href="../../themes/default/easyui.css" 	/>
+
+<script type="text/javascript" src="../../scripts/jquery-1.8.0.min.js"			></script>
+<script type="text/javascript" src="../../scripts/jquery.easyui.min.js"			></script>
+<script type="text/javascript" src="../../scripts/src/jquery.parser.js"			></script>
+<script type="text/javascript" src="../../scripts/locale/easyui-lang-zh_CN.js"	></script>
+<script type="text/javascript" src="../../scripts/general.js"					></script>
+<script type="text/javascript" src="../../scripts/sessionExpriation.js"			></script>
+<style type="text/css">
+.table_new{
+	margin-bottom:40px; 
+}
+</style>
+	<script type="text/javascript">
+	//新增产品类型的代码，后台给的数据应该是逗号分隔的字符串，并且每一个要对应到id
+	$(function() {
+		
+		//测试用的
+		 var str = "weldedPipe,chanpin2"; 
+		 $(str.split(",")).each(function (i,dom){ 
+		     var idChoose = "#"+dom; 
+		    $(idChoose).show();  
+		 });
+
+		var projectId = $.getUrlParam('proId');
+		//给后台子项目名称，后台给出数据到底是什么产品类型
+		$.ajax({//
+			url : '../../XXX/XXX.ajax',
+			type : 'post',
+			dataType : 'JSON',
+			cache: false,
+			data : {
+				proId : projectId 
+			},
+			error: function(XMLHttpRequest, textStatus, errorThrown) {	                   
+	        },
+			success : function(data) {
+				init_table(data);
+			}
+		});
+		
+		$('#new_form').form({//提交表单的验证
+			url : '../../project/modifyEntrusting.ajax?proId='+projectId,
+			onSubmit : function() {		
+				if ($(this).form('validate')) {
+					return true;//验证是否为空
+				} else {
+					return false;
+				}
+			},
+			success : function(data) {
+				var obj = $.parseJSON(data);//将json字符串转换为object对象
+				if (obj.success) {
+					$.messager.alert('提示', obj.message, 'info', function(){
+						location.reload();//强迫浏览器刷新当前页面
+					});
+				} else {
+					$.messager.alert('错误', obj.message, 'error');
+				}
+			}
+		});
+
+		//事件绑定，点击提交就提交表单
+		$('#btn_submit').bind('click', function() {
+			$("#new_form").submit();
+		});
+
+		//选择日期
+		$('.dateSelect').datebox({
+			onSelect: function(date){
+				var entrustDate = $(this).datebox('getValue');
+			},
+			required:true
+		}); 
+
+		//扩展easyui表单的验证  验证整数的
+		$.extend($.fn.validatebox.defaults.rules, {  
+			checkNum: {  
+	            validator: function(value, param) {  
+	                return /^([0-9]+)$/.test(value);  
+	            },  
+	            message: '请输入整数'  
+	        }
+		});		
+ 	});	
+	function init_table(data){
+		var str = data.chanpin+'';//取得产品的字符串   
+		    $(str.split(",")).each(function (i,dom){ 
+		    	var idChoose = "#"+dom; 
+		        $(idChoose).show();  
+		    });
+	}
+</script>
+</head>
+
+<body>
+<form id="new_form" method="post" enctype="multipart/form-data">
+<input type="hidden" name="fileNameTotal" 		id="fileName_total" 	value="" />
+	<!--焊管-->
+	<table class="table_new" id="weldedPipe" style="display: none" >
+		<tr>
+			<td align="center" colspan="11"><strong>焊管进度控制</strong> </td>
+		</tr>		
+		<tr>
+			<td align="center" width="80px" rowspan="2"><strong>产品名称</strong></td>
+			<td align="center" width="80px" rowspan="2"><strong>产品规格</strong></td>
+			<td align="center" width="80px" rowspan="2"><strong>订货数量</strong></td>
+			<td align="center" width="600px" colspan="7"><strong>进度节点</strong></td>
+			<td align="center" width="100px" rowspan="2"><strong>计划完成日期</strong></td>
+		</tr>
+		<tr>
+			<td align="center" width="100px" ><strong>到料</strong></td>
+			<td align="center" width="100px" ><strong>投料</strong></td>
+			<td align="center" width="80px" ><strong>焊出量</strong></td>
+			<td align="center" width="80px" ><strong>入库量</strong></td>
+			<td align="center" width="80px" ><strong>倒运防腐</strong></td>
+			<td align="center" width="80px" ><strong>防腐量</strong></td>
+			<td align="center" width="80px" ><strong>发运量</strong></td>
+		</tr>
+		<tr>
+			<td align="center"><span>焊管+防腐</span></td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_80" type="text"   id="" name="" />
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" data-options="validType:'checkNum'" type="text"  id="" name="" />吨
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" data-options="validType:'checkNum'" dir='rtl' type="text"  id="" name="" />卷/张<br/><br/>				
+				<input class="easyui-validatebox input_60" data-options="validType:'checkNum'" dir='rtl' type="text"  id="" name="" />吨
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" data-options="validType:'checkNum'" dir='rtl' type="text"  id="" name="" />卷/张<br/><br/>
+				<input class="easyui-validatebox input_60" data-options="validType:'checkNum'" dir='rtl' type="text"  id="" name="" />吨
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" data-options="validType:'checkNum'" dir='rtl' type="text"  id="" name="" />根<br/><br/>
+				<input class="easyui-validatebox input_60" data-options="validType:'checkNum'" dir='rtl' type="text"  id="" name="" />米<br/><br/>
+				<input class="easyui-validatebox input_60" data-options="validType:'checkNum'" dir='rtl' type="text"  id="" name="" />吨
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60"  data-options="validType:'checkNum'" dir='rtl' type="text"  id="" name="" />根<br/><br/>
+				<input class="easyui-validatebox input_60"  data-options="validType:'checkNum'" dir='rtl' type="text"  id="" name="" />米<br/><br/>
+				<input class="easyui-validatebox input_60" data-options="validType:'checkNum'" dir='rtl' type="text"  id="" name="" />吨
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" data-options="validType:'checkNum'" dir='rtl' type="text"  id="" name="" />根<br/><br/>
+				<input class="easyui-validatebox input_60" data-options="validType:'checkNum'" dir='rtl' type="text"  id="" name="" />米<br/><br/>
+				<input class="easyui-validatebox input_60" data-options="validType:'checkNum'" dir='rtl' type="text"  id="" name="" />吨
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" data-options="validType:'checkNum'" dir='rtl' type="text"  id="" name="" />根<br/><br/>
+				<input class="easyui-validatebox input_60" data-options="validType:'checkNum'" dir='rtl' type="text"  id="" name="" />米<br/><br/>
+				<input class="easyui-validatebox input_60" data-options="validType:'checkNum'" dir='rtl' type="text"  id="" name="" />吨
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" data-options="validType:'checkNum'" dir='rtl' type="text"  id="" name="" />根<br/><br/>
+				<input class="easyui-validatebox input_60" data-options="validType:'checkNum'" dir='rtl' type="text"  id="" name="" />米<br/><br/>
+				<input class="easyui-validatebox input_60" data-options="validType:'checkNum'" dir='rtl' type="text"  id="" name="" />吨
+			</td>	
+			<td class="td_new_value">
+				<input type="text" name=""  class="dateSelect" style="width: 100px" />
+			</td>
+		</tr>
+	</table>	
+	<!--无缝钢管-->
+	<table class="table_new" id="chanpin2" style="display: none">
+		<tr>
+			<td align="center" colspan="10"><strong>无缝钢管进度控制</strong> </td>
+		</tr>		
+		<tr>
+			<td align="center" width="80px" rowspan="2"><strong>产品名称</strong></td>
+			<td align="center" width="80px" rowspan="2"><strong>产品规格</strong></td>
+			<td align="center" width="80px" rowspan="2"><strong>订货数量</strong></td>
+			<td align="center" width="480px" colspan="6"><strong>进度节点</strong></td>
+			<td align="center" width="100px" rowspan="2"><strong>计划完成日期</strong></td>
+		</tr>
+		<tr>
+			<td align="center" width="80px" ><strong>轧制</strong></td>
+			<td align="center" width="80px" ><strong>热处理</strong></td>
+			<td align="center" width="80px" ><strong>无损检测</strong></td>
+			<td align="center" width="80px" ><strong>水压试验</strong></td>
+			<td align="center" width="80px" ><strong>入库量</strong></td>
+			<td align="center" width="80px" ><strong>发货量</strong></td>
+		</tr>
+		<tr>
+			<td align="center"><span>无缝钢管</span></td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_80" type="text"   id="" name="" />
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />吨
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />根				
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />根
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />根
+			</td>
+			<td class="td_new_value"> 
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />根
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />根<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />吨
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />根<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />吨
+			</td>
+			<td class="td_new_value">
+				<input type="text" name=""  class="dateSelect" style="width: 100px" />
+			</td>
+		</tr>
+	</table>
+	<!--钢管弯管防腐保温进度控制-->
+	<table class="table_new" id="" style="display: none">
+		<tr>
+			<td align="center" colspan="7"><strong>钢管防腐保温进度控制</strong> </td>
+		</tr>		
+		<tr>
+			<td align="center" width="120px" rowspan="2"><strong>产品名称</strong></td>
+			<td align="center" width="80px" rowspan="2"><strong>产品规格</strong></td>
+			<td align="center" width="80px" rowspan="2"><strong>订货数量</strong></td>
+			<td align="center" width="300px" colspan="3"><strong>进度节点</strong></td>
+			<td align="center" width="100px" rowspan="2"><strong>计划完成日期</strong></td>
+		</tr>
+		<tr>
+			<td align="center" width="100px" ><strong>到料</strong></td>
+			<td align="center" width="100px" ><strong>防腐量</strong></td>
+			<td align="center" width="100px" ><strong>发运量</strong></td>
+		</tr>
+		<tr>
+			<td align="center"><span>钢管防腐保温</span></td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_80" type="text"   id="" name="" />
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />根<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />米<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />吨			
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />根<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />米<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />吨			
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />根<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />米<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />吨
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />根<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />米<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />吨
+			</td>
+			<td class="td_new_value">
+				<input type="text" name=""  class="dateSelect" style="width: 100px"/>
+			</td>
+		</tr>
+	</table>
+
+	<!--钢管弯管防腐保温进度控制-->
+	<table class="table_new" id="" style="display: none">
+		<tr>
+			<td align="center" colspan="7"><strong>弯管防腐保温进度控制</strong> </td>
+		</tr>		
+		<tr>
+			<td align="center" width="120px" rowspan="2"><strong>产品名称</strong></td>
+			<td align="center" width="80px" rowspan="2"><strong>产品规格</strong></td>
+			<td align="center" width="80px" rowspan="2"><strong>订货数量</strong></td>
+			<td align="center" width="300px" colspan="3"><strong>进度节点</strong></td>
+			<td align="center" width="100px" rowspan="2"><strong>计划完成日期</strong></td>
+		</tr>
+		<tr>
+			<td align="center" width="100px" ><strong>到料</strong></td>
+			<td align="center" width="100px" ><strong>防腐量</strong></td>
+			<td align="center" width="100px" ><strong>发运量</strong></td>
+		</tr>
+		<tr>
+			<td align="center"><span>弯管防腐保温</span></td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_80" type="text"   id="" name="" />
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />根<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />米<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />吨			
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />根<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />米<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />吨			
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />根<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />米<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />吨
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />根<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />米<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />吨
+			</td>
+			<td class="td_new_value">
+				<input type="text" name=""  class="dateSelect" style="width: 100px" />
+			</td>
+		</tr>
+	</table>
+
+	<table class="table_new" id="" style="display: none">
+		<tr>
+			<td align="center" colspan="12"><strong>油套管（ERW焊管）进度控制</strong> </td>
+		</tr>		
+		<tr>
+			<td align="center" width="140px" rowspan="2"><strong>产品名称</strong></td>
+			<td align="center" width="80px" rowspan="2"><strong>产品规格</strong></td>
+			<td align="center" width="80px" rowspan="2"><strong>订货数量</strong></td>
+			<td align="center" width="640px" colspan="8"><strong>进度节点</strong></td>
+			<td align="center" width="100px" rowspan="2"><strong>计划完成日期</strong></td>
+		</tr>
+		<tr>
+			<td align="center" width="80px" ><strong>钢管成型</strong></td>
+			<td align="center" width="80px" ><strong>热处理</strong></td>
+			<td align="center" width="80px" ><strong>无损检测</strong></td>
+			<td align="center" width="80px" ><strong>尺寸检验</strong></td>
+			<td align="center" width="80px" ><strong>螺纹加工</strong></td>
+			<td align="center" width="80px" ><strong>水压、拧接、通径</strong></td>
+			<td align="center" width="80px" ><strong>成品入库</strong></td>
+			<td align="center" width="80px" ><strong>发货量</strong></td>
+		</tr>
+		<tr>
+			<td align="center"><span>油套管（ERW焊管）</span></td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_80" type="text"   id="" name="" />
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />根<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />米<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />吨	
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />支<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />米<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />吨			
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />支<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />米<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />吨
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />支<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />米<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />吨
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />支<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />米<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />吨
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />支<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />米<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />吨
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />支<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />米<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />吨
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />支<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />米<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />吨
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />支<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />米<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />吨
+			</td>
+			<td class="td_new_value">
+				<input type="text" name=""  class="dateSelect" style="width: 100px" />
+			</td>
+		</tr>
+	</table>
+	
+	<table class="table_new" id="" style="display: none">
+		<tr>
+			<td align="center" colspan="12"><strong>油套管（无缝钢管）</strong> </td>
+		</tr>		
+		<tr>
+			<td align="center" width="140px" rowspan="2"><strong>产品名称</strong></td>
+			<td align="center" width="80px" rowspan="2"><strong>产品规格</strong></td>
+			<td align="center" width="80px" rowspan="2"><strong>订货数量</strong></td>
+			<td align="center" width="640px" colspan="8"><strong>进度节点</strong></td>
+			<td align="center" width="100px" rowspan="2"><strong>计划完成日期</strong></td>
+		</tr>
+		<tr>
+			<td align="center" width="80px" ><strong>钢管轧制</strong></td>
+			<td align="center" width="80px" ><strong>热处理</strong></td>
+			<td align="center" width="80px" ><strong>无损检测</strong></td>
+			<td align="center" width="80px" ><strong>尺寸检验</strong></td>
+			<td align="center" width="80px" ><strong>螺纹加工</strong></td>
+			<td align="center" width="80px" ><strong>水压、拧接、通径</strong></td>
+			<td align="center" width="80px" ><strong>成品入库</strong></td>
+			<td align="center" width="80px" ><strong>发货量</strong></td>
+		</tr>
+		<tr>
+			<td align="center"><span>油套管（无缝钢管）</span></td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_80" type="text"   id="" name="" />
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_80" type="text"  id="" name="" />
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />支<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />米<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />吨			
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />支<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />米<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />吨
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />支<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />米<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />吨
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />支<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />米<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />吨
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />支<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />米<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />吨
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />支<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />米<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />吨
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />支<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />米<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />吨
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />支<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />米<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />吨
+			</td>
+			<td class="td_new_value">
+				<input type="text" name=""  class="dateSelect" style="width: 100px" />
+			</td>
+		</tr>
+		</table>
+		
+		<table class="table_new" id="seamlessTube" style="display: none">
+		<tr>
+			<td align="center" colspan="9"><strong>油套管（螺纹加工）进度控制</strong> </td>
+		</tr>		
+		<tr>
+			<td align="center" width="150px" rowspan="2"><strong>产品名称</strong></td>
+			<td align="center" width="80px" rowspan="2"><strong>产品规格</strong></td>
+			<td align="center" width="80px" rowspan="2"><strong>订货数量</strong></td>
+			<td align="center" width="400px" colspan="5"><strong>进度节点</strong></td>
+			<td align="center" width="100px" rowspan="2"><strong>计划完成日期</strong></td>
+		</tr>
+		<tr>
+			<td align="center" width="80px" ><strong>钢管到料</strong></td>
+			<td align="center" width="80px" ><strong>螺纹加工</strong></td>
+			<td align="center" width="80px" ><strong>水压、拧接、通径</strong></td>
+			<td align="center" width="80px" ><strong>成品入库</strong></td>
+			<td align="center" width="80px" ><strong>发货量</strong></td>
+		</tr>
+		<tr>
+			<td align="center"><span>油套管(螺纹加工)</span></td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_80" type="text"   id="" name="" />
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_80" type="text"  id="" name="" />
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />支<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />米<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />吨			
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />支<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />米<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />吨
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />支<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />米<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />吨
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />支<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />米<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />吨
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />支<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />米<br/><br/>
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />吨
+			</td>
+			<td class="td_new_value">
+				<input type="text" name=""  class="dateSelect" style="width: 100px" />
+			</td>
+		</tr>
+	</table>
+		
+	<table class="table_new" id="" style="display: none">
+		<tr>
+			<td align="center" colspan="10"><strong>管件（无缝、锻制）进度控制</strong> </td>
+		</tr>		
+		<tr>
+			<td align="center" width="130px" rowspan="2"><strong>产品名称</strong></td>
+			<td align="center" width="80px" rowspan="2"><strong>产品规格</strong></td>
+			<td align="center" width="80px" rowspan="2"><strong>订货数量</strong></td>
+			<td align="center" width="480px" colspan="6"><strong>进度节点</strong></td>
+			<td align="center" width="100px" rowspan="2"><strong>计划完成日期</strong></td>
+		</tr>
+		<tr>
+			<td align="center" width="80px" ><strong>下料成型</strong></td>
+			<td align="center" width="80px" ><strong>热处理</strong></td>
+			<td align="center" width="80px" ><strong>表面处理</strong></td>
+			<td align="center" width="80px" ><strong>涂覆</strong></td>
+			<td align="center" width="80px" ><strong>成品检验</strong></td>
+			<td align="center" width="80px" ><strong>发运</strong></td>
+		</tr>
+		<tr>
+			<td align="center"><span>管件（无缝、锻制）</span></td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_80" type="text"   id="" name="" />
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_80" type="text"  id="" name="" />
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />件	
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />件
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />件
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />件
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />件
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />件
+			</td>
+			<td class="td_new_value">
+				<input type="text" name=""  class="dateSelect" style="width: 100px" />
+			</td>
+		</tr>
+	</table>
+		
+	<table class="table_new" id="" style="display: none">
+		<tr>
+			<td align="center" colspan="12"><strong>管件（焊接）进度控制</strong> </td>
+		</tr>		
+		<tr>
+			<td align="center" width="120px" rowspan="2"><strong>产品名称</strong></td>
+			<td align="center" width="80px" rowspan="2"><strong>产品规格</strong></td>
+			<td align="center" width="80px" rowspan="2"><strong>订货数量</strong></td>
+			<td align="center" width="400px" colspan="8"><strong>进度节点</strong></td>
+			<td align="center" width="100px" rowspan="2"><strong>计划完成日期</strong></td>
+		</tr>
+		<tr>
+			<td align="center" width="80px" ><strong>下料成型</strong></td>
+			<td align="center" width="80px" ><strong>焊接</strong></td>
+			<td align="center" width="80px" ><strong>热处理</strong></td>
+			<td align="center" width="80px" ><strong>焊缝检测</strong></td>
+			<td align="center" width="80px" ><strong>表面处理</strong></td>
+			<td align="center" width="80px" ><strong>涂覆</strong></td>
+			<td align="center" width="80px" ><strong>成品检验</strong></td>
+			<td align="center" width="80px" ><strong>发运</strong></td>
+		</tr>
+		<tr>
+			<td align="center"><span>管件（焊接）</span></td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_80" type="text"   id="" name="" />
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_80" type="text"  id="" name="" />
+			</td>
+			<td class="td_new_value"> 
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />件	
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />件
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />件
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />件
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />件
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />件
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />件
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />件
+			</td>
+			<td class="td_new_value">
+				<input type="text" name=""  class="dateSelect"  style="width: 100px" />
+			</td>
+		</tr>
+	</table>
+		
+	<table class="table_new" id="seamlessTube" style="display: none">
+		<tr>
+			<td align="center" colspan="10"><strong>法兰 进度控制</strong> </td>
+		</tr>		
+		<tr>
+			<td align="center" width="100px" rowspan="2"><strong>产品名称</strong></td>
+			<td align="center" width="80px" rowspan="2"><strong>产品规格</strong></td>
+			<td align="center" width="80px" rowspan="2"><strong>订货数量</strong></td>
+			<td align="center" width="480px" colspan="6"><strong>进度节点</strong></td>
+			<td align="center" width="100px" rowspan="2"><strong>计划完成日期</strong></td>
+		</tr>
+		<tr>
+			<td align="center" width="80px" ><strong>下料</strong></td>
+			<td align="center" width="80px" ><strong>热处理</strong></td>
+			<td align="center" width="80px" ><strong>加工钻孔</strong></td>
+			<td align="center" width="80px" ><strong>无损检测</strong></td>
+			<td align="center" width="80px" ><strong>入库</strong></td>
+			<td align="center" width="80px" ><strong>包装发运</strong></td>
+		</tr>
+		<tr>
+			<td align="center"><span>法兰 </span></td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_80" type="text"   id="" name="" />
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_80" type="text"  id="" name="" />
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />片	
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />片
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />片
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />片
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />片
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />片
+			</td>
+			<td class="td_new_value">
+				<input type="text" name=""  class="dateSelect" style="width: 100px" />
+			</td>
+		</tr>
+	</table>
+		
+
+	<table class="table_new" id="" style="display: none">
+		<tr>
+			<td align="center" colspan="10"><strong>阀门 进度控制</strong> </td>
+		</tr>		
+		<tr>
+			<td align="center" width="80px" rowspan="2"><strong>产品名称</strong></td>
+			<td align="center" width="80px" rowspan="2"><strong>产品规格</strong></td>
+			<td align="center" width="80px" rowspan="2"><strong>订货数量</strong></td>
+			<td align="center" width="480px" colspan="6"><strong>进度节点</strong></td>
+			<td align="center" width="100px" rowspan="2"><strong>计划完成日期</strong></td>
+		</tr>
+		<tr>
+			<td align="center" width="80px" ><strong>阀体到料</strong></td>
+			<td align="center" width="80px" ><strong>阀体加工焊接</strong></td>
+			<td align="center" width="80px" ><strong>总装</strong></td>
+			<td align="center" width="80px" ><strong>性能测试</strong></td>
+			<td align="center" width="80px" ><strong>油漆</strong></td>
+			<td align="center" width="80px" ><strong>包装发运</strong></td>
+		</tr>
+		<tr>
+			<td align="center"><span>阀门</span></td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_80" type="text"   id="" name="" />
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_80" type="text"  id="" name="" />
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />台
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />台
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />台
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />台
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />台
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />台
+			</td>
+			<td class="td_new_value">
+				<input type="text" name="tProject.proEndtime"  class="dateSelect" style="width: 100px" />
+			</td>
+		</tr>
+	</table>
+	
+	<table class="table_new" id="" style="display: none">
+		<tr>
+			<td align="center" colspan="11"><strong>摩擦焊钻杆 进度控制</strong> </td>
+		</tr>		
+		<tr>
+			<td align="center" width="80px" rowspan="2"><strong>产品名称</strong></td>
+			<td align="center" width="80px" rowspan="2"><strong>产品规格</strong></td>
+			<td align="center" width="80px" rowspan="2"><strong>订货数量</strong></td>
+			<td align="center" width="560px" colspan="7"><strong>进度节点</strong></td>
+			<td align="center" width="100px" rowspan="2"><strong>计划完成日期</strong></td>
+		</tr>
+		<tr>
+			<td align="center" width="80px" ><strong>管体到料</strong></td>
+			<td align="center" width="80px" ><strong>管体调质、检测</strong></td>
+			<td align="center" width="80px" ><strong>接头调制、加工检测</strong></td>
+			<td align="center" width="80px" ><strong>焊接</strong></td>
+			<td align="center" width="80px" ><strong>焊区调制检测</strong></td>
+			<td align="center" width="80px" ><strong>涂覆</strong></td>
+			<td align="center" width="80px" ><strong>发运</strong></td>
+		</tr>
+		<tr>
+			<td align="center"><span>摩擦焊钻杆</span></td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_80" type="text"   id="" name="" />
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_80" type="text"  id="" name="" />
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />根	
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />根
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />根
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />根
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />根
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />根
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />根
+			</td>
+			<td class="td_new_value">
+				<input type="text" name="tProject.proEndtime"  class="dateSelect" style="width: 100px" />
+			</td>
+		</tr>
+	</table>
+		
+	<table class="table_new" id="" style="display: none">
+		<tr>
+			<td align="center" colspan="11"><strong>整体钻杆 进度控制</strong> </td>
+		</tr>		
+		<tr>
+			<td align="center" width="150px" rowspan="2"><strong>产品名称</strong></td>
+			<td align="center" width="80px" rowspan="2"><strong>产品规格</strong></td>
+			<td align="center" width="80px" rowspan="2"><strong>订货数量</strong></td>
+			<td align="center" width="400px" colspan="7"><strong>进度节点</strong></td>
+			<td align="center" width="100px" rowspan="2"><strong>计划完成日期</strong></td>
+		</tr>
+		<tr>
+			<td align="center" width="80px" ><strong>到料</strong></td>
+			<td align="center" width="80px" ><strong>钻孔车圆</strong></td>
+			<td align="center" width="80px" ><strong>管体无损检测</strong></td>
+			<td align="center" width="80px" ><strong>调质</strong></td>
+			<td align="center" width="80px" ><strong>精车及螺纹加工</strong></td>
+			<td align="center" width="80px" ><strong>涂覆</strong></td>
+			<td align="center" width="80px" ><strong>发运</strong></td>
+		</tr>
+		<tr>
+			<td align="center"><span>整体钻杆、加重钻杆</span></td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_80" type="text"   id="" name="" />
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_80" type="text"  id="" name="" />
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />根	
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />根
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />根
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />根
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />根
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />根
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'"  dir='rtl' id="" name="" />根
+			</td>
+			<td class="td_new_value">
+				<input type="text" name=""  class="dateSelect" style="width: 100px" />
+			</td>
+		</tr>
+	</table>
+	
+<table class="table_new" id="" style="display: none">
+		<tr>
+			<td align="center" colspan="12"><strong>钻铤 进度控制</strong> </td>
+		</tr>		
+		<tr>
+			<td align="center" width="80px" rowspan="2"><strong>产品名称</strong></td>
+			<td align="center" width="80px" rowspan="2"><strong>产品规格</strong></td>
+			<td align="center" width="80px" rowspan="2"><strong>订货数量</strong></td>
+			<td align="center" width="640px" colspan="8"><strong>进度节点</strong></td>
+			<td align="center" width="100px" rowspan="2"><strong>计划完成日期</strong></td>
+		</tr>
+		<tr>
+			<td align="center" width="80px" ><strong>到料</strong></td>
+			<td align="center" width="80px" ><strong>钻孔车圆</strong></td>
+			<td align="center" width="80px" ><strong>管体无损检测</strong></td>
+			<td align="center" width="80px" ><strong>调质</strong></td>
+			<td align="center" width="80px" ><strong>精车及螺纹加工</strong></td>
+			<td align="center" width="80px" ><strong>铣螺旋</strong></td>
+			<td align="center" width="80px" ><strong>涂覆</strong></td>
+			<td align="center" width="80px" ><strong>发运</strong></td>
+		</tr>
+		<tr>
+			<td align="center"><span>钻铤</span></td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_80" type="text"   id="" name="" />
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_80" type="text"  id="" name="" />
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />根	
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />根
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />根
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />根
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />根
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />根
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />根
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />根
+			</td>
+			<td class="td_new_value">
+				<input type="text" name="tProject.proEndtime"  class="dateSelect" style="width: 100px" />
+			</td>
+		</tr>
+	</table>
+		
+	<table class="table_new" id="" style="display: none">
+		<tr>
+			<td align="center" colspan="12"><strong>转换接头 进度控制</strong> </td>
+		</tr>		
+		<tr>
+			<td align="center" width="80px" rowspan="2"><strong>产品名称</strong></td>
+			<td align="center" width="80px" rowspan="2"><strong>产品规格</strong></td>
+			<td align="center" width="80px" rowspan="2"><strong>订货数量</strong></td>
+			<td align="center" width="640px" colspan="8"><strong>进度节点</strong></td>
+			<td align="center" width="100px" rowspan="2"><strong>计划完成日期</strong></td>
+		</tr>
+		<tr>
+			<td align="center" width="80px" ><strong>到料</strong></td>
+			<td align="center" width="80px" ><strong>下料粗车</strong></td>
+			<td align="center" width="80px" ><strong>无损检测</strong></td>
+			<td align="center" width="80px" ><strong>调质</strong></td>
+			<td align="center" width="80px" ><strong>螺纹加工</strong></td>
+			<td align="center" width="80px" ><strong>入库</strong></td>
+			<td align="center" width="80px" ><strong>涂覆</strong></td>
+			<td align="center" width="80px" ><strong>发运</strong></td>
+		</tr>
+		<tr>
+			<td align="center"><span>转换接头</span></td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_80" type="text"   id="" name="" />
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_80" type="text"  id="" name="" />
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />吨	
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />根
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />根
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />根
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />根
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />根
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />根
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />根
+			</td>
+			<td class="td_new_value">
+				<input type="text" name=""  class="dateSelect" style="width: 100px" />
+			</td>
+		</tr>
+		</table>
+		<br/>
+		<table class="table_new" id="" style="display: none">
+		<tr>
+			<td align="center" colspan="11"><strong>泵 进度控制</strong> </td>
+		</tr>		
+		<tr>
+			<td align="center" width="80px" rowspan="2"><strong>产品名称</strong></td>
+			<td align="center" width="80px" rowspan="2"><strong>产品规格</strong></td>
+			<td align="center" width="80px" rowspan="2"><strong>订货数量</strong></td>
+			<td align="center" width="560px" colspan="7"><strong>进度节点</strong></td>
+			<td align="center" width="100px" rowspan="2"><strong>计划完成日期</strong></td>
+		</tr>
+		<tr>
+			<td align="center" width="80px" ><strong>泵体加工检验</strong></td>
+			<td align="center" width="80px" ><strong>主轴加工检验</strong></td>
+			<td align="center" width="80px" ><strong>叶轮加工检验</strong></td>
+			<td align="center" width="80px" ><strong>总装</strong></td>
+			<td align="center" width="80px" ><strong>性能测试</strong></td>
+			<td align="center" width="80px" ><strong>油漆</strong></td>
+			<td align="center" width="80px" ><strong>包装发运</strong></td>
+		</tr>
+		<tr>
+			<td align="center"><span>泵</span></td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_80" type="text"   id="" name="" />
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />台
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />件	
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />件
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text"  data-options="validType:'checkNum'"dir='rtl' id="" name="" />件
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />台
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />台
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />台
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />台
+			</td>
+			<td class="td_new_value">
+				<input type="text" name=""  class="dateSelect" style="width: 100px"/>
+			</td>
+		</tr>
+	</table>
+		<br/>
+		<br/>
+	<table class="table_new" id="" style="display: none">
+		<tr>
+			<td align="center" colspan="13"><strong>设备 进度控制</strong> </td>
+		</tr>		
+		<tr>
+			<td align="center" width="80px" rowspan="3"><strong>产品名称</strong></td>
+			<td align="center" width="80px" rowspan="3"><strong>产品规格</strong></td>
+			<td align="center" width="80px" rowspan="3"><strong>订货数量</strong></td>
+			<td align="center" width="740px" colspan="9"><strong>进度节点</strong></td>
+			<td align="center" width="95px" rowspan="3"><strong>计划完成日期</strong></td>
+		</tr>
+		<tr>
+			<td align="center" width="80px" rowspan="2"><strong>壳体材料到料</strong></td>
+			<td align="center" width="80px" rowspan="2"><strong>锻件到料</strong></td>
+			<td align="center" width="180px" colspan="2"><strong>组装焊接</strong></td>
+			<td align="center" width="80px" rowspan="2"><strong>热处理</strong></td>
+			<td align="center" width="80px" rowspan="2"><strong>水压试验</strong></td>
+			<td align="center" width="80px" rowspan="2"><strong>其他性能测试</strong></td>
+			<td align="center" width="80px" rowspan="2"><strong>油漆</strong></td>
+			<td align="center" width="80px" rowspan="2"><strong>发运</strong></td>
+		</tr>
+		<tr>
+			<td align="center" width="80px" ><strong>完成量</strong></td>
+			<td align="center" width="90px" ><strong>完成量说明</strong></td>
+		</tr>
+		<tr>
+			<td align="center"><span>设备</span></td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_80" type="text"   id="" name="" />
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />台
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />%	
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />%
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />%
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_80" type="text" id="" name="" />
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />台
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />台
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />台
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />台
+			</td>
+			<td class="td_new_value">
+				<input class="easyui-validatebox input_60" type="text" data-options="validType:'checkNum'" dir='rtl' id="" name="" />台
+			</td>
+			<td class="td_new_value">
+				<input type="text" name=""  class="dateSelect" style="width: 90px" />
+			</td>
+		</tr>
+	</table>
+	<table class="table_new">
+	<tr>
+		<td align="center" width="100%"><a id="btn_submit" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok">确认提交</a></td>
+	</tr>
+	</table>
+
+</form>
+
+</body>
+</html>

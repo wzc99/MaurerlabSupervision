@@ -1,0 +1,317 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<title>监造物资清单</title>
+	
+	<link rel="stylesheet" type="text/css" href="../../themes/general.css">
+	<link rel="stylesheet" type="text/css" href="../../themes/icon.css">
+	<link rel="stylesheet" type="text/css" href="../../themes/gray/easyui.css">
+
+	<script type="text/javascript" src="../../scripts/jquery-1.8.0.min.js"></script>
+	<script type="text/javascript" src="../../scripts/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="../../scripts/locale/easyui-lang-zh_CN.js"></script>
+	<script type="text/javascript" src="../../scripts/src/jquery.parser.js"></script>
+	<script type="text/javascript" src="../../scripts/general.js"></script>
+	<script type="text/javascript" src="../../scripts/sessionExpriation.js"></script>
+<style type="text/css">	
+.inbe{
+	border: 1px solid #95B8E7;
+	border-radius: 5px 5px 5px 5px;
+	height: 25px;
+}
+#tableWork td{
+	padding-left:0;
+	padding-right:0;
+}
+#attion{
+	padding:5px 10px;
+}
+.myerror {
+	border:1px solid red;
+	backgroundColor:yellow;
+}
+
+</style>
+<script type="text/javascript">
+	$(function() {
+		//项目的id作为隐藏值保存在表单中
+		var proId = $.getUrlParam('proId');
+		var dailyDate = $.getUrlParam('mydate');
+		var journalId = $.getUrlParam('journalId');
+		var processType = 0;
+		$('#proId').val(91);
+		alert(proId);
+		alert(dailyDate);
+		//再次判断是重新生成还是新生成日报
+		if(dailyDate) {
+			processType = 1;
+			journalId = journalId;
+			$("#journalId").val(journalId);
+			$("#processType").val(processType);
+			$("#dailyDate").val(dailyDate);
+			$("#btn_submit").html("重新生成");
+			$('#btn_submit').css({width:'100px',height:'30px',lineHeight:'30px',border:'1px solid green'})
+			//$("#dailyDate").datebox({ disabled: true });
+		}else {
+			$("#journalId").val(0);
+			$("#processType").val(0);
+		}
+		
+		
+		var jsonObject;
+		//表单提交的ajax
+		$('#new_form').form({
+			url : '../../journal/addDailyJournal.ajax',
+			onSubmit : function() {	
+				if(validatePic()) {
+					return false;
+				}
+				recoderPicNames();
+				if ($(this).form('validate')) {					return true;//验证是否为空
+				} else {
+					return false;
+				}
+			},
+			success : function(data) {
+				alert(data);
+				var data = $.parseJSON(data);//将json字符串转换为object对象
+				if(data.statusCode == 200) {
+					$.messager.alert('提示', '生成成功', 'info', function(){
+						 //刷新项目详述页面
+						 href="./project/view.html?proId="+proId;
+						 alert(href);
+						var content = '<iframe scrolling="auto" frameborder="0"  src="'+href+'" style="width:100%;height:100%;"></iframe>';  
+					    var tt = parent.$('#tabs');  	   
+					    if (tt.tabs('exists', "项目详述")){//如果tab已经存在,则选中该tab，并更新内容          
+					        tt.tabs('select', "项目详述");  
+					        var tab =parent.$('#tabs').tabs('getSelected'); 
+					        parent.$('#tabs').tabs('update', {
+					        	tab: tab,
+					        	options: {
+					        		content:content
+					        	}
+					        });
+					    }
+					    //关闭当前页面
+					 	parent.$('#tabs').tabs('close','物资清单');
+					});
+				} else {
+					$.messager.alert('错误', obj.message, 'error');
+				}
+			}
+		});
+		
+		//事件绑定，点击提交就提交表单
+		$('#btn_submit').bind('click', function() {
+			$("#new_form").submit();
+		});
+
+	
+		var index = 2;
+		
+		$("#addTableWork").click(function(){
+			var delIndex = "equip" + index;
+			var tempIndex=index-1;
+			$str='';     
+		    $str+='<tr>';     
+		    $str+='<td align="center"><input style="width:300px;height:40px"  name="list['+tempIndex+'].title" 			id="title'+index+'"  class="easyui-textbox inbe" required="required"/></td>';
+		    $str+='<td align="center"><textarea class="easyui-textbox" data-options="multiline:true" style="width:300px;height:100px" name="list['+tempIndex+'].content" id="content'+index+'" required="required"/></td>';
+			$str+='<td align="center"><a id="'+delIndex+'" 	href="javascript:delTr(\''+delIndex+'\')" >删除</a></td>';
+			$str+='</tr>';
+		    $("#tableWork").append($str);
+			
+			index++;
+			
+		
+		});
+		
+		var picIndex = 2;
+		
+		$("#addTablePic").click(function(){
+			var delIndex = "equip" + index;
+			var tempIndex=index-1;
+			$str='';     
+			$str += '<tr>';
+			$str += '<td align="center" width="200px">图片描述</td>';
+			$str += '<td align="center"><input type="text" name="picList['+tempIndex+'].description" id="description'+index+'" class="inbe" style="width:300px;height:40px" ></td>';
+			$str += '<td align="center"><span>上传图片：</span><input type="file" name="file" id="picture'+index+'" accept="image/*" ></td>';
+			$str += '<td align="center"><a id="'+delIndex+'" 	href="javascript:delTr(\''+delIndex+'\')" >删除</a></td>';
+			$str += '</tr>';
+		    $("#table_pic").append($str);
+			
+			index++;
+			
+		
+		});
+		
+		$('#dailyDate').datebox({
+			onSelect: function(date){
+				var date = $('#dailyDate').datebox('getValue');
+				alert(date);
+				$.ajax({//完工资料的文件信息
+					url : '../../journal/hasDailyJournal.ajax',
+					type : 'post',
+					dataType : 'JSON',
+					cache: false,
+					data : {
+						proId : 91,
+						date : date
+					},
+					error: function(XMLHttpRequest, textStatus, errorThrown) {
+			                   // alert(XMLHttpRequest.status);
+			        },
+					success : function(data) {
+						if(data.data) {
+							alert("这天的日报已经存在，你可以去列表页重新生成");
+							journalId = 0;
+							$("#journalId").val(0);
+							$("#processType").val(0);
+							$("#control_btn").css('display','none'); 
+						}else {
+							journalId = 0;
+							$("#journalId").val(0);
+							$("#processType").val(0);
+							$("#control_btn").css('display','block'); 
+						}
+					}
+				});
+			},
+			required:true
+		});
+		
+		
+		$("#dailyDate").change(function(){
+			//在这里就在后端调用，后端是否有这天的日志，并提示
+			
+			
+		});
+		
+	});
+	
+	function delTr(tempTdId){//删除
+		var obj  = $("#" + tempTdId);
+		$(obj).parent().parent().remove();  
+	}
+	 function recoderPicNames() {
+		 var str = "";
+		 var picDess = $('input[id^="description"]');
+		 for(var i = 0;i<picDess.length;i++) {
+			 str += $(picDess[i]).val() + "&";
+		 }
+		str =  str.substring(0,str.length-1);
+		 $('#picDescription').val(str);
+	 }
+	 
+	 function validatePic() {
+		 var num = 0;
+		 $('input[id^="picture"]').each(function(){
+			    var index = $(this).attr('id').substring(7);
+			    if($(this).val()) {
+			    	$(this).removeClass('myerror');
+			    	//如果选择图片了，那么图片描述必须写
+			    	if(!$("#description"+index).val()) {
+			    		$("#description"+index).addClass('myerror');
+			    		/* .css({
+							 "border":"1px solid red",
+							 "backgroundColor":"yellow"
+						 }); */
+			    		num++;
+			    	}
+			    }
+			    
+			  //如果写了图片描述，那么图片必须填写
+			    if($("#description"+index).val()) {
+			    	$("#description"+index).removeClass('myerror');
+			    	if(!$(this).val()) {
+			    		$(this).addClass('myerror');
+			    		num++;
+			    	}
+			    	
+			    }
+			    
+		});
+		 if(num == 0) {
+			 return false;
+		 }else {
+			 alert("请检查见证图片的格式是否正确！");
+			 return true;
+		 }
+	 }
+	</script>
+</head>
+
+<body>
+<form id="new_form" method="post" enctype="multipart/form-data">
+	<input type="text" style="display: none;" name="proId" id="proId">
+	<input type="text" style="display:none" name="picDescription" id="picDescription">
+	<input type="text" name="processType" id="processType" style="display:none">
+	<input type="text" name="journalId" id="journalId" style="display: none;">
+	<table class="table_view" id="tableWork">
+		<tr>
+			<td class="td_new_subtitle" colspan="7" ><strong>生成日报</strong></td>
+		</tr>
+		<tr>
+			<td align="center" width="200px">
+				<strong>选择日报时间</strong>
+			</td>
+			<td align="center" width="200px">
+				<input type="text" name="dailyDate" id="dailyDate"  required="required">
+			</td>
+		</tr>
+		<tr>
+			<td align="center" width="200px"><strong>见证标题</strong></td>
+			<td align="center" width="120px"><strong>见证内容</strong></td>
+			<td align="center" width="80px"><a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addTableWork"></a></td>
+		</tr>
+		<tr>
+			<td align="center">
+				<input type="text" class="easyui-textbox"	id="title1" class="inbe" style="width:300px;height:40px"	name="list[0].title" required="required"	/>
+			</td>
+			<td align="center">
+				<input class="easyui-textbox" data-options="multiline:true" id="content1" name="list[0].content" style="width:300px;height:100px" required="required">
+			</td>
+			<td align="center"></td>
+		</tr>
+	</table>
+	<br>
+	 <table class="table_view" id="table_pic">
+		<tr>
+			<td class="td_new_subtitle"  colspan="3"><strong>见证图片</strong></td>
+			<td align="center" colspan="1"><a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addTablePic"></a></td>
+		</tr>
+		
+		<tr>
+			
+			<td align="center" width="200px">图片描述</td>
+			<td align="center">
+				<input type="text" name="picList[0].description" id="description1" class="inbe" style="width:300px;height:40px" >
+			</td>
+		<td align="center">
+				<span>上传图片：</span><input type="file" name="file" id="picture1" accept="image/*" >
+			</td>
+			<td align="center"></td>
+		</tr>
+	</table>
+	<br>
+	
+	<table class="table_view">
+		<tr>
+			<td align="center" >
+				<span>hse情况内容</span>
+			</td>
+			<td>
+				<input class="easyui-textbox" data-options="multiline:true" id="hseContent" name="hseContent" style="width:300px;height:100px">
+			</td>
+		</tr>
+	</table>
+	<br>
+	<table class="table_view" id="control_btn">
+		<tr>
+			<td align="center" ><a id="btn_submit" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok">生成日报</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</tr>
+	</table>
+	
+</form>
+
+</body>
+</html>
