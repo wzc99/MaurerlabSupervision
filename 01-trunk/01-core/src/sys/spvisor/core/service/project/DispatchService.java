@@ -520,7 +520,17 @@ public class DispatchService {
 						XWPFRun picRun1 = row11.getCell(3).getParagraphArray(0).createRun();
 						try {
 							//picRun1.addPicture(ip1, Document.PICTURE_TYPE_PNG, "", Units.toEMU(230), Units.toEMU(170));
-							picRun1.addPicture(ip1, Document.PICTURE_TYPE_JPEG, "", Units.toEMU(100), Units.toEMU(40));
+							String houzhui = getPicSuffix(picPath).toLowerCase(); 
+							if(houzhui.equals("jpg")||houzhui.equals("jpeg")){
+								picRun1.addPicture(ip1, Document.PICTURE_TYPE_JPEG, "", Units.toEMU(100), Units.toEMU(40));
+							}else if(houzhui.equals("png")) {
+								picRun1.addPicture(ip1, Document.PICTURE_TYPE_PNG, "", Units.toEMU(100), Units.toEMU(40));
+							}else if(houzhui.equals("gif")) {
+								picRun1.addPicture(ip1, Document.PICTURE_TYPE_GIF, "", Units.toEMU(100), Units.toEMU(40));
+							}else if(houzhui.equals("bmp")){
+								picRun1.addPicture(ip1, Document.PICTURE_TYPE_BMP, "", Units.toEMU(100), Units.toEMU(40));
+							}
+							
 						} catch (InvalidFormatException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -551,6 +561,13 @@ public class DispatchService {
 			//           t = configuration.getTemplate("dispatchForm1.ftl");
 		}
 		  
+	}
+	public  String getPicSuffix(String img_path){    
+	   if (img_path == null || img_path.indexOf(".") == -1){    
+	        return ""; //如果图片地址为null或者地址中没有"."就返回""    
+	   }    
+	   return img_path.substring(img_path.lastIndexOf(".") + 1).    
+	          trim().toLowerCase();    
 	}
 	
 	

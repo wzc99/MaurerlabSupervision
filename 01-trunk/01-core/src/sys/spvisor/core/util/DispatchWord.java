@@ -33,8 +33,9 @@ public class DispatchWord {
 	      params.put("appleAmt", "100.00");  
 	      params.put("bananaAmt", "200.00");  
 	      params.put("totalAmt", "300.00");*/  
-	      String filePath = FileUtils.getServerPath(request, SystemConstants.tempFilesPath)
+	      String filePath = FileUtils.getServerPath(request, SystemConstants.tempFilesPath).replace(File.separator + "console", File.separator)
 					+ "\\dispatchForm.docx"; 
+	      System.out.println(filePath);
 	      InputStream is = new FileInputStream(filePath);  
 	      XWPFDocument doc = new XWPFDocument(is);  
 	      //替换段落里面的变量  

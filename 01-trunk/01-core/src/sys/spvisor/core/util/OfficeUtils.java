@@ -53,12 +53,11 @@ public class OfficeUtils {
 		String metrialListPath = request.getSession().getServletContext().getRealPath("upload/"+proId+"/material_list.docx");
 		File fileDir = new File(request.getSession().getServletContext().getRealPath("upload/"+proId));
 		
-		if (!fileDir.exists()) {
-			fileDir.mkdirs();
-		}
+		if (!fileDir.exists()) {        }
 		System.out.print(metrialListPath);
-		String tempFilePath = FileUtils.getServerPath(request, SystemConstants.tempFilesPath)
-				+ "\\t1_material_list.docx";
+		String tempFilePath = FileUtils.getServerPath(request, SystemConstants.tempFilesPath).replace(File.separator + "console", File.separator)
+				+ "\\t1_material_list.docx";    
+		System.out.println(tempFilePath);
 
 		// String path = System.getProperty("user.dir");
 		// System.out.println(path);
