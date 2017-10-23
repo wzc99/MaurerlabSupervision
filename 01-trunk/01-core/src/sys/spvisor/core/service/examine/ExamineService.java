@@ -588,6 +588,7 @@ public class ExamineService {
 					exa.setId(id);
 					exa.setStatus(-1);
 					tExamineMapper.updateByPrimaryKeySelective(exa);
+					result = Enumerations.ServiceReturnCode.操作成功.getCode();
 				} else {
 					result = Enumerations.ServiceReturnCode.非法操作.getCode();
 				}
@@ -598,6 +599,7 @@ public class ExamineService {
 					exaProcess.setId(id);
 					exaProcess.setNodeStatus(-1);
 					tExaProcessMapper.updateByPrimaryKeySelective(exaProcess);
+					result = Enumerations.ServiceReturnCode.操作成功.getCode();
 				} else {
 					result = Enumerations.ServiceReturnCode.非法操作.getCode();
 				}
