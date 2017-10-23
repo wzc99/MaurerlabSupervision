@@ -78,7 +78,7 @@ $(function() {
 			//alert(data);
 			var data = $.parseJSON(data);//将json字符串转换为object对象
 			if(data.statusCode == 200) {
-				$.messager.alert('提示', obj.message, 'info', function(){
+				$.messager.alert('提示', '生成周报成功', 'info', function(){
 					 //刷新项目详述页面
 					 href="./project/view.html?proId="+proId;
 					 alert(href);
@@ -294,6 +294,7 @@ function getDate(strDate){
 	<input type="text"  name="proId" id="proId" style="display: none;">
 	<input type="text" style="display:none" name="picDescription" id="picDescription">
 	<input type="text" name="processType" id="processType" style="display: none">
+	<input type="text" name="journalId" id="journalId" style="display: none;">
 	<table class="table_view" id="tableWork">
 		<tr>
 			<td class="td_new_subtitle" colspan="7" ><strong>生成周报</strong></td>
@@ -304,8 +305,8 @@ function getDate(strDate){
 			</td>
 			<td align="center" width="200px">
 				<input type="text" required="required" name="dailyDate" id="dailyDate">
-				<input type="text" name="weekDate" id="WeekDate" style="display: none">
-				<input type="text" name="yearDate" id="YearDate" style="display: none">
+				<input type="text" name="weekDate" id="WeekDate" >
+				<input type="text" name="yearDate" id="YearDate" >
 			</td>
 			
 			<td align="center" width="200px">

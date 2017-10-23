@@ -124,7 +124,7 @@
 	function generator(val,row,index) {
 		//$('#daily_query_result').datagrid('selectRow', index);  
 	    /*  var row = $('#daily_query_result').datagrid('getSelected'); */
-		return '<a href="../logs/weekly.htm?proId='+row.pid+'&week='+row.week+'&year='+row.yearInt+'&jTime='+rowjTime+'">重新生成</a>'; 
+		return '<a href="../logs/weekly.htm?proId='+row.pid+'&week='+row.week+'&year='+row.yearInt+'&jTime='+row.jTime+'">重新生成</a>'; 
 		//parent.parent.addTabWithIcon("添加日报","../htm/logs/weekly.htm?proId="+window.parent.projectId)
 	}
 	
@@ -180,6 +180,7 @@
 								
 								<th data-options="field:'id',width:40,hidden:true,align:'center'">ID</th>
 								<th data-options="field:'pid',width:100,hidden:true,align:'center'">项目id</th>
+								<th data-options="field:'file',width:100,align:'center'">文件路径</th>
 								<th data-options="field:'yearInt',width:40,hidden:false,align:'center'" formatter="formatYear">年份</th>
 								<th data-options="field:'week',width:40,hidden:false,align:'center'" formatter="formatWeek">周期</th>
 								<th data-options="field:'pname',width:100,hidden:false,align:'center'">项目名称</th>

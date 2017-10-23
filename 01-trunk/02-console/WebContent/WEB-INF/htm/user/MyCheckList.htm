@@ -313,7 +313,7 @@ window.onload = function() {
 				 	parent.$('#tabs').tabs('close','开工报审');
 				});
 			} else {
-				$.messager.alert('错误', data.message, 'error');
+				$.messager.alert('错误', '服务器错误', 'error');
 			}
 		}
 	});
@@ -688,7 +688,8 @@ window.onload = function() {
 				<div class="no1" style="height: 50px;line-height:50px;">
 					<button id="already_read" onclick="recodeAlreadyRead()">撤销</button>
 					<button id="ignore" onclick="IgnoreMessage()">不再显示</button>
-					<button id="edit" onclick="editMessage()">编辑</button>
+					<!-- <button id="edit" onclick="editMessage()">编辑</button> -->
+					<button id="edit">编辑</button>
 				</div>
 			</div>
 		</div>
