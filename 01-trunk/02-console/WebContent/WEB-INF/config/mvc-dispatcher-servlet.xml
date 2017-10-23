@@ -160,6 +160,7 @@
 			
 			
 			<mvc:exclude-mapping path="/user/center/editAddentance.ajax"/>
+			<mvc:exclude-mapping path="/htm/user/ByMyCheckList.htm"/>
 			
 			
 			<bean class="sys.spvisor.console.interceptor.PermissionCheckInterceptor" />
