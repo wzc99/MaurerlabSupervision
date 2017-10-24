@@ -89,9 +89,9 @@ public final class FileUtils {
 			// filePath+fileName the complex file Name
 			String serverPath = getServerPath(request, filePath);
 			serverPath = serverPath.replace(File.separator + "console", File.separator);
-			String relativePath = getRelativePath();
-			checkDir(serverPath + relativePath);
-			String result = relativePath + getUUIDName(suffix);
+			// String relativePath = getRelativePath();
+			checkDir(serverPath);
+			String result = File.separator + getUUIDName(suffix);
 			String absolutePath = serverPath + result;
 			try {
 				// save file

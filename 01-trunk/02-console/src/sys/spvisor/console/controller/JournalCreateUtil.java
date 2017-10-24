@@ -181,8 +181,12 @@ public class JournalCreateUtil {
 
 		FileOutputStream out;
 		String uuid = FileUtils.getUUIDName(".docx");
-		out = new FileOutputStream(savepath + File.separator + uuid);
-		result = SystemConstants.journalsPath + File.separator + uuid;
+		String datePath = FileUtils.getDataPath();
+		String savaPath = savepath + File.separator +datePath;
+		FileUtils.checkDir(savaPath);
+		out = new FileOutputStream(savaPath+File.separator+uuid);
+		
+		result = SystemConstants.journalsPath + File.separator +datePath+File.separator+ uuid;
 		doc.write(out);
 		doc.close();
 		out.close();
@@ -243,7 +247,7 @@ public class JournalCreateUtil {
 			}
 			if (para.getText().contains("${time}")) {
 				String[] te = model.getDailyDate().toString().split("-");
-				//System.out.println(model.getDailyDate().toString());
+				// System.out.println(model.getDailyDate().toString());
 				OfficeUtils.replaceText(para, "${time}", te.length >= 1 ? te[0] + "年"
 						: "" + (te.length >= 2 ? te[1] + "月" : "") + (te.length >= 3 ? te[2] + "日" : ""));
 			}
@@ -472,7 +476,10 @@ public class JournalCreateUtil {
 		}
 
 		FileOutputStream out = null;
-		result = path + File.separator + FileUtils.getUUIDName(".docx");
+		result = path.replace(File.separator + "templates", File.separator + "journal") + File.separator
+				+ FileUtils.getDataPath() + File.separator + "Temp" ;
+		FileUtils.checkDir(result);
+		result = result+ File.separator + FileUtils.getUUIDName(".docx");
 		out = new FileOutputStream(result);
 		doc.write(out);
 		// 关闭文件

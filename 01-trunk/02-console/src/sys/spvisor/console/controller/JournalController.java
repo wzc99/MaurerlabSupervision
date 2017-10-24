@@ -1,5 +1,6 @@
 package sys.spvisor.console.controller;
 
+import java.io.File;
 import java.sql.Date;
 import java.util.List;
 
@@ -55,7 +56,8 @@ public class JournalController extends BaseController {
 		try {
 			String[] filePath = null;
 			if (file != null) {
-				filePath = FileUtils.MaxFilesUpload_transferTo_spring(req, file, SystemConstants.tempJournalPicPath);
+				filePath = FileUtils.MaxFilesUpload_transferTo_spring(req, file,
+						SystemConstants.journaleTempFilesPath + FileUtils.getDataPath() + File.separator + "pic");
 			}
 
 			if (journalModel.getPicDescription() != null && filePath != null) {
@@ -111,7 +113,8 @@ public class JournalController extends BaseController {
 		try {
 			String[] filePath = null;
 			if (file != null) {
-				filePath = FileUtils.MaxFilesUpload_transferTo_spring(req, file, SystemConstants.tempJournalPicPath);
+				filePath = FileUtils.MaxFilesUpload_transferTo_spring(req, file,
+						SystemConstants.journaleTempFilesPath + FileUtils.getDataPath() + File.separator + "pic");
 			}
 
 			if (journalModel.getPicDescription() != null && filePath != null) {
