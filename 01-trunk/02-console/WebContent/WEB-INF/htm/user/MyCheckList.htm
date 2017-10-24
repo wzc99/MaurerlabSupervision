@@ -174,7 +174,7 @@ window.onload = function() {
 				$(".myFile").show();
 				$("#already_read").show();
 				$("#ignore").show();
-				$("#edit").show();
+				
 				
 				//初始化查看里面的数据
 				$("#submitter").html(data.data.submitName);
@@ -227,6 +227,10 @@ window.onload = function() {
 				if(data.data.status == 3) {
 					$("#edit").show();
 				}
+				if(data.data.exaType == 0 && data.data.status == 3) {
+					$("#edit").hide();
+				}
+				
 			}
 		});
 	}
@@ -272,7 +276,7 @@ window.onload = function() {
 		success : function(data) {
 			
 			var obj = $.parseJSON(data);//将json字符串转换为object对象
-			alert(obj);
+			
 			if(obj.SUCCESS){
 				$("#exaFilePath").attr("value",obj.path);	
 			}
@@ -726,7 +730,8 @@ window.onload = function() {
 						<span class="explain">文件名称：</span>
 						
 						<span class="exp_value"  id="file_name1"></span>
-						<input type="hidden" name="exaFilePath"  id="exaFilePath">
+						<!-- <input type="hidden" name="exaFilePath"  id="exaFilePath"> -->
+						<input name="exaFilePath"  id="exaFilePath">
 					</div>
 					</form>
 					

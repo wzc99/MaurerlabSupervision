@@ -207,7 +207,14 @@ $(function() {
 	    if(month < 10) clock += "0";         
 	    clock += month + "-";  
 	    if(day < 10) clock += "0";   
-	    clock += day;  
+	    clock += day;
+	    var date =getDate($("#dailyDate").val());
+		var year = date.getFullYear();
+		var week = getYearWeek(date.getFullYear(),date.getMonth(),date.getDate());
+		alert("year:"+year + ",week:"+ week);
+		$("#WeekDate").val(week);
+		$("#mydescription").html(date.getFullYear() + '年,第' + week +'周');
+		$("#YearDate").val(date.getFullYear());
 	    return clock;   
 	} 
 	

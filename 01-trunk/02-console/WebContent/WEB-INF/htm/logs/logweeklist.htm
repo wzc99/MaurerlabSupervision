@@ -142,7 +142,7 @@
           form.attr('id', 'temp_download_form');
           form.attr('target', '');
           form.attr('method', 'post');
-          form.attr('action', '../../file/download.ajax?fileId='+row.file+'&type=1');	//这个需要改类型，改成日志的类型
+          form.attr('action', '../../file/download.ajax?fileId='+row.id+'&type=2');	//这个需要改类型，改成日志的类型
           $('body').append(form);
           form.submit();
           form.remove();
@@ -154,7 +154,7 @@
       if(!row.file) {
       	alert("这不是文件类型的消息，没有附件可以预览");
       }else {
-      	window.open('../ViewPDF.html?fileurl='+row.file+'&type=1');	//这个需要改类型，改成日志的类型
+      	window.open('../ViewPDF.html?fileurl='+row.id+'&type=2');	//这个需要改类型，改成日志的类型
       }
     	
   }

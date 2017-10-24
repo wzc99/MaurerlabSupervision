@@ -220,7 +220,12 @@ public class FileController extends BaseController{
 	@RequestMapping("/preview.ajax")
 	public @ResponseBody Map<String,Object>  previewFile(HttpServletResponse response, HttpServletRequest request,int type,int fileId) throws Exception {
 		Map<String,Object> result = new HashMap<String,Object>(2);
-		String realPath = fileDownAndPrewService.previewFile(response, request, type, fileId);
+		String realPath = "";
+		if(type == 2) {
+			realPath = fileDownAndPrewService.previewFileJournal(response, request, type, fileId);
+		}else {
+			realPath = fileDownAndPrewService.previewFile(response, request, type, fileId);
+		}
 		boolean isPdf = DecideFileType.isPDF(realPath);
 		boolean isPicture = DecideFileType.isPicture(realPath);
 		if(isPdf) {

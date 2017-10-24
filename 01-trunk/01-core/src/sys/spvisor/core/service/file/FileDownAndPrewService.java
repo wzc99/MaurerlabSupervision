@@ -8,12 +8,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import sys.file.common.AutoCreateFileName;
+import sys.spvisor.core.dao.examine.TExamineMapper;
 import sys.spvisor.core.dao.file.TCompanyFileManageMapper;
+import sys.spvisor.core.dao.journal.TJournalMapper;
 import sys.spvisor.core.dao.project.TFileFormMapper;
 import sys.spvisor.core.dao.work.TQualityCheckRecoderMapper;
 import sys.spvisor.core.dao.work.TQualityFileRecoderMapper;
 import sys.spvisor.core.dao.work.TQualityPeopleRecoderMapper;
+import sys.spvisor.core.entity.examine.TExamine;
 import sys.spvisor.core.entity.file.TCompanyFileManage;
+import sys.spvisor.core.entity.journal.TJournal;
+import sys.spvisor.core.entity.journal.TJournalExample;
 import sys.spvisor.core.entity.project.TFileForm;
 import sys.spvisor.core.entity.work.TQualityCheckRecoder;
 import sys.spvisor.core.entity.work.TQualityFileRecoder;
@@ -33,6 +38,8 @@ public class FileDownAndPrewService {
 	TQualityPeopleRecoderMapper tQualityPeopleRecoderMapper;
 	@Autowired
 	TCompanyFileManageMapper tCompanyFileManageMapper;
+	@Autowired
+	TJournalMapper journalMapper;
 	
 	
 	/**
@@ -49,13 +56,15 @@ public class FileDownAndPrewService {
 	public void download(HttpServletResponse response, HttpServletRequest request,int type,int fileId) {
 		int proId = 0;
 		String fileName = "";
+		boolean isJournal = false;
 		if(type == 1) {
 			TFileForm tFileForm = tFileFormMapper.selectByPrimaryKey(fileId);
 			proId = tFileForm.getFileFormProjectId();
 			fileName = tFileForm.getFileFormPath();
 		}else if(type == 2) {
-			//TODO
-			//日志这一块还没有弄
+			TJournal tJournal = journalMapper.selectByPrimaryKey(fileId);
+			fileName = tJournal.getFile();
+			isJournal = true;
 		}else if(type == 3) {
 			TQualityCheckRecoder recoder = tQualityCheckRecoderMapper.selectByPrimaryKey(fileId);
 			proId = recoder.getProId();
@@ -79,7 +88,12 @@ public class FileDownAndPrewService {
 			fileName = "material_list.docx";
 			
 		}
-		AutoCreateFileName.FilesDownload(request, response, "/upload/"+proId+"/"+fileName);
+		if(isJournal) {
+			AutoCreateFileName.FilesDownload(request, response, fileName);
+		}else {
+			AutoCreateFileName.FilesDownload(request, response, "/upload/"+proId+"/"+fileName);
+		}
+		
 	}
 	
 	/**
@@ -97,14 +111,16 @@ public class FileDownAndPrewService {
 	public String previewFile(HttpServletResponse response, HttpServletRequest request,int type,int fileId) throws Exception {
 		int proId = 0;
 		String fileName = "";
+		//boolean isJournal = false;
 		if(type == 1) {
 			TFileForm tFileForm = tFileFormMapper.selectByPrimaryKey(fileId);
 			proId = tFileForm.getFileFormProjectId();
 			fileName = tFileForm.getFileFormPath();
 			
 		}else if(type == 2) {
-			//TODO
-			//日志这一块还没有弄
+			/*TExamine examine = tExamineMapper.selectByPrimaryKey(fileId);
+			fileName = examine.getExaFilePath();
+			isJournal = true;*/
 		}else if(type == 3) {
 			TQualityCheckRecoder recoder = tQualityCheckRecoderMapper.selectByPrimaryKey(fileId);
 			proId = recoder.getProId();
@@ -137,6 +153,36 @@ public class FileDownAndPrewService {
 		}else if(isPdf) {
 			realPath = request.getSession().getServletContext().getRealPath("/upload/"+proId+"/"+fileName);
 			return "console/../../upload/"+proId+"/"+fileName;
+		}
+		return realPath;
+		
+	}
+	public String previewFileJournal(HttpServletResponse response, HttpServletRequest request,int type,int fileId) throws Exception {
+		int proId = 0;
+		String fileName = "";
+		
+		TJournal examine = journalMapper.selectByPrimaryKey(fileId);
+		fileName = examine.getFile();
+        String name = fileName.substring(fileName.lastIndexOf("/")+1);
+	    System.out.println("文件名称" + name);
+		//判断文件是图片还是PDF还是其他文件
+		boolean isPicture = DecideFileType.isPicture(name);
+		boolean isPdf = DecideFileType.isPDF(name);
+		String realPath = "";
+		if(!isPicture && !isPdf) {
+			// 生成唯一编号
+			String tempId = System.currentTimeMillis() + "_" + Long.toString((long) (Math.random() * Long.MAX_VALUE), 36);
+			realPath = request.getSession().getServletContext().getRealPath(fileName);
+			System.out.println("/download/"+proId+"/"+tempId+".pdf");
+			OfficeUtils.office2PDF(realPath,request.getSession().getServletContext().getRealPath("/download/"+proId+"/"+name.substring(0, name.lastIndexOf("."))+".pdf"));
+			return "console/../../download/"+proId+"/"+tempId+".pdf";
+		}else if(isPicture) {
+			//否则，直接返回路径
+			realPath = request.getSession().getServletContext().getRealPath(fileName);
+			return "console/../.."+fileName;
+		}else if(isPdf) {
+			realPath = request.getSession().getServletContext().getRealPath(fileName);
+			return "console/../.."+fileName;
 		}
 		return realPath;
 		

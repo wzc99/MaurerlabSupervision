@@ -121,7 +121,7 @@ public class FileService {
 			form.setFileFormPath(path);
 			tFileFormMapper.updateByPrimaryKey(form);
 		}
-		return path;
+		return "/upload/"+form.getFileFormProjectId() + "/" + path;
 	}
 
 }
