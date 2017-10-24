@@ -29,8 +29,8 @@ overflow: hidden;
 		//这里给路径还要给类型，1表示文件，2表示图片
 		var myUrl = $.getUrlParam('fileurl');
 		var type = $.getUrlParam('type');
-		alert(myUrl);
-		alert(type);
+		/* alert(myUrl);
+		alert(type); */
 		$.ajax({//获取项目名称
 			url : '../file/preview.ajax',
 			type : 'post',
@@ -60,14 +60,6 @@ overflow: hidden;
 				}
 			}
 		}); 
-		/* if(type == 2) {
-			$("#pdf1").hide();
-			$("#myPic").attr('src',myUrl);
-		}else {
-			$("#myPic").hide();
-			$("#download").attr('href',myUrl);
-			var success = new PDFObject({ url:myUrl  ,pdfOpenParams: { scrollbars: '0', toolbar: '0', statusbar: '0'}}).embed("pdf1");
-		} */
 		
 	}
 

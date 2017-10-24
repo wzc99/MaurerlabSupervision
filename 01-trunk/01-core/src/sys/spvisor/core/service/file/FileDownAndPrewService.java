@@ -174,7 +174,7 @@ public class FileDownAndPrewService {
 			String tempId = System.currentTimeMillis() + "_" + Long.toString((long) (Math.random() * Long.MAX_VALUE), 36);
 			realPath = request.getSession().getServletContext().getRealPath(fileName);
 			System.out.println("/download/"+proId+"/"+tempId+".pdf");
-			OfficeUtils.office2PDF(realPath,request.getSession().getServletContext().getRealPath("/download/"+proId+"/"+name.substring(0, name.lastIndexOf("."))+".pdf"));
+			OfficeUtils.office2PDF(realPath,request.getSession().getServletContext().getRealPath("/download/"+proId+"/"+tempId+".pdf"));
 			return "console/../../download/"+proId+"/"+tempId+".pdf";
 		}else if(isPicture) {
 			//否则，直接返回路径

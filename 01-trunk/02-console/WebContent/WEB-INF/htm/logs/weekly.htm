@@ -208,16 +208,19 @@ $(function() {
 	    clock += month + "-";  
 	    if(day < 10) clock += "0";   
 	    clock += day;
-	    var date =getDate($("#dailyDate").val());
+	    return clock;   
+	} 
+	function initDate() {
+		
+		var date = new Date();
 		var year = date.getFullYear();
 		var week = getYearWeek(date.getFullYear(),date.getMonth(),date.getDate());
-		alert("year:"+year + ",week:"+ week);
+		//alert("year:"+year + ",week:"+ week);
 		$("#WeekDate").val(week);
 		$("#mydescription").html(date.getFullYear() + '年,第' + week +'周');
 		$("#YearDate").val(date.getFullYear());
-	    return clock;   
-	} 
-	
+	}
+	initDate();
 	
 });
 
@@ -312,8 +315,8 @@ function getDate(strDate){
 			</td>
 			<td align="center" width="200px">
 				<input type="text" required="required" name="dailyDate" id="dailyDate">
-				<input type="text" name="weekDate" id="WeekDate" >
-				<input type="text" name="yearDate" id="YearDate" >
+				<input type="text" name="weekDate" id="WeekDate" style="display: none">
+				<input type="text" name="yearDate" id="YearDate" style="display: none">
 			</td>
 			
 			<td align="center" width="200px">

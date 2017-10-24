@@ -167,11 +167,11 @@
 			if(data == null){
 				$.messager.alert('Error', '该数据已经关闭', 'error');
 			}
-			alert(data.project.proEntrustTime);
+			//alert(data.project.proEntrustTime);
 			$("#ownerCompany").val(data.project.proUnit);//业主单位
 			$('#bigProjectName').combobox('setValue',data.project.proBigProjectName);
 			$("#projectName").val(data.project.projectName);//项目名称
-			alert(data.project.proEntrustTime);
+			//alert(data.project.proEntrustTime);
 			$("#entrustDate").datebox("setValue", data.project.proEntrustTime);//委托日期
 			$("#entrustCode").val(data.project.proNum);//委托单号
 			$("#ownerContacts").val(data.project.proConpeople);//业主联系人
