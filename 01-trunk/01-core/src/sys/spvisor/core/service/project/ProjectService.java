@@ -361,6 +361,9 @@ public class ProjectService {
 			List<TUser> userList =  userMapper.selectByExample(uExample);
 			if(userList.size()>0) {
 				userId = userList.get(0).getUserId();
+			}else {
+				List<TProjectAndMember> last = new ArrayList<TProjectAndMember>();
+				return last;
 			}
 		}
 		params.setUserId(userId);
