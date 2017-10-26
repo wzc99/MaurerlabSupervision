@@ -147,15 +147,26 @@ $(function() {
 		
 	
 	function formatDownLoad(val, row) {	
-		 return '<a href="#" onclick="download(row)">下载</a>';		
+		// return '<a href="#" onclick="download(row)">下载</a>';
+		return '<a href="javascript:do_download(' + row.fileId + ','+6+')">下载</a>';	
 	}
-	/* download(row){
-	
-	} */
+	function do_download(projectPlanFileId,type) {//下载
+		var form = $("<form>");
+	    form.attr('style', 'display:none');
+	    form.attr('id', 'temp_download_form');
+	    form.attr('target', '');
+	    form.attr('method', 'post');
+	    form.attr('action', '../../file/download.ajax?fileId='+projectPlanFileId+'&type='+type);
+	    $('body').append(form);
+	    form.submit();
+	    form.remove();
+	}
 	
 	function formatPreview(val, row) {	
-		 return '<button type="button">预览</button>';		
+		 //return '<button type="button">预览</button>';	
+		return '<a href="../ViewPDF.html?fileurl=' + row.fileId + '&type='+6+'" target="_blank">预览</a>';		
 	}
+
 	
 	function formatDate(val, row) {	
 		  return formatTime(val);		

@@ -162,6 +162,11 @@
 			<mvc:exclude-mapping path="/user/center/editAddentance.ajax"/>
 			<mvc:exclude-mapping path="/htm/user/ByMyCheckList.htm"/>
 			<mvc:exclude-mapping path="/journal/addWeeklyJournal.ajax"/>
+			<mvc:exclude-mapping path="/htm/project/addQuality.htm"/>
+			<mvc:exclude-mapping path="/test/testResult.ajax"/>
+			<mvc:exclude-mapping path="/test/viewResult.ajax"/>
+			<mvc:exclude-mapping path="/htm/project/editQuality.htm"/>
+			<mvc:exclude-mapping path="/test/editResult.ajax"/>
 			
 			
 			<bean class="sys.spvisor.console.interceptor.PermissionCheckInterceptor" />

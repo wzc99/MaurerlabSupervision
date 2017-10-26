@@ -91,7 +91,7 @@ public class JournalCreateUtil {
 		List<Table3> tab3 = sController.dailyTable3(proId, date);
 		TProject project = proDao.selectByPrimaryKey(proId);
 		List<ProblemResult> problems = problemService.getDailyQuestion(date, proId);
-		templatePath = templatePath.replace(File.separator + "console", File.separator);
+		templatePath = templatePath.replace(File.separator + "console", "");
 
 		String tempTemplatePath = createWordByModel(tab2.size(), tab3.size(), templatePath, project, 0);
 		String path = setData2Word(tempTemplatePath, journalParentPath, picParentPath, tab1, tab2, tab3, model,
@@ -126,7 +126,7 @@ public class JournalCreateUtil {
 		List<Table3> tab3 = sController.weeklyTable3(proId, start, end);
 		TProject project = proDao.selectByPrimaryKey(proId);
 		List<ProblemResult> problems = problemService.getWeekQuestion(start, end, proId);
-		templatePath = templatePath.replace(File.separator + "console", File.separator);
+		templatePath = templatePath.replace(File.separator + "console","");
 
 		String tempTemplatePath = createWordByModel(tab2.size(), tab3.size(), templatePath, project, 1);
 
