@@ -81,7 +81,7 @@ $(function() {
 				$.messager.alert('提示', '生成周报成功', 'info', function(){
 					 //刷新项目详述页面
 					 href="./project/view.html?proId="+proId;
-					 alert(href);
+					 //alert(href);
 					var content = '<iframe scrolling="auto" frameborder="0"  src="'+href+'" style="width:100%;height:100%;"></iframe>';  
 				    var tt = parent.$('#tabs');  	   
 				    if (tt.tabs('exists', "项目详述")){//如果tab已经存在,则选中该tab，并更新内容          
@@ -151,7 +151,7 @@ $(function() {
 			var date =getDate($("#dailyDate").val());
 			var year = date.getFullYear();
 			var week = getYearWeek(date.getFullYear(),date.getMonth(),date.getDate());
-			alert("year:"+year + ",week:"+ week);
+			//alert("year:"+year + ",week:"+ week);
 			$("#WeekDate").val(week);
 			$("#mydescription").html(date.getFullYear() + '年,第' + week +'周');
 			$("#YearDate").val(date.getFullYear());

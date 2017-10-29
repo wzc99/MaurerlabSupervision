@@ -96,7 +96,7 @@ window.onload = function() {
 			sortOrder:"asc",
 			remoteSort:false,
 				onDblClickRow: function(rowIndex, rowData){
-					alert(i);
+					//alert(i);
 					do_view(i);
 				}
 		});
@@ -281,7 +281,7 @@ function parseJson1(obj) {
 						alert("操作成功");
 						$("#myBack").hide();
 						href="./user/AllCheckList.htm";
-						 alert(href);
+						 //alert(href);
 						var content = '<iframe scrolling="auto" frameborder="0"  src="'+href+'" style="width:100%;height:100%;"></iframe>';  
 					    var tt = parent.$('#tabs');  	   
 					    if (tt.tabs('exists', "审核列表")){//如果tab已经存在,则选中该tab，并更新内容          

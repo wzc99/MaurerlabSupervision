@@ -112,7 +112,7 @@ function do_submit(pageNumber,pageSize){//使用ajax来进行真正的查询
 		},
 		success:function(data){
 			var obj = $.parseJSON(data);
-			alert(obj.message);
+			//alert(obj.message);
 			var length = obj.rows.length;
 			for(var i=0;i<length;i++){
 				var rate = obj.rows[i].completeRateToday+"";

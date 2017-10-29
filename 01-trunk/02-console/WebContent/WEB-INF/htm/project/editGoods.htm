@@ -64,13 +64,13 @@
 				}
 			},
 			success : function(data) {
-				alert(data);
+				//alert(data);
 				var obj = $.parseJSON(data);//将json字符串转换为object对象
 				if(obj.success){
 					$.messager.alert('提示', obj.message, 'info', function(){
 						 //刷新项目详述页面
 						 href="./project/view.html?proId="+projectId;
-						 alert(href);
+						 //alert(href);
 						var content = '<iframe scrolling="auto" frameborder="0"  src="'+href+'" style="width:100%;height:100%;"></iframe>';  
 					    var tt = parent.$('#tabs');  	   
 					    if (tt.tabs('exists', "项目详述")){//如果tab已经存在,则选中该tab，并更新内容          
@@ -131,7 +131,7 @@
 		        },
 				success : function(data) {//传过来一个json对象
 					if(data.success) {
-						alert(data.message)
+						//alert(data.message)
 						var fileId = data.fileId;
 						$("#recordFileId").html(fileId);
 					}else {
@@ -285,7 +285,7 @@
 			alert('请先生成物资清单，再进行下载！');
 			return;
 		}
-		alert("我的类型"+7);
+		//alert("我的类型"+7);
 		var form = $("<form>");
 	    form.attr('style', 'display:none');
 	    form.attr('id', 'temp_download_form');

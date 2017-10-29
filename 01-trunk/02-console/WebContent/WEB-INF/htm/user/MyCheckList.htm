@@ -160,7 +160,7 @@ window.onload = function() {
 	//index表示那个table里面的数据
 	function do_view(index) {
 		window.row = $('#query_result'+index).datagrid('getSelected');
-		alert(window.row.id);
+		//alert(window.row.id);
 		$.ajax({
 			url : '../../examine/getExamineById.ajax',
 			type : 'get',
@@ -300,7 +300,7 @@ window.onload = function() {
 				$.messager.alert('提示', "修改成功", 'info', function(){
 					 //刷新项目详述页面
 					 href="./user/MyCheckList.htm";
-					 alert(href);
+					 //alert(href);
 					var content = '<iframe scrolling="auto" frameborder="0"  src="'+href+'" style="width:100%;height:100%;"></iframe>';  
 				    var tt = parent.$('#tabs');  	   
 				    if (tt.tabs('exists', "我的审核")){//如果tab已经存在,则选中该tab，并更新内容          
@@ -345,11 +345,11 @@ window.onload = function() {
 				},
 				success : function(data) {
 					if(data.statusCode == 200) {
-						alert(data.message);
+						//alert(data.message);
 						alert("撤销成功");
 						$("#myBack").hide();
 						href="./user/MyCheckList.htm";
-						 alert(href);
+						// alert(href);
 						var content = '<iframe scrolling="auto" frameborder="0"  src="'+href+'" style="width:100%;height:100%;"></iframe>';  
 					    var tt = parent.$('#tabs');  	   
 					    if (tt.tabs('exists', "我的审核")){//如果tab已经存在,则选中该tab，并更新内容          
@@ -382,11 +382,11 @@ window.onload = function() {
 				},
 				success : function(data) {
 					if(data.statusCode == 200) {
-						alert(data.message);
+						//alert(data.message);
 						alert("撤销成功");
 						$("#myBack").hide();
 						href="./user/MyCheckList.htm";
-						 alert(href);
+						 //alert(href);
 						var content = '<iframe scrolling="auto" frameborder="0"  src="'+href+'" style="width:100%;height:100%;"></iframe>';  
 					    var tt = parent.$('#tabs');  	   
 					    if (tt.tabs('exists', "我的审核")){//如果tab已经存在,则选中该tab，并更新内容          
