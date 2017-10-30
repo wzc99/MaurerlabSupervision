@@ -113,7 +113,7 @@ $(function() {
 			success : function(data) {
 				
 				var obj = $.parseJSON(data);//将json字符串转换为object对象
-				alert(obj);
+				//alert(obj);
 				if(obj.success){
 					$.messager.alert('提示', obj.message, 'info', function(){
 					

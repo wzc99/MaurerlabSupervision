@@ -81,7 +81,7 @@ function do_submit(pageNumber,pageSize){//使用ajax来进行真正的查询
 		},
 		success:function(data){
 			var obj = $.parseJSON(data);
-			alert(obj.message);
+			//alert(obj.message);
 			$('#query_result').datagrid('loadData',obj);
 			$("#proStartTime").datebox("setValue",null);
 		}
