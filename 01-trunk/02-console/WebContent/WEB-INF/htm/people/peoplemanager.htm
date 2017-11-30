@@ -895,9 +895,14 @@ function isCardID(sId){
    			  						<option value="2">甲方人员</option>
 							</select></td>
 							<td class="td_view_name"  style = "text-align: center" >学历</td>
-							<td class="td_view_value" ><input  type="text"
-								class="easyui-validatebox input_140" id="AddUserEducation"
-								name="userEducation"  /></td>							
+							<td class="td_view_value" >
+							<select id="AddUserEducation" class="easyui-combobox" name="userEducation" style="width:140px;">
+							        <option value="博士">博士</option>
+							        <option value="研究生">研究生</option>
+							        <option value="本科">本科</option>
+							        <option value="大专">大专</option>
+							        <option value="高中">高中</option>    
+							 </select></td>							
 						</tr>
 
 						<tr>	
@@ -906,20 +911,39 @@ function isCardID(sId){
 								class="easyui-validatebox input_140" type="text" 
 								id="AddUserMajor" name="userMajor" /></td>
 							<td class="td_view_name"  style = "text-align: center" >专业资质</td>
-							<td class="td_view_value"><input
-								class="easyui-validatebox input_140" type="text" 
-								id="AddUserProfessionalQualification" name="userProfessionalQualification" /></td>
+							<td class="td_view_value">
+							<select id="AddUserProfessionalQualification" class="easyui-combobox" name="userProfessionalQualification" style="width:200px;">
+							        <option value="RT(RTⅠ、RTⅡ、RTⅢ)">RT(RTⅠ、RTⅡ、RTⅢ)</option>
+							        <option value="UT(UTⅠ、UTⅡ、UTⅢ)">UT(UTⅠ、UTⅡ、UTⅢ)</option>
+							        <option value="MT(MTⅠ、MTⅡ、MTⅢ)">MT(MTⅠ、MTⅡ、MTⅢ)</option>
+							        <option value="PT(PTⅠ、PTⅡ、PTⅢ)">PT(PTⅠ、PTⅡ、PTⅢ)</option>
+							        <option value="SSPC(SSPCⅠ、SSPCⅡ)">SSPC(SSPCⅠ、SSPCⅡ)</option>
+							        <option value="ASNT RT(RTⅠ、RTⅡ、RTⅢ)">ASNT RT(RTⅠ、RTⅡ、RTⅢ)</option>
+							        <option value="ASNT UT(UTⅠ、UTⅡ、UTⅢ)">ASNT UT(UTⅠ、UTⅡ、UTⅢ)</option>
+							        <option value="ASNT MT(MTⅠ、MTⅡ、MTⅢ)">ASNT MT(MTⅠ、MTⅡ、MTⅢ)</option>
+							        <option value="ASNT PT(PTⅠ、PTⅡ、PTⅢ)">ASNT PT(PTⅠ、PTⅡ、PTⅢ)</option>
+							        <option value="腐蚀检测工程师">腐蚀检测工程师</option>
+							        <option value="一级建造师">一级监造师</option>
+							        <option value="二级建造师">二级建造师</option>
+							        <option value="其他">其他请直接填写</option>  
+							</select></td>
 						</tr>
 						
 						<tr>
 							<td class="td_view_name"  style = "text-align: center" >职称</td>
-							<td class="td_view_value"><input
-								class="easyui-validatebox input_140" type="text" 
-								id="AddUserProfessionalTitle" name="userProfessionalTitle"  /></td>
-							<td class="td_view_name"  style = "text-align: center" >职业资格</td>
-							<td class="td_view_value"><input
-								class="easyui-validatebox input_140" type="text" 
-								id="AddUserCareerQualification" name="userCareerQualification" /></td>	 											
+							<td class="td_view_value">
+							<select id="AddUserProfessionalTitle" class="easyui-combobox" name="userProfessionalTitle" style="width:140px;">
+							        <option value="助理工程师">助理工程师</option>
+							        <option value="中级工程师">中级工程师</option>
+							        <option value="高级工程师">高级工程师</option>
+							</select></td>
+							<td class="td_view_name"  style = "text-align: center" >执业资格</td>
+							<td class="td_view_value">
+							<select id="AddUserCareerQualification" class="easyui-combobox" name="userCareerQualification" style="width:140px;">
+							        <option value="助理设备监理师">助理设备监理师</option>
+							        <option value="专业设备监理师">专业设备监理师</option>
+							        <option value="注册设备监理师">注册设备监理师</option>
+							</select></td>	 											
 						</tr>
 
 						<tr>							

@@ -1,0 +1,1046 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<link rel="stylesheet" type="text/css" href="../themes/general.css">
+	<link rel="stylesheet" type="text/css" href="../themes/icon.css">
+	<link rel="stylesheet" type="text/css" href="../themes/gray/easyui.css">
+	<script type="text/javascript" src="../scripts/jquery-1.8.0.min.js"></script>
+	<script type="text/javascript" src="../scripts/jquery.easyui.min.js"></script>
+	<script type="text/javascript" src="../scripts/locale/easyui-lang-zh_CN.js"></script>
+	<title>Main</title>
+	<style type="text/css">
+		#num{
+			font:16px;
+			color:red;
+		}
+		
+		#hello span {
+			color: green;
+		}
+		img:hover {
+			cursor: pointer;
+		}
+		.black_overlay{
+		display: none;
+		position: absolute;
+		top: 0%;
+		left: 0%;
+		width: 100%;
+		height: 100%;
+		background-color: black;
+		z-index:1001;
+		-moz-opacity: 0.8;
+		opacity:.80;
+		filter: alpha(opacity=80);
+		}
+		.white_content {
+		display: none;
+		position: absolute;
+		top: 25%;
+		left: 25%;
+		width: 50%;
+		height: 50%;
+		border: 16px solid lightblue;
+		background-color: white;
+		z-index:1002;
+		overflow: auto;
+		}
+		.white_content_small {
+		display: none;
+		position: absolute;
+		top: 20%;
+		left: 30%;
+		width: 40%;
+		height: 50%;
+		border: 16px solid lightblue;
+		background-color: white;
+		z-index:1002;
+		overflow: auto;
+		}
+		input {
+			border: 0px;
+			color: black;
+			background-color: #F7F7F7;
+		}
+		#content_region {
+			font-size:14px;
+		}
+		#w_message {
+			font-size: 16px;
+		}
+		#w_message .inbe{
+			border: 1px solid #95B8E7;
+			border-radius: 5px 5px 5px 5px;
+			height: 25px;
+			font-size: 16px;
+			color:purple;
+		}
+		#icon-mini-edit:hover {
+			cursor: pointer;
+		}
+		table.gridtable {
+			font-family: verdana,arial,sans-serif;
+			font-size:11px;
+			color:#333333;
+			border-width:1px;
+			border-color:#64e0c8;
+			border-collapse: collapse;
+		}
+		table.gridtable th {
+			border-width: 1px;
+			padding:8px;
+			border-color:#64e0c8;
+			border-style:solid;
+			background-color:#dedede;
+		}
+		table.gridtable td {
+			border-width:1px;
+			padding:8px;
+			border-style:solid;
+			border-color:#64e0c8;
+			background-color: #ffffff;
+		}
+	</style>
+	<script>
+	
+		$(function(){
+			$('#userWorkStatus').combobox({
+				url : '../people/getPostStatus.ajax',
+				valueField : 'postStatusId',
+				textField : 'postStatusDes',
+				panelHeight : 'auto',
+
+			});
+			
+			//让改变个性签名这个信息框刚开始就关掉
+        	$('#w').window('close');
+        	//让修改信息这个框刚开始就关掉
+        	$('#w_message').window('close');
+        	//未读消息窗口刚开始就关掉
+        	$('#chakan_message').window('close');
+        	$("#AddWindow").window("close");
+        	$("#chakan_shenhe_message").window("close");
+        	$("#qingjia").window("close");
+			
+			$.getJSON("../ana/getCurrentMenus.ajax", function(data){ 
+            	init_menu(data);
+            });
+            
+            $.getJSON("../ana/getCurrentUserName.ajax", function(data){
+	            $("#cur_user").text(data.username); 
+	            $("#cur_userId").val(data.userId); 
+            });
+            
+            $.ajax({
+        		url : '../ana/checkCheckPermission.ajax',
+        		type : 'post',
+        		dataType : 'JSON',
+        		cache: false,
+        		error: function(XMLHttpRequest, textStatus, errorThrown) {
+                            //alert(XMLHttpRequest.status);
+                },
+        		success : function(data) {
+					if(data.success){
+					}
+        		}
+        	}); 
+        	
+
+        	$('#query_result').datagrid({
+				onDblClickRow: function(rowIndex, rowData){
+				view(rowData);
+				}
+        	
+			});
+        	
+        	//TODO
+        	//获取要处理的审核信息
+        	 $.ajax({
+				url : '../examine/getExamineCount.ajax',
+				type : 'post',
+				dataType : 'JSON',
+				cache: false,
+				async:false,
+				error: function(XMLHttpRequest, textStatus, errorThrown) {
+		                   
+		        },
+				success : function(data) {//传过来一个json对象
+					$("#shenheNo1").html(data.data.myExaCount+"条记录");
+					$("#shenheNo2").html(data.data.exaByMeCount+"条记录");
+					$("#shenheNo3").html(data.data.exaByMeRecordCount+"条记录");
+				}
+			});
+        	
+        	//获取未读消息
+        	$.ajax({
+				url : '../message/getUnreadMessageTotal.ajax',
+				type : 'post',
+				dataType : 'JSON',
+				cache: false,
+				async:false,
+				error: function(XMLHttpRequest, textStatus, errorThrown) {
+		                   
+		        },
+				success : function(data) {//传过来一个json对象
+					$("#unread_num").html(data.length);
+				}
+			});
+			
+        	
+        	$.ajax({
+				url : '../user/center/getUserInfo.ajax',
+				type : 'post',
+				dataType : 'JSON',
+				cache: false,
+				async:false,
+				error: function(XMLHttpRequest, textStatus, errorThrown) {
+		                   
+		        },
+				success : function(data) {//传过来一个json对象
+					init_user_message(data);
+				}
+			});
+        	
+        	
+        	//从后台获取岗位状态和岗位申请状态
+        	$.ajax({
+				url : '../user/getUserStatus.ajax',
+				type : 'post',
+				dataType : 'JSON',
+				cache: false,
+				async:false,
+				error: function(XMLHttpRequest, textStatus, errorThrown) {
+		                   
+		        },
+				success : function(data) {//传过来一个json对象
+					//给我两个数据，一个真实的岗位状态，一个申请的岗位状态，没有为"";
+					$("#mystatus").text(data.myStatus);
+					if(data.checkStatus !== "") {
+						//如果有申请的岗位，那么申请这个按钮不可用，并且设置申请岗位状态的内容
+						$("#btn_apply").attr("disabled", true);
+						$("#check_status").html(data.checkStatus);
+					}else {
+						//没有，那么就表示没有申请的岗位状态
+						$("#check_status").html("暂无申请岗位状态。。。。。");
+					}
+				}
+			});
+        	
+        	//更换岗位状态
+        	
+        	$('#btn_apply').bind('click',function(){
+        		$("#qingjia").window("open");
+        		
+    		});
+        	
+        	$("#btn_add_attendance").bind("click",function() {
+        		DoAttendance();
+        	});
+        	
+        	
+        	
+        	
+        	//更换个性签名
+        	$('#btn_changeImg').bind('click',function() {
+        		$('#w').window('open');
+        		//window.open("signature.html","","width=400,height=400,position=fixed,left=300,top=100");
+    		});
+        	//更换个人信息
+        	$('#btn_Edit').bind('click',function() {
+        		$('#w_message').window('open');
+    		});
+        	
+        	
+        	//查看未读消息窗口
+        	$('#icon-mini-edit').bind('click',function() {
+     			addTabWithIcon("未读消息","../htm/user/MessageList.htm")
+    		});
+        	//查看我的审核界面
+        	$('#shenheNo1').bind('click',function() {
+     			addTabWithIcon("我的审核","../htm/user/MyCheckList.htm")
+    		});
+        	//查看由我审核的界面
+        	$('#shenheNo2').bind('click',function() {
+     			addTabWithIcon("由我审核","../htm/user/ByMyCheckList.htm")
+    		});
+        	//查看审核记录的界面
+        	$('#shenheNo3').bind('click',function() {
+     			addTabWithIcon("审核列表","../htm/user/AllCheckList.htm")
+    		});
+        	
+        	//查看我的考勤界面
+        	$('#watch_my_attendence').bind('click',function() {
+     			addTabWithIcon("考勤列表","../htm/user/Attendance.htm")
+    		});
+        	
+        	
+        	$('#btn_update_message').bind('click', function() {
+        		//$("#form_my_message").submit();
+        		DoSubmitMyMessage();
+    		});
+        	
+        	
+        	$('#btn_add_pic').bind('click', function() {
+    			//$("#form_pic").submit();
+        		DoSubmitMyPic();
+        		//window.open("signature.html","","width=200,height=200"); 
+    		});
+        	
+    		//委托日期 使用databox 主要是判断注册日期是否大于现在的日期
+    		$('#userBirthdate1').datebox({
+    			onSelect: function(date){
+    			},
+    			required:true
+    		});
+    		
+    		
+});
+		
+		function DoAttendance() {
+			var sel=document.getElementById("workStatus"); 
+            var index = sel.selectedIndex; // 选中索引
+            var status = sel.options[index].value;//要的值
+			$("#form_attendance").form('submit',{
+				url : '../user/center/editAddentance.ajax',
+    			onSubmit : function() {				
+    			},
+    			success : function(data) {
+    				var obj = $.parseJSON(data);
+    				if (obj.statusCode == 200) {
+    					alert("申请岗位状态改变成功！");
+    					location.reload();
+    					
+    				} else {
+    					alert("申请岗位状态改变失败，请重试！");
+    				}
+    			}
+			});
+		}
+		
+		function DoSubmitMyPic() {
+			//图片表单提交
+    		 $('#form_pic').form('submit',{
+    			url : '../user/center/editUserSignature.ajax',
+    			onSubmit : function() {						
+    			},
+    			success : function(data) {
+    				var obj = $.parseJSON(data);
+    				if (obj.statusCode == 200) {
+    					alert("更换个性签名成功！");
+    					location.reload();
+    					
+    				} else {
+    					alert("更换个性签名失败，请重试！");
+    				}
+    			}
+    		});
+		}
+
+	function DoSubmitMyMessage() {
+		 var form = document.getElementById("form_my_message");
+			var aInputs = form.getElementsByTagName("input");
+			var length = aInputs.length;
+			for(var i = 0; i< length; i++) {
+				if(!aInputs[i].value) {
+					aInputs[i].value = "##";
+				}
+			}
+		$("#form_my_message").form('submit', {
+			url : '../user/center/editUserInfo.ajax',
+			onSubmit : function() {
+				userWorkStatus:$('#userWorkStatus').val()
+			},
+			success : function(data) {
+				var obj = $.parseJSON(data);
+				if (obj.statusCode == 200) {
+					alert("修改个人信息成功！");
+					location.reload();
+					
+				} else {
+					alert("修改个人信息失败，请重试！");
+				}
+			}
+		});
+		
+	} 
+	
+	function do_view() {
+		var row = $('#query_result').datagrid('getSelected');//返回第一个选中的行
+		if(row == null){
+			$.messager.alert('Info', '请选择行', 'info');
+			return;
+		}
+		//alert(row.msgContent);
+		view(row);
+	}
+
+		function init_menu(menu_data) {
+			$("#menu_container").empty();
+		    for(var i=0; i<menu_data.menus.length; i++) {
+		        var n = menu_data.menus[i];
+		        
+		        var sub_menu_str = "";
+		        
+		        for (var j=0;j<n.submenus.length; j++){
+			    	var o = n.submenus[j];
+			    	sub_menu_str += "<div style=\"padding:0px;background:#fafafa;overflow:hidden\"><a href=\"javascript:void(0)\" class=\"easyui-linkbutton\"  plain=\"true\" iconCls=\"icon-menu-" + o.code + "\" style=\"width:100%;\" onclick=\"addTabWithIcon('" + o.name + "','" + ".." + o.url +"','icon-menu-" + o.code +"')\">"+o.name+"</a></div>";   	
+			    }
+		        
+		        $('#menu_container').accordion('add', {//折叠
+			        title: n.name,
+			        content: sub_menu_str,
+			        selected: false
+			    })
+		    }
+		    
+		    $("#menu_container").accordion("select", 0);
+		}
+		
+		function addTabWithIcon(title, href,icon){
+			//alert(href);
+			 if (href){  
+		         var content = '<iframe scrolling="auto" frameborder="0"  src="'+href+'" style="width:100%;height:100%;"></iframe>';  
+		     } else {  
+		         var content = '未实现';  
+		     }  
+		    var tt = $('#tabs');  	   
+		    if (tt.tabs('exists', title)){//如果tab已经存在,则选中该tab，并更新内容          
+		        tt.tabs('select', title);  
+		        var tab = $('#tabs').tabs('getSelected'); 
+		        $('#tabs').tabs('update', {
+		        	tab: tab,
+		        	options: {
+		        		content:content
+		        	}
+		        });
+		    } else {
+		    	var tabcount = $('#tabs').tabs('tabs').length;
+		    	if (tabcount>10){
+			    	$.messager.alert("提示","对不起，最多只能同时打开10个菜单。","info");
+			    	return;
+			    }
+		        tt.tabs('add',{  
+		            title:title,  
+		            closable:true,  
+		            content:content,
+		            iconCls:icon||'icon-default'  
+		        });  
+		    }  
+		}
+		
+		function editTabTitle(title){
+		    var tt = $('#tabs');  	   
+		    if (tt.tabs('exists', title)){//如果tab已经存在,则选中该tab          
+		        tt.tabs('select', title);  
+		        var tab = $('#tabs').tabs('getSelected'); 
+		        $('#tabs').tabs('update', {
+		        	tab: tab,
+		        	options: {
+		        		title: ""
+		        	}
+		        });
+		    }  
+		}
+		
+		function closeTabByTitle(title){
+			var tt = $('#tabs');
+			if (tt.tabs('exists', title)){//如果tab已经存在,则选中该tab
+		        tt.tabs('close', title);
+			}
+		}
+		
+		function go_home() {
+			var tt = $('#tabs');  	    	    
+		    tt.tabs('select', '主页');
+		}
+		
+		function change_password() {
+			$("#dlg_change_password").dialog('open');
+		}
+		
+		function logout() {
+			//alert("logtou simulation")
+			window.location.replace("./login.jsp");
+		}
+		
+		function conformPassword(){
+			var password = $('#password').val();
+			if(null==password||password==""){
+				$.messager.alert('Info', '密码不能为空', 'info');
+				return;
+			}
+			var newPasswd = $('#newPasswd').val();
+			var newPasswdConfirm = $('#newPasswdConfirm').val();
+			if(null==newPasswd||newPasswd==""){
+				$.messager.alert('Info', '新密码不能为空', 'info');
+				return false;
+			}
+			
+			if(newPasswd !== newPasswdConfirm){
+				$.messager.alert('Info', '两次密码不一致', 'info');
+				return false;
+			} 
+			return true;
+		}
+		
+		function doSubmit(){
+			var password = $('#password').val();
+			var newPasswd = $('#newPasswd').val();
+			var id = $('#cur_userId').val();
+			$.ajax({
+				url : '../user/changePasswordForLoginUser.ajax?'+new Date().getTime(),
+				type : 'get',
+				dataType : 'JSON',
+				data:{
+					password:password,
+					newPasswd:newPasswd,
+					id:id
+				},
+				success : function(data) {
+					if(data.success){
+						//alert(data.message);
+						$('#password').val('');
+						$('#newPasswd').val('');
+						$('#newPasswdConfirm').val('');
+						$('#dlg_change_password').dialog('close');
+					}else{
+						alert(data.message);
+					}
+				}
+			});
+		}
+		
+		function init_view_by_permission() {
+			$.ajax({
+				url : '../ana/checkPermission.ajax',
+				type : 'get',
+				dataType : 'JSON',
+				data : {
+					permissionCode : 'CHANGE_LOGINPASSWORD'
+				},
+				success : function(data) {
+					if (data.success) {
+						$('#iconPassword').show();
+						$('#changePassword').show();
+					} else {
+						$('#iconPassword').hide();
+						$('#changePassword').hide();
+					}
+				}
+			});
+		}
+
+
+		
+	//关闭查看窗口
+	function AddWindowClose(str) {
+		$(str).window('close');
+	}
+	
+		init_view_by_permission();
+		
+		function init_user_message(data) {
+			var data = data.data;
+			var status = "";
+			status = WorkStatus(data.userWorkStatusId);
+			$("#userId").html(data.userId);
+			$("#userName").html(data.userName);
+			$("#userSex").html(data.userSex);
+			$("#mobile").html(data.mobile);
+			$("#email").html(data.email);
+			$("#userUnit").html(data.userUnit);
+			$("#userIdentityCard").html(data.userIdentityCard);
+			$("#userWorkStatusId").html(status);	//需要根据判断是哪一个
+			$("#userLocationDes").html(data.userLocationDes);
+			$("#userBirthdate").html(myformatter(data.userBirthdate));
+			$("#userEducation").html(data.userEducation);
+			$("#userMajor").html(data.userMajor);
+			$("#userProfessionalQualification").html(data.userProfessionalQualification);
+			$("#userProfessionalTitle").html(data.userProfessionalTitle);
+			$("#userCareerQualification").html(data.userCareerQualification);
+			$("#userId1").val(data.userId);
+			$("#userName1").val(data.userName);
+			$("#userSex1").val(data.userSex);
+			$("#mobile1").val(data.mobile);
+			$("#email1").val(data.email);
+			$("#userUnit1").val(data.userUnit);
+			$("#userIdentityCard1").val(data.userIdentityCard);
+			$("#userWorkStatusId1").val(status);	//需要根据判断是哪一个
+			$('#userWorkStatus').combobox('select', data.userWorkStatusId);
+			$('#userWorkStatus').combobox('disable');
+			$("#userLocationDes1").val(data.userLocationDes);
+			$("#userWorkStatusId2").val(data.userWorkStatusId);
+			//$("#userBirthdate1").val(data.userBirthdate);
+			//alert(myformatter(data.userBirthdate));
+			//$("#userBirthdate1").datebox("setValue", myformatter(data.userBirthdate));
+			$("#userBirthdate1").val(myformatter(data.userBirthdate));
+			$("#userEducation1").val(data.userEducation);
+			$("#userMajor1").val(data.userMajor);
+			$("#userProfessionalQualification1").val(data.userProfessionalQualification);
+			$("#userProfessionalTitle1").val(data.userProfessionalTitle);
+			$("#userCareerQualification1").val(data.userCareerQualification);
+			$("#my_status").html(status);
+			//$("#check_status").html(status);
+			$("#myPic").attr("src", "console/../.." + data.userSignature);
+			$("#popImg").attr("src","console/../.." + data.userSignature);
+			if(data.statusIdStatus == 0) {
+				$("#check_status").html("暂没有岗位状态改变申请。。。。。");
+				$("#btn_apply").show();
+			}else {
+				$("#check_status").html("您申请的状态为"+WorkStatus(data.toStatusId)+"");
+				$("#btn_apply").hide();
+			}
+			
+			$("#linkId").val(data.statusLinkId);
+			$("#linkId").hide();
+			
+		}
+		
+		function WorkStatus(condition) {
+			var status = "";
+			if (condition == 1) {
+				status = "出差";
+			}else if (condition == 2) {
+				status = "办公室出勤";
+			}else if (condition == 3) {
+				status = "休假";
+			}else if (condition == 4) {
+				status = "请假";
+			}else if (condition == 5) {
+				status = "本人待岗";
+			}else if (condition == 6) {
+				status = "非本人待岗";
+			}else if (condition == 7) {
+				status = "离职";
+			}else if (condition == 8) {
+				status = "备用";
+			}
+			return status;
+		}
+		
+		
+		//修改消息内容
+		function UpdateMessageData() {
+		$('#query_form_Add').form('submit', {
+			url : '../pushMessage/updatePushMessage.ajax',
+			onSubmit : function() {
+				return true;
+			},
+			success : function(data) {
+				var obj = $.parseJSON(data);//将json字符串转换为object对象
+				if (obj.success) {
+					//成功的话需要将审核状态那里的字变了。
+					var row = $('#query_result').datagrid('getSelected');
+					row['checkStatus'] = $("#check").val();
+					var index = $('#query_result').datagrid('getRowIndex', row);
+					$('#query_result').datagrid('refreshRow',index);
+					AddWindowClose('#AddWindow');					
+				} else {
+					$.messager.alert('错误', obj.message, 'error');
+				}
+			}
+		});
+	}
+		
+		
+		
+		//格式化时间
+		function formatTime(date) {
+			var unixTimestamp = new Date(date) ;
+			commonTime = unixTimestamp.toLocaleString();
+			return commonTime;
+		}
+		Date.prototype.toLocaleString = function() {
+	        return this.getFullYear() + "年" + (this.getMonth() + 1) + "月" + this.getDate() + "日 " + this.getHours() + "点" + this.getMinutes() + "分" + this.getSeconds() + "秒";
+	  };
+	  function myformatter(date){  
+		  var unixTimestamp = new Date(date) ;
+		    var y = unixTimestamp.getFullYear();  
+		    var m = unixTimestamp.getMonth()+1;  
+		    var d = unixTimestamp.getDate();  
+		    return y+'-'+(m<10?('0'+m):m)+'-'+(d<10?('0'+d):d);  
+		}
+	</script>
+</head>
+<body class="easyui-layout" >
+	<div data-options="region:'north',border:true" style="height:64px;padding:5px 5px 0px 10px;background:#F9F9F9;">
+		<table width="100%">
+			<tr>
+				<td align="left" valign="bottom"><img src="../images/logo1.png" width="50" height="50"/>&nbsp;&nbsp;<b>监造信息管理系统</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></td>
+				<td align="right" valign="bottom">
+				 	<input type="text" name="cur_userId" id="cur_userId" style="display:none;"/>
+					<span class="icon-user">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>当前用户：<span id="cur_user"></span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					<span class="icon-mini-edit" >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span id="icon-mini-edit">当前您有：<span id="unread_num"></span>条未读消息 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+					<span class="icon-home">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="javascript:void(0)" onclick="go_home()">主页</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					<span class="icon-password" id="iconPassword" >&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="javascript:void(0)" onclick="change_password()" id="changePassword" >修改密码</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+					<span class="icon-logout">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><a href="../ana/logout.do" target="_top">退出</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+				</td>
+			</tr>
+		</table>
+	</div>
+	<!--
+	<div data-options="region:'south',border:false" style="height:40px;padding:10px;background:#ccc;">
+		<p>The south content.</p>
+	</div>
+	-->
+	<div data-options="region:'west',split:true" title="菜单导航" style="width:200px;padding:0px;overflow:hidden;">
+		<div id="menu_container" class="easyui-accordion" data-options="fit:true,border:false"></div>
+		<div id="dlg_change_password" class="easyui-dialog" style="width:400px;height:280px;padding:10px 20px" data-options="  
+                title: '修改密码',
+                closed:true,
+                modal:true,  
+                buttons: [{  
+                    text:'确认',  
+                    iconCls:'icon-ok',  
+                    handler:function(){  
+                    	if(conformPassword()){
+                    		doSubmit();
+                    	};
+                    }  
+                },{  
+                    text:'取消',  
+                    handler:function(){ 
+                    	$('#dlg_change_password').dialog('close'); 
+                    }  
+                }]  
+            ">
+         <div id="pwd">  
+			<table class="table_new" >
+					<tr>
+						<td class="td_new_name">原密码</td>
+						<td class="td_new_value"><input
+							class="input_140" type="password" data-options="required:true" id="password" ></td>
+					</tr>
+					<tr>
+						<td class="td_new_name">新密码</td>
+						<td class="td_new_value"><input
+							class="input_140" type="password"
+							data-options="required:true" id="newPasswd" ></td>
+					</tr>
+					<tr>
+						<td class="td_new_name">确认密码</td>
+						<td class="td_new_value">
+							<input type="password" class="input_140" data-options="required:true" id="newPasswdConfirm" ></td>
+					</tr>
+			</table>	
+		</div>
+		</div>
+	</div>
+
+	<div id="content_region" data-options="region:'center'" style="overflow-y:hidden;">
+		<div id="tabs" class="easyui-tabs" data-options="border:false" fit="true">
+			<div title="主页" data-options="closable:false" style="padding:5px;overflow:hidden;"> 
+				
+	
+	<div data-options="closable:false" style="margin-top:7px;"> 
+	<table class="easyui-datagrid" title="审核" style="width:860px;height:auto;margin-top:20px;"
+				data-options="
+					iconCls: 'icon-check'">
+				<thead>
+				<tr>
+					<th data-options="field: 'msgType',width:285,align:'center'">我的审核：<span id="shenheNo1" style="color: red;cursor: pointer;" ></span></th>
+					<th data-options="field: 'msgContent',width:285,align:'center'">由我审核：<span id="shenheNo2" style="color: purple;cursor: pointer;" ></span></th>
+					<th data-options="field:'pushTime',width:285,align:'center'">审核记录：<span id="shenheNo3" style="color: green;cursor: pointer;" ></span></th>						
+					
+				</tr>
+		</thead>
+	</table>
+	
+	</div>
+	
+	<div data-options="closable:false" style="margin-top:7px;" id="hello"> 
+	<table class="easyui-datagrid" title="个人信息" style="width:860px;height:auto;margin-top:20px;"
+				data-options="
+					iconCls: 'icon-tip'">
+				<thead>
+				<tr>
+					<th data-options="field: 'msgType',width:214,align:'right'" colspan="2" >
+						<a href="javascript:void(0)" onclick="change_password()" id="changePassword" >修改密码</a>
+					</th>
+				</tr>
+				<tr>
+				
+					<th data-options="field: 'msgType',width:214,align:'left'" style="display: none">
+						Id：<span id="userId"></span>
+					</th>
+					<th data-options="field: 'msgType',width:214,align:'left'">
+						姓名：<span id="userName"></span>
+					</th>
+					<th data-options="field: 'msgType',width:214,align:'left'">
+						性别:<span id="userSex"></span>
+					</th>
+					<th data-options="field: 'msgType',width:214,align:'left'">
+						手机:<span id="mobile"></span>
+					</th>
+					<th data-options="field: 'msgType',width:214,align:'left'">
+						邮箱：<span id="email"></span>
+					</th>
+					
+				</tr>
+				<tr>
+					<th data-options="field: 'msgType',width:214,align:'left'">
+						单位名称: <span id="userUnit"></span>
+					</th>
+					<th data-options="field: 'msgType',width:214,align:'left'">
+						身份证号码: <span id="userIdentityCard"></span>
+					</th>
+					<th data-options="field: 'msgType',width:214,align:'left'">
+						岗位状态: <span id="userWorkStatusId"></span>
+					</th>
+					<th data-options="field: 'msgType',width:214,align:'left'">
+						出差位置: <span id="userLocationDes"></span>
+					</th>
+				</tr>
+				<tr>
+					<th data-options="field: 'msgType',width:214,align:'left'">
+						出生日期: <span id="userBirthdate"></span>
+					</th>
+					<th data-options="field: 'msgType',width:214,align:'left'">
+						学历:<span id="userEducation"></span>
+					</th>
+					<th data-options="field: 'msgType',width:214,align:'left'">
+						专业:<span id="userMajor"></span>
+					</th>
+					<th data-options="field: 'msgType',width:214,align:'left'">
+						专业资质:<span id="userProfessionalQualification"></span>
+					</th>
+					
+				</tr>	
+				<tr>
+					<th data-options="field: 'msgType',width:214,align:'left'">
+						职称:<span id="userProfessionalTitle"></span>
+					</th>
+					<th data-options="field: 'msgType',width:214,align:'left'">
+						职业资格:<span id="userProfessionalTitle"></span>
+					</th>
+					<th data-options="field: 'msgType',width:214,align:'center'">
+						<a id="btn_Edit" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok">点我修改</a>
+					</th>
+				</tr>			
+		</thead>
+		
+				
+			
+		
+	</table>
+	
+	</div>
+	
+	
+	<div data-options="closable:false" style="margin-top:7px;"> 
+	<table class="easyui-datagrid" title="个人签名" style="width:860px;height:auto;margin-top:20px;"
+				data-options="
+					iconCls: 'icon-check'">
+				<thead>
+				
+				<tr>
+					<th data-options="field: 'pic',width:214,align:'center'">
+						<img id="myPic" src="" style="width: 100px;height: 30px;" > 
+					</th>
+					<th data-options="field: 'pic',width:214,align:'center'">
+						<a id="btn_changeImg" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok">更改签名</a>
+					</th>
+				</tr>
+		</thead>
+	</table>
+	
+	</div>
+	
+	
+	
+	<div data-options="closable:false" style="margin-top:7px;"> 
+	
+	<table class="easyui-datagrid" title="考勤" style="width:860px;height:auto;margin-top:20px;"
+				data-options="
+					iconCls: 'icon-tip'">
+				<thead>
+				
+				<tr>
+					<th data-options="field: 'msgType',width:214,align:'center'">
+						个人状态：<span id="my_status">在岗</span>
+					</th>
+					<th data-options="field: 'msgType',width:214,align:'center'">
+						<a id="btn_apply" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok">申请状态</a>
+					</th>
+					
+				</tr>
+				<tr>
+					<th data-options="field: 'msgType',width:214,align:'center'">
+						岗位申请状态：<span id="check_status" style="color:red">正在处理中...</span>
+					</th>
+					<th data-options="field: 'msgType',width:300,align:'center'">
+						<span id="watch_my_attendence" style="color:green">点击查看我的考勤</span>
+					</th>
+					<th data-options="field: 'msgType',width:214,align:'center'">
+						
+					</th>
+					<th data-options="field: 'msgType',width:214,align:'center'">
+						
+					</th>
+					
+				</tr>
+				
+		</thead>
+	</table>
+	</div>
+	
+	
+	</div>
+	</div>
+	</div>
+
+	<div id="fade" class="black_overlay">
+	</div>
+	<div id="MyDiv" class="white_content">
+		<div style="text-align: right; cursor: default; height: 40px;">
+			<span style="font-size: 16px;" onclick="CloseDiv('MyDiv','fade')">关闭</span>
+		</div>
+		<img id="popImg" width="600px" height="270px" style="margin:10px auto;">
+	</div>
+	
+	<!-- 这是修改个人签名的弹出框 -->
+	<div id="w" class="easyui-window" title="修改签名" data-options="iconCls:'icon-save'" style="width:500px;height:200px;padding:5px;">
+		<div class="easyui-layout" data-options="fit:true">
+			<div data-options="region:'center'" style="padding:10px;">
+				<form id="form_pic" method="post" enctype="multipart/form-data" >
+					<span>选择新的个性签名：</span><input type="file" name="signature" accept="image/gif,image/jpeg,image/jpg,image/png,image/svg" style="height:23px;border:1px solid #33979d;border-radius:5px;">
+				</form>
+			</div>
+			<div data-options="region:'south',border:false" style="text-align:right;padding:5px 0 0;">
+				<a id="btn_add_pic" class="easyui-linkbutton"  data-options="iconCls:'icon-ok'" href="javascript:void(0)" style="width:80px">确定</a>
+				<a class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" href="javascript:void(0)" onclick="$('#w').window('close')" style="width:80px">取消</a>
+			</div>
+		</div>
+	</div>
+	<!-- 这是更改个人信息的界面 -->
+	 <div id="w_message" class="easyui-window" title="修改个人信息" data-options="iconCls:'icon-save'" style="width:900px;height:300px;padding:5px;">
+		<div class="easyui-layout" data-options="fit:true">
+			
+			<div data-options="region:'center'" style="padding:10px;">
+				<form id="form_my_message" method="post">
+					
+					<table class="gridtable">
+						<tr>
+							<td><span>ID：<input type="text" class="inbe" name="userId" id="userId1" readonly></span></td>
+						
+							<td><span>姓名:<input type="text" name="userName" id="userName1" class="inbe" readonly></span></td>
+						
+							<td><span>性别:<input type="text" name="userSex" id="userSex1" class="inbe" readonly></span></td>
+						
+							<td><span>手机:<input type="text" name="mobile" id="mobile1" class="inbe" >
+							</span></td>
+						</tr>
+						
+						<tr>
+							<td><span>邮箱：<input type="text" class="inbe" name="email" id="email1"></span></td>
+						
+							<td><span>单位名称:<input type="text" name="userUnit" id="userUnit1" class="inbe" ></span></td>
+						
+							<td><span>身份证号码:<input type="text" name="userIdentityCard" id="userIdentityCard1" class="inbe" ></span></td>
+						
+							<!-- <td><span>岗位状态:<input type="text" id="userWorkStatusId1" name="userWorkStatusId" class="inbe" >
+							</span></td> -->
+							<td class="td_view_value_people">岗位状态：<input class="easyui-combobox" id="userWorkStatus" name="userWorkStatusId" class="inbe" /></td>
+						</tr>
+						
+						<tr>
+							<td>出差位置:<input type="text" name="userLocationDes" id="userLocationDes1" class="inbe" ></td>
+						
+							<td>出生日期:<input type="text" name="userBirthdate" id="userBirthdate1" class="inbe" ></td>
+						
+							<td>学历:<select id="userEducation1" class="inbe" name="userEducation" style="width:140px;">
+							                <option value="博士">博士</option>
+							                <option value="研究生">研究生</option>
+							                <option value="本科">本科</option>
+							                <option value="大专">大专</option>
+							                <option value="高中">高中</option>    
+							        </select>
+						    </td>
+						
+							<td>专业:<input type="text" name="userMajor" id="userMajor1" class="inbe" ></td>
+						</tr>
+						<tr>
+							<td>专业资质:<input type="text" name="userProfessionalQualification" id="userProfessionalQualification1" class="inbe" ></td>
+						
+							<td>职称:<select id="userProfessionalTitle1" class="inbe" name="userProfessionalTitle" style="width:140px;">
+							                <option value="助理工程师">助理工程师</option>
+							                <option value="中级工程师">中级工程师</option>
+							                <option value="高级工程师">高级工程师</option>
+							         </select>
+							</td>
+						
+							<td>职业资格:<input type="text" name="userCareerQualification" id="userCareerQualification1" class="inbe" ></td>
+							<td></td>
+						</tr>
+					</table>
+				
+				</form>
+			</div>
+			<div data-options="region:'south',border:false" style="text-align:right;padding:5px 0 0;">
+				<a id="btn_update_message" class="easyui-linkbutton" data-options="iconCls:'icon-ok'" href="javascript:void(0)" style="width:80px">确定</a>
+				<a class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" href="javascript:void(0)" onclick="$('#w_message').window('close')" style="width:80px">取消</a>
+			</div>
+		</div>
+	</div>
+	
+	<!-- 这是请假的弹出框 -->
+	<div id="qingjia" class="easyui-window" title="修改个人岗位状态" data-options="iconCls:'icon-save'" style="width:500px;height:200px;padding:5px;">
+		<div class="easyui-layout" data-options="fit:true">
+			<div data-options="region:'center'" style="padding:10px;">
+				<form id="form_attendance" method="post" >
+					<input type="text" id="linkId" name="linkId" >
+				<table class="gridtable">
+					<tr>
+						<td><span>状态改变标题：</span><input type="text" id="att_title" name="title" style="height:23px;border:1px solid #33979d;border-radius:5px;"></td>
+					</tr>
+					<tr>
+						<td><span>状态改变原因：</span><input type="text" id="att_content" name="content" style="height:23px;border:1px solid #33979d;border-radius:5px;"></td>
+					</tr>
+					<tr>
+						<td><span>申请：</span><select  id="workStatus" name="targetStatus"  style="height:23px;border:1px solid #33979d;border-radius:5px;">
+							<option value="1">出差</option>
+							<option value="2">办公室出勤</option>
+							<option value="3">休假</option>
+							<option value="4">请假</option>
+							<option value="5">本人待岗</option>
+							<option value="6">非本人待岗</option>
+							<option value="7">离职</option>
+							<option value="8">备用</option>
+						</select>
+						</td>
+					</tr>
+					</table>
+				</form>
+			</div>
+			<div data-options="region:'south',border:false" style="text-align:right;padding:5px 0 0;">
+				<a id="btn_add_attendance" class="easyui-linkbutton" data-options="iconCls:'icon-ok'" href="javascript:void(0)" style="width:80px">确定</a>
+				<a class="easyui-linkbutton" data-options="iconCls:'icon-cancel'" href="javascript:void(0)" onclick="$('#qingjia').window('close')" style="width:80px">取消</a>
+			</div>
+		</div>
+	</div>	
+ 	
+	<script type="text/javascript">
+	window.onload = function() {
+		var myPic = document.getElementById("myPic");
+		myPic.onclick=function(){
+			//alert(this.src);
+			document.getElementById("MyDiv").style.display='block';
+			document.getElementById("popImg").src = this.src;
+			document.getElementById("fade").style.display='block' ;
+			var bgdiv = document.getElementById("fade");
+			bgdiv.style.width = document.body.scrollWidth;
+			// bgdiv.style.height = $(document).height();
+			$("#fade").height($(document).height());
+		}
+		
+		}
+		//关闭弹出层
+		function CloseDiv(show_div,bg_div)
+		{
+			document.getElementById(show_div).style.display='none';
+			document.getElementById(bg_div).style.display='none';
+		};
+	</script>
+</body>
+</html>
