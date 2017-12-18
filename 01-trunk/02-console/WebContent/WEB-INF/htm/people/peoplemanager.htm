@@ -636,7 +636,7 @@ function isCardID(sId){
 	<!-- 查看人员信息窗口 -->
 	<div id="ViewWindow" class="easyui-window" title="查看人员信息"
 		data-options="collapsible:false,closable:false,minimizable:false,maximizable:false,modal:true,closed:true,iconCls:'icon-view'"
-		style="width:700px;height:460px;padding:10px;">
+		style="width:700px;height:530px;padding:10px;">
 		<div class="easyui-layout" data-options="fit:true">
 		<div data-options="region:'center'" style="padding:10px;">
 				<form id="query_form_View" method="post">
@@ -687,7 +687,7 @@ function isCardID(sId){
 								id="ViewUserMajor" name="userMajor"  readonly = "true"/></td>
 							<td class="td_view_name"  style = "text-align: center" >专业资质</td>
 							<td class="td_view_value"><input
-								class="easyui-validatebox input_140" type="text" data-options="editable:false"
+								class="easyui-validatebox input_360" type="text" data-options="editable:false"
 								id="ViewUserProfessionalQualification" name="userProfessionalQualification"  readonly = "true"/></td>
 						</tr>
 						
@@ -739,7 +739,7 @@ function isCardID(sId){
 	<!-- 修改人员信息窗口 -->
 	<div id="EditWindow" class="easyui-window" title="修改人员信息"
 		data-options="collapsible:false,closable:false,minimizable:false,maximizable:false,modal:true,closed:true,iconCls:'icon-Edit'"
-		style="width:700px;height:460px;padding:10px;">
+		style="width:700px;height:530px;padding:10px;">
 		<div class="easyui-layout" data-options="fit:true">
 		<div data-options="region:'center'" style="padding:10px;">
 				<form id="query_form_Edit" method="post">
@@ -794,7 +794,7 @@ function isCardID(sId){
 								id="EditUserMajor" name="userMajor" /></td>
 							<td class="td_view_name"  style = "text-align: center" >专业资质</td>
 							<td class="td_view_value"><input
-								class="easyui-validatebox input_140" type="text" 
+								class="easyui-validatebox input_360" type="text" 
 								id="EditUserProfessionalQualification" name="userProfessionalQualification" /></td>
 						</tr>
 						
@@ -849,7 +849,7 @@ function isCardID(sId){
 	<!-- 新增人员信息窗口 -->
 	<div id="AddWindow" class="easyui-window" title="新增人员信息"
 		data-options="collapsible:false,closable:false,minimizable:false,maximizable:false,modal:true,closed:true,iconCls:'icon-Add'"
-		style="width:700px;height:460px;padding:10px;">
+		style="width:700px;height:530px;padding:10px;">
 		<div class="easyui-layout" data-options="fit:true">
 		<div data-options="region:'center'" style="padding:10px;">
 				<form id="query_form_Add" method="post">
@@ -912,21 +912,39 @@ function isCardID(sId){
 								id="AddUserMajor" name="userMajor" /></td>
 							<td class="td_view_name"  style = "text-align: center" >专业资质</td>
 							<td class="td_view_value">
-							<select id="AddUserProfessionalQualification" class="easyui-combobox" name="userProfessionalQualification" style="width:200px;">
-							        <option value="RT(RTⅠ、RTⅡ、RTⅢ)">RT(RTⅠ、RTⅡ、RTⅢ)</option>
-							        <option value="UT(UTⅠ、UTⅡ、UTⅢ)">UT(UTⅠ、UTⅡ、UTⅢ)</option>
-							        <option value="MT(MTⅠ、MTⅡ、MTⅢ)">MT(MTⅠ、MTⅡ、MTⅢ)</option>
-							        <option value="PT(PTⅠ、PTⅡ、PTⅢ)">PT(PTⅠ、PTⅡ、PTⅢ)</option>
-							        <option value="SSPC(SSPCⅠ、SSPCⅡ)">SSPC(SSPCⅠ、SSPCⅡ)</option>
-							        <option value="ASNT RT(RTⅠ、RTⅡ、RTⅢ)">ASNT RT(RTⅠ、RTⅡ、RTⅢ)</option>
-							        <option value="ASNT UT(UTⅠ、UTⅡ、UTⅢ)">ASNT UT(UTⅠ、UTⅡ、UTⅢ)</option>
-							        <option value="ASNT MT(MTⅠ、MTⅡ、MTⅢ)">ASNT MT(MTⅠ、MTⅡ、MTⅢ)</option>
-							        <option value="ASNT PT(PTⅠ、PTⅡ、PTⅢ)">ASNT PT(PTⅠ、PTⅡ、PTⅢ)</option>
-							        <option value="腐蚀检测工程师">腐蚀检测工程师</option>
-							        <option value="一级建造师">一级监造师</option>
-							        <option value="二级建造师">二级建造师</option>
-							        <option value="其他">其他请直接填写</option>  
-							</select></td>
+							        <label><input name="userProfessionalQualification"type="checkbox"value="RTⅠ"/>RTⅠ</label>
+                                    <label><input name="userProfessionalQualification"type="checkbox"value="RTⅡ"/>RTⅡ</label>
+                                    <label><input name="userProfessionalQualification"type="checkbox"value="RTⅢ"/>RTⅢ</label><br/>
+                                    <label><input name="userProfessionalQualification"type="checkbox"value="UTⅠ"/>UTⅠ</label>
+                                    <label><input name="userProfessionalQualification"type="checkbox"value="UTⅡ"/>UTⅡ</label>
+                                    <label><input name="userProfessionalQualification"type="checkbox"value="UTⅢ"/>UTⅢ</label><br/>
+                                    <label><input name="userProfessionalQualification"type="checkbox"value="MTⅠ"/>MTⅠ</label>
+                                    <label><input name="userProfessionalQualification"type="checkbox"value="MTⅡ"/>MTⅡ</label>
+                                    <label><input name="userProfessionalQualification"type="checkbox"value="MTⅢ"/>MTⅢ</label><br/>
+                                    <label><input name="userProfessionalQualification"type="checkbox"value="PTⅠ"/>PTⅠ</label>
+                                    <label><input name="userProfessionalQualification"type="checkbox"value="PTⅡ"/>PTⅡ</label>
+                                    <label><input name="userProfessionalQualification"type="checkbox"value="PTⅢ"/>PTⅢ</label><br/>
+                                    <label><input name="userProfessionalQualification"type="checkbox"value="SSPCⅠ"/>SSPCⅠ</label>
+                                    <label><input name="userProfessionalQualification"type="checkbox"value="SSPCⅡ"/>SSPCⅡ</label><br/>
+                                    <label><input name="userProfessionalQualification"type="checkbox"value="ASNT RT(RTⅠ)"/>ASNT RT(RTⅠ)</label>
+                                    <label><input name="userProfessionalQualification"type="checkbox"value="ASNT RT(RTⅡ)"/>ASNT RT(RTⅡ)</label>
+                                    <label><input name="userProfessionalQualification"type="checkbox"value="ASNT RT(RTⅢ)"/>ASNT RT(RTⅢ)</label>
+                                    <label><input name="userProfessionalQualification"type="checkbox"value="ASNT UT(UTⅠ)"/>ASNT UT(UTⅠ)</label>
+                                    <label><input name="userProfessionalQualification"type="checkbox"value="ASNT UT(UTⅡ)"/>ASNT UT(UTⅡ)</label>
+                                    <label><input name="userProfessionalQualification"type="checkbox"value="ASNT UT(UTⅢ)"/>ASNT UT(UTⅢ)</label>
+                                    <label><input name="userProfessionalQualification"type="checkbox"value="ASNT MT(MTⅠ)"/>ASNT MT(MTⅠ)</label>
+                                    <label><input name="userProfessionalQualification"type="checkbox"value="ASNT MT(MTⅡ)"/>ASNT MT(MTⅡ)</label>
+                                    <label><input name="userProfessionalQualification"type="checkbox"value="ASNT MT(MTⅢ)"/>ASNT MT(MTⅢ)</label>
+                                    <label><input name="userProfessionalQualification"type="checkbox"value="ASNT PT(PTⅠ)"/>ASNT PT(PTⅠ)</label>
+                                    <label><input name="userProfessionalQualification"type="checkbox"value="ASNT PT(PTⅡ)"/>ASNT PT(PTⅡ)</label>
+                                    <label><input name="userProfessionalQualification"type="checkbox"value="ASNT PT(PTⅢ)"/>ASNT PT(PTⅢ)</label>
+                                    <label><input name="userProfessionalQualification"type="checkbox"value="腐蚀检测工程师"/>腐蚀检测工程师</label>
+                                    <label><input name="userProfessionalQualification"type="checkbox"value="一级建造师"/>一级建造师</label><br/>
+                                    <label><input name="userProfessionalQualification"type="checkbox"value="二级建造师"/>二级建造师</label>          
+                           
+                                    <br/>其他：
+                                    <input class="easyui-validatebox input_140" type="text" id="AddUserProfessionalQualification" name="userProfessionalQualification" />
+							</td>
 						</tr>
 						
 						<tr>
