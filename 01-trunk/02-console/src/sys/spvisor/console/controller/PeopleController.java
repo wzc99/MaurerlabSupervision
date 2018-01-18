@@ -74,11 +74,11 @@ public class PeopleController {
 	@RequestMapping("/queryPeopleUser.ajax")
 	public @ResponseBody Map<String, Object> queryPeopleUser(PeopleManageCriteria params) {
 		Map<String, Object> result = new HashMap<String, Object>(3);
-		System.out.println("进入查询ajax");
+		System.out.println("进入查询ajax" + params.getUserWorkStatusId());
 		List<TUser> lists = null;
 		try {
 			lists = peopleService.queryPeopleUser(params);
-			int count = peopleService.queryPeopleUserCount(params);
+			int count = lists.size();
 			result.put("total", count);
 			result.put("rows", lists);
 			result.put("success", true);
