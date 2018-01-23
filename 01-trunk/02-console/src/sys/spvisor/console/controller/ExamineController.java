@@ -301,9 +301,10 @@ public class ExamineController extends BaseController {
 			HttpSession session, @Param("note") String note, HttpServletRequest req)
 			throws UnsupportedEncodingException {
 		ReturnDatas returnData = ReturnDatas.getSuccessReturnDatas();
+		Long userId = (Long) session.getAttribute("USER_ID");
 		note = note != null ? URLDecoder.decode(note, "UTF-8") : null;
 		try {
-			int result = exaService.ToDoExamine(processId, toNodeStatus, note);
+			int result = exaService.ToDoExamine(processId, toNodeStatus, note,userId.intValue());
 			if (result != Enumerations.ServiceReturnCode.操作成功.getCode()) {
 				return Enumerations.getReturnDatasByServiceCode(result);
 			}
