@@ -29,6 +29,8 @@ public class TExaProcess {
 
     private Integer coperRole;
 
+    private Integer checkerUserId;
+
     public Integer getId() {
         return id;
     }
@@ -131,5 +133,13 @@ public class TExaProcess {
 
     public void setCoperRole(Integer coperRole) {
         this.coperRole = coperRole;
+    }
+
+    public Integer getCheckerUserId() {
+        return checkerUserId;
+    }
+
+    public void setCheckerUserId(Integer checkerUserId) {
+        this.checkerUserId = checkerUserId;
     }
 }

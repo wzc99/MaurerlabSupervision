@@ -6,8 +6,7 @@ public class SystemConstants {
 	// 模版路径
 	public static final String tempFilesPath = File.separator + "files" + File.separator + "templates";
 	// 日志临时文件路径
-	public static final String journaleTempFilesPath = File.separator + "files" + File.separator + "journal"
-			+ File.separator ;
+	public static final String journaleTempFilesPath = File.separator + "files" + File.separator + "journal";
 	// 报表路径
 	public static final String journalsPath = File.separator + "upload" + File.separator + "journals";
 	// 物资清单生成存储路径

@@ -230,6 +230,17 @@ public class ExamineService {
 
 	/**
 	 * 
+	 * @param proId
+	 * @return
+	 */
+	public List<ExaSubAndExaBean> getExaSubAndExaList(int proId) {
+		List<ExaSubAndExaBean> result = new ArrayList<>();
+		
+		return result;
+	}
+
+	/**
+	 * 
 	 * 我提交的审核列表
 	 * 
 	 * @param userId
@@ -524,7 +535,8 @@ public class ExamineService {
 				TExaProcessExample example = new TExaProcessExample();
 				TExaProcessExample.Criteria tpCriteria = example.createCriteria();
 				tpCriteria.andExamineIdEqualTo(exaId);
-				//List<TExaProcess> tt = tExaProcessMapper.selectByExample(example);
+				// List<TExaProcess> tt =
+				// tExaProcessMapper.selectByExample(example);
 				TExaProcess ePTemp = tExaProcessMapper.selectByExample(example).get(0);
 
 				ExamineInit init = new ExamineInit();
@@ -631,7 +643,7 @@ public class ExamineService {
 	 * @throws ParseException
 	 */
 	@Transactional
-	public int ToDoExamine(int processId, int toNodeStatus, String note) throws ParseException {
+	public int ToDoExamine(int processId, int toNodeStatus, String note, int exaUserId) throws ParseException {
 		int result = Enumerations.ServiceReturnCode.出错或异常.getCode();
 		TExaProcess targert = tExaProcessMapper.selectByPrimaryKey(processId);
 		if (targert.getNodeStatus() == 0 && targert.getProNodeStatus() == 1
@@ -686,6 +698,7 @@ public class ExamineService {
 			if (!StringUtils.isEmpty(note)) {
 				targert.setNote(note);
 			}
+			targert.setCheckerUserId(exaUserId);
 			tExaProcessMapper.updateByPrimaryKeySelective(targert);
 
 			result = Enumerations.ServiceReturnCode.操作成功.getCode();

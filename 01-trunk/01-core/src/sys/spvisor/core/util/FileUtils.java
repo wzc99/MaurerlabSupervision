@@ -85,19 +85,19 @@ public final class FileUtils {
 			// get files suffix
 			String suffix = multipartFile.getOriginalFilename()
 					.substring(multipartFile.getOriginalFilename().lastIndexOf("."));
-
 			// filePath+fileName the complex file Name
 			String serverPath = getServerPath(request, filePath);
-			serverPath = serverPath.replace(File.separator + "console", File.separator);
-			// String relativePath = getRelativePath();
-			checkDir(serverPath);
+			serverPath = serverPath.replace(File.separator + "console", "");
+			String relativePath = File.separator + getDataPath();
+			String path = serverPath + relativePath;
+			checkDir(path);
 			String result = File.separator + getUUIDName(suffix);
-			String absolutePath = serverPath + result;
+			String absolutePath = path + result;
 			try {
 				// save file
 				multipartFile.transferTo(new File(absolutePath));
 				// return relative Path
-				return filePath + result;
+				return filePath +relativePath+ result;
 			} catch (IOException e) {
 				e.printStackTrace();
 				return null;

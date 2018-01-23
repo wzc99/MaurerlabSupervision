@@ -23,7 +23,6 @@ public class ExamineCallBack {
 		System.out.println(linkId + " " + status);
 	}
 	/**
-	 * 
 	 * @param linkId
 	 * @param status 1:通过 2:未通过 3:撤销 :
 	 */

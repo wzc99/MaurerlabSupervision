@@ -1,15 +1,13 @@
 package sys.spvisor.core.entity.examine;
 
-import java.sql.Timestamp;
+import java.util.Date;
 
 public class TExamine {
 	private Integer id;
 
 	private Integer submitId;
-	
-	private String submitName;
 
-	private Timestamp submitTime;
+	private Date submitTime;
 
 	private Integer status;
 
@@ -24,6 +22,18 @@ public class TExamine {
 	private String exaFilePath;
 
 	private Integer exaLinkId;
+
+	private Integer exaProId;
+
+	private String submitName;
+
+	public String getSubmitName() {
+		return submitName;
+	}
+
+	public void setSubmitName(String submitName) {
+		this.submitName = submitName;
+	}
 
 	public Integer getId() {
 		return id;
@@ -40,22 +50,12 @@ public class TExamine {
 	public void setSubmitId(Integer submitId) {
 		this.submitId = submitId;
 	}
-	
-	
 
-	public String getSubmitName() {
-		return submitName;
-	}
-
-	public void setSubmitName(String submitName) {
-		this.submitName = submitName;
-	}
-
-	public Timestamp getSubmitTime() {
+	public Date getSubmitTime() {
 		return submitTime;
 	}
 
-	public void setSubmitTime(Timestamp submitTime) {
+	public void setSubmitTime(Date submitTime) {
 		this.submitTime = submitTime;
 	}
 
@@ -114,4 +114,13 @@ public class TExamine {
 	public void setExaLinkId(Integer exaLinkId) {
 		this.exaLinkId = exaLinkId;
 	}
+
+	public Integer getExaProId() {
+		return exaProId;
+	}
+
+	public void setExaProId(Integer exaProId) {
+		this.exaProId = exaProId;
+	}
+
 }
