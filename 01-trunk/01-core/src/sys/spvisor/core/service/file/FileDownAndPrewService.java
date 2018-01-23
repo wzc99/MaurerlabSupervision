@@ -89,7 +89,7 @@ public class FileDownAndPrewService {
 			
 		}
 		if(isJournal) {
-			AutoCreateFileName.FilesDownload(request, response, fileName);
+			AutoCreateFileName.JournalFilesDownload(request, response, fileName);
 		}else {
 			AutoCreateFileName.FilesDownload(request, response, "/upload/"+proId+"/"+fileName);
 		}
