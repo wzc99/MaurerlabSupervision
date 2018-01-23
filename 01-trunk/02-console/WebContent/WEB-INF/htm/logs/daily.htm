@@ -37,6 +37,7 @@
 		//项目的id作为隐藏值保存在表单中
 		var proId = $.getUrlParam('proId');
 		var dailyDate = $.getUrlParam('mydate');
+		alert(dailyDate);
 		var journalId = $.getUrlParam('journalId');
 		var processType = 0;
 		
@@ -59,7 +60,7 @@
 			$("#detail").html("日报未上传！");
 			$("#processType").val(0);
 		}
-		
+		$("#dailyDate").attr("disabled","disabled");
 		
 		var jsonObject;
 		//表单提交的ajax
@@ -153,7 +154,7 @@
 			
 			
 		});
-		$('#dailyDate').datebox('setValue', getCurentDateStr());  
+		//$('#dailyDate').datebox('setValue', getCurentDateStr());  
 		
 	    $('#dailyDate').datebox('calendar').calendar({  
 	        validator : function(date){  

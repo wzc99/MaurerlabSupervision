@@ -37,7 +37,7 @@ $(function() {
 	var year = $.getUrlParam('year');
 	var journalId = $.getUrlParam('journalId');
 	var jTime = $.getUrlParam('jTime');
-	
+	alert(jTime);
 	$('#proId').val(proId);
 	//再次判断是重新生成还是新生成日报
 	var processType = 0;
@@ -50,7 +50,7 @@ $(function() {
 		$("#detail").html("周报已上传！");
 		$("#processType").val(processType);
 		$("#journalId").val(journalId);
-		$("#dailyDate").val(dailyDate);
+		$("#dailyDate").val(jTime);
 		$('#btn_submit').css({width:'100px',height:'30px',lineHeight:'30px',border:'1px solid green'})
 		$("#dailyDate").datebox({ disabled: true });
 	}else {
@@ -58,8 +58,9 @@ $(function() {
 		$("#detail").html("周报未上传！");
 		$("#processType").val(0);
 	}
-	
-	
+	$("#WeekDate").attr("disabled","disabled");
+	$("#YearDate").attr("disabled","disabled");
+	$("#dailyDate").attr("disabled","disabled");
 	
 	var jsonObject;
 	//表单提交的ajax
@@ -155,14 +156,14 @@ $(function() {
 		},
 		required:true
 	});
-	$('#dailyDate').datebox('setValue', getCurentDateStr());  
+	/* $('#dailyDate').datebox('setValue', getCurentDateStr());  
     $('#dailyDate').datebox('calendar').calendar({  
         validator : function(date){  
             var now = new Date();  
             var d1 = new Date(now.getFullYear(),now.getMonth(),now.getDate());  
             return date <= d1;  
         }  
-	});  
+	});   */
 	  
 	function getCurentDateStr()  
 	{   
@@ -219,7 +220,7 @@ $(function() {
 				}
 			});
 	}
-	initDate();
+	//initDate();
 	
 });
 
