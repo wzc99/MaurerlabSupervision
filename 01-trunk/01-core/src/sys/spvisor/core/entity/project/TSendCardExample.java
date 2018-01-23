@@ -429,7 +429,8 @@ public class TSendCardExample {
             addCriterion("t_send_go_time is null");
             return (Criteria) this;
         }
-
+        
+    
         public Criteria andTSendGoTimeIsNotNull() {
             addCriterion("t_send_go_time is not null");
             return (Criteria) this;
@@ -494,6 +495,173 @@ public class TSendCardExample {
             addCriterion("t_send_go_time not between", value1, value2, "tSendGoTime");
             return (Criteria) this;
         }
+        
+        public Criteria andSubmissionsIsNull() {
+            addCriterion("t_submissions is null");
+            return (Criteria) this;
+        }
+
+
+     	 public Criteria andSubmissionsIsNotNull() {
+		            addCriterion("t_submissions is not null");
+		            return (Criteria) this;
+		        }
+		
+		
+		
+		public Criteria andSubmissionsEqualTo(String value) {
+		            addCriterion("t_submissions =", value, "submissions");
+		            return (Criteria) this;
+		        }
+		
+		
+		public Criteria andSubmissionsNotEqualTo(String value) {
+		            addCriterion("t_submissions <>", value, "submissions");
+		            return (Criteria) this;
+		        }
+		
+		
+		 public Criteria andSubmissionsGreaterThan(String value) {
+		            addCriterion("t_submissions >", value, "submissions");
+		            return (Criteria) this;
+		        }
+		
+		public Criteria andSubmissionsGreaterThanOrEqualTo(String value) {
+		            addCriterion("t_submissions >=", value, "submissions");
+		            return (Criteria) this;
+		        }
+		
+		
+		public Criteria andSubmissionsLessThan(String value) {
+		            addCriterion("t_submissions <", value, "submissions");
+		            return (Criteria) this;
+		        }
+		
+		
+		public Criteria andSubmissionsLessThanOrEqualTo(String value) {
+		            addCriterion("t_submissions <=", value, "submissions");
+		            return (Criteria) this;
+		        }
+		
+		 public Criteria andSubmissionsLike(String value) {
+		            addCriterion("t_submissions like", value, "submissions");
+		            return (Criteria) this;
+		        }
+		
+		
+		 public Criteria andSubmissionsNotLike(String value) {
+		            addCriterion("t_submissions not like", value, "submissions");
+		            return (Criteria) this;
+		        }
+		
+		
+		
+		public Criteria andSubmissionsIn(List<String> values) {
+		            addCriterion("t_submissions in", values, "submissions");
+		            return (Criteria) this;
+		        }
+		
+		
+		 public Criteria andSubmissionsNotIn(List<String> values) {
+		            addCriterion("t_submissions not in", values, "submissions");
+		            return (Criteria) this;
+		        }
+		
+		 public Criteria andSubmissionsBetween(String value1, String value2) {
+		            addCriterion("t_submissions between", value1, value2, "submissions");
+		            return (Criteria) this;
+		        }
+		
+		
+		
+		public Criteria andSubmissionsNotBetween(String value1, String value2) {
+		            addCriterion("t_submissions not between", value1, value2, "submissions");
+		            return (Criteria) this;
+		        }
+		
+		public Criteria andRemarksIsNull() {
+            addCriterion("t_remarks is null");
+            return (Criteria) this;
+        }
+
+
+		public Criteria andRemarksIsNotNull() {
+		            addCriterion("t_remarks is not null");
+		            return (Criteria) this;
+		        }
+		
+		
+		
+		public Criteria andRemarksEqualTo(String value) {
+		            addCriterion("t_remarks =", value, "remarks");
+		            return (Criteria) this;
+		        }
+		
+		
+		public Criteria andRemarksNotEqualTo(String value) {
+		            addCriterion("t_remarks <>", value, "remarks");
+		            return (Criteria) this;
+		        }
+		
+		
+		 public Criteria andRemarksGreaterThan(String value) {
+		            addCriterion("t_remarks >", value, "remarks");
+		            return (Criteria) this;
+		        }
+		
+		public Criteria andRemarksGreaterThanOrEqualTo(String value) {
+		            addCriterion("t_remarks >=", value, "remarks");
+		            return (Criteria) this;
+		        }
+		
+		
+		public Criteria andRemarksLessThan(String value) {
+		            addCriterion("t_remarks <", value, "remarks");
+		            return (Criteria) this;
+		        }
+		
+		
+		public Criteria andRemarksLessThanOrEqualTo(String value) {
+		            addCriterion("t_remarks <=", value, "remarks");
+		            return (Criteria) this;
+		        }
+		
+		 public Criteria andRemarksLike(String value) {
+		            addCriterion("t_remarks like", value, "remarks");
+		            return (Criteria) this;
+		        }
+		
+		
+		 public Criteria andRemarksNotLike(String value) {
+		            addCriterion("t_remarks not like", value, "remarks");
+		            return (Criteria) this;
+		        }
+		
+		
+		
+		public Criteria andRemarksIn(List<String> values) {
+		            addCriterion("t_remarks in", values, "remarks");
+		            return (Criteria) this;
+		        }
+		
+		
+		 public Criteria andRemarksNotIn(List<String> values) {
+		            addCriterion("t_remarks not in", values, "remarks");
+		            return (Criteria) this;
+		        }
+		
+		 public Criteria andRemarksBetween(String value1, String value2) {
+		            addCriterion("t_remarks between", value1, value2, "remarks");
+		            return (Criteria) this;
+		        }
+		
+		
+		
+		public Criteria andRemarksNotBetween(String value1, String value2) {
+		            addCriterion("t_remarks not between", value1, value2, "remarks");
+		            return (Criteria) this;
+		        }
+
 
         public Criteria andTManagerLeaderIsNull() {
             addCriterion("t_manager_leader is null");

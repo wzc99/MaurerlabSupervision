@@ -14,6 +14,10 @@ public class TSendCard {
     private String tSendTechFolder;
 
     private String tSendGoTime;
+    
+    private String submissions;
+    
+    private String remarks;
 
     private Integer tManagerLeader;
 
@@ -95,6 +99,21 @@ public class TSendCard {
 
     public void settShenpiId(Integer tShenpiId) {
         this.tShenpiId = tShenpiId;
+    }
+    public String getsubmissions() {
+        return submissions;
+    }
+
+    public void setsubmissions(String submissions) {
+        this.submissions = submissions == null ? null : submissions.trim();
+    }
+    
+    public String getremarks() {
+        return remarks;
+    }
+    
+    public void setremarks(String remarks) {
+        this.remarks = remarks == null ? null : remarks.trim();
     }
 
     public Date gettSubmitTime() {

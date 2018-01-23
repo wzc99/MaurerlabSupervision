@@ -8,6 +8,8 @@
     <result column="t_send_quality_plan" property="tSendQualityPlan" jdbcType="VARCHAR" />
     <result column="t_send_tech_folder" property="tSendTechFolder" jdbcType="VARCHAR" />
     <result column="t_send_go_time" property="tSendGoTime" jdbcType="VARCHAR" />
+    <result column="t_submissions" property="submissions" jdbcType="VARCHAR" />
+    <result column="t_remarks" property="remarks" jdbcType="VARCHAR" />
     <result column="t_manager_leader" property="tManagerLeader" jdbcType="INTEGER" />
     <result column="t_bianzhi_id" property="tBianzhiId" jdbcType="INTEGER" />
     <result column="t_shenpi_id" property="tShenpiId" jdbcType="INTEGER" />
@@ -74,7 +76,7 @@
   </sql>
   <sql id="Base_Column_List" >
     t_send_id, t_send_num, t_send_project_id, t_send_quality_plan, t_send_tech_folder, 
-    t_send_go_time, t_manager_leader, t_bianzhi_id, t_shenpi_id, t_submit_time, t_send_num_str
+    t_send_go_time, t_submissions, t_remarks, t_manager_leader, t_bianzhi_id, t_shenpi_id, t_submit_time, t_send_num_str
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="sys.spvisor.core.entity.project.TSendCardExample" >
     select
@@ -108,11 +110,11 @@
   </delete>
   <insert id="insert" parameterType="sys.spvisor.core.entity.project.TSendCard" useGeneratedKeys="true" keyProperty="tSendId">
     insert into t_send_card (t_send_num, t_send_project_id, 
-      t_send_quality_plan, t_send_tech_folder, t_send_go_time, 
+      t_send_quality_plan, t_send_tech_folder, t_send_go_time, t_submissions, t_remarks,
       t_manager_leader, t_bianzhi_id, t_shenpi_id, 
       t_submit_time, t_send_num_str)
     values (#{tSendNum,jdbcType=INTEGER}, #{tSendProjectId,jdbcType=INTEGER}, 
-      #{tSendQualityPlan,jdbcType=VARCHAR}, #{tSendTechFolder,jdbcType=VARCHAR}, #{tSendGoTime,jdbcType=VARCHAR}, 
+      #{tSendQualityPlan,jdbcType=VARCHAR}, #{tSendTechFolder,jdbcType=VARCHAR}, #{tSendGoTime,jdbcType=VARCHAR},#{submissions,jdbcType=VARCHAR}, #{remarks,jdbcType=VARCHAR},
       #{tManagerLeader,jdbcType=INTEGER}, #{tBianzhiId,jdbcType=INTEGER}, #{tShenpiId,jdbcType=INTEGER}, 
       #{tSubmitTime,jdbcType=TIMESTAMP}, #{tSendNumStr,jdbcType=VARCHAR})
   </insert>
@@ -136,6 +138,12 @@
       </if>
       <if test="tSendGoTime != null" >
         t_send_go_time,
+      </if>
+      <if test="submissions != null" >
+        t_submissions,
+      </if>
+       <if test="remarks != null" >
+        t_remarks,
       </if>
       <if test="tManagerLeader != null" >
         t_manager_leader,
@@ -171,6 +179,12 @@
       </if>
       <if test="tSendGoTime != null" >
         #{tSendGoTime,jdbcType=VARCHAR},
+      </if>
+      <if test="submissions != null" >
+        #{submissions,jdbcType=VARCHAR},
+      </if>
+      <if test="remarks != null" >
+        #{remarks,jdbcType=VARCHAR},
       </if>
       <if test="tManagerLeader != null" >
         #{tManagerLeader,jdbcType=INTEGER},
@@ -216,6 +230,12 @@
       <if test="record.tSendGoTime != null" >
         t_send_go_time = #{record.tSendGoTime,jdbcType=VARCHAR},
       </if>
+      <if test="record.submissions != null" >
+        t_submissions = #{record.submissions,jdbcType=VARCHAR},
+      </if>
+      <if test="record.remarks != null" >
+        t_remarks = #{record.remarks,jdbcType=VARCHAR},
+      </if>
       <if test="record.tManagerLeader != null" >
         t_manager_leader = #{record.tManagerLeader,jdbcType=INTEGER},
       </if>
@@ -244,6 +264,8 @@
       t_send_quality_plan = #{record.tSendQualityPlan,jdbcType=VARCHAR},
       t_send_tech_folder = #{record.tSendTechFolder,jdbcType=VARCHAR},
       t_send_go_time = #{record.tSendGoTime,jdbcType=VARCHAR},
+      t_submissions = #{record.submissions,jdbcType=VARCHAR},
+      t_remarks = #{record.remarks,jdbcType=VARCHAR},
       t_manager_leader = #{record.tManagerLeader,jdbcType=INTEGER},
       t_bianzhi_id = #{record.tBianzhiId,jdbcType=INTEGER},
       t_shenpi_id = #{record.tShenpiId,jdbcType=INTEGER},
@@ -271,6 +293,12 @@
       <if test="tSendGoTime != null" >
         t_send_go_time = #{tSendGoTime,jdbcType=VARCHAR},
       </if>
+      <if test="submissions != null" >
+        t_submissions = #{submissions,jdbcType=VARCHAR},
+      </if>
+      <if test="remarks != null" >
+        t_remarks = #{remarks,jdbcType=VARCHAR},
+      </if>
       <if test="tManagerLeader != null" >
         t_manager_leader = #{tManagerLeader,jdbcType=INTEGER},
       </if>
@@ -296,6 +324,8 @@
       t_send_quality_plan = #{tSendQualityPlan,jdbcType=VARCHAR},
       t_send_tech_folder = #{tSendTechFolder,jdbcType=VARCHAR},
       t_send_go_time = #{tSendGoTime,jdbcType=VARCHAR},
+      t_submissions = #{submissions,jdbcType=VARCHAR},
+      t_remarks = #{remarks,jdbcType=VARCHAR},
       t_manager_leader = #{tManagerLeader,jdbcType=INTEGER},
       t_bianzhi_id = #{tBianzhiId,jdbcType=INTEGER},
       t_shenpi_id = #{tShenpiId,jdbcType=INTEGER},

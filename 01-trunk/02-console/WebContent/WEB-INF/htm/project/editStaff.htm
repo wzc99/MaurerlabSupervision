@@ -622,8 +622,8 @@
 			$("#tSendQualityPlan").val(data.sendCard.tSendQualityPlan);//质量计划
 			$("#tSendGoTime").val(data.sendCard.tSendGoTime);//出发时间
 			$("#jobContent").val();//工作内容
-			$("#submissions").val();//结束后提交材料
-			$("#remarks").val();//备注
+			$("#submissions").val(data.sendCard.submissions);//结束后提交材料
+			$("#remarks").val(data.sendCard.remarks);//备注
 			$("#tManagerLeader").val(data.sendCard.tManagerLeader);//主管领导
 			$("#tBianzhiId").val(data.sendCard.tBianzhiId);//编制人
 			$("#tShenpiId").val(data.sendCard.tShenpiId);//审批人
@@ -819,17 +819,17 @@
 		<tr>
 			<td class="td_new_name">工作结束后需提交材料</td>
 			<td class="td_new_value" colspan="6">
-			<textarea name="" id="submissions" style="height: 60px" cols="105" readonly="true" class="easyui-validatebox">
+			<textarea name="submissions" id="submissions" style="height: 60px" cols="105"  class="easyui-validatebox">
 1、根据监理资料规范要求MR-ZJ-2017-01提交要求（□方案1  ■方案2  □方案3）提交；
 2、监造资料及监造总结报告在项目完成后一周内提交项目经理；
 3、项目经理在收到监造资料和监理总结报告后一周内提交资料室。				
 			</textarea>
 			</td>
-		</tr>
+		</tr> 
 		<tr>
 			<td class="td_new_name">备注</td>
 			<td class="td_new_value" colspan="6">
-			<textarea name="" id="remarks" style="height: 70px" cols="105" readonly="true" class="easyui-validatebox">
+			<textarea name="remarks" id="remarks" style="height: 70px" cols="105" class="easyui-validatebox">
 1、日/周报命名：监理日/周（2017.××.××）-项目简称-生产单位名称+产品名称+（西安摩尔）；
 2、日报汇报时间：监理组长每天10:00前向项目经理发送前日日报，项目经理与次日12:00前发送业主；
 3、监理组长入厂3日内完成监理细则发项目经理，项目经理两日内审核完成发送尚汉青shq_working@163.com。

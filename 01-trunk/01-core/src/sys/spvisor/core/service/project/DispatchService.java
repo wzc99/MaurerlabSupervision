@@ -383,6 +383,8 @@ public class DispatchService {
 			sc.settSendGoTime(sendCard.gettSendGoTime());
 			sc.settBianzhiId(sendCard.gettBianzhiId());
 			sc.settShenpiId(sendCard.gettShenpiId());
+			sc.setsubmissions(sendCard.getsubmissions());
+			sc.setremarks(sendCard.getremarks());
 			tSendCardMapper.updateByPrimaryKey(sc);
 		}
 		else{
@@ -405,7 +407,7 @@ public class DispatchService {
         		sendCard.settSendNum(1);
             String sendNumStr = "";
             int sendNum = sendCard.gettSendNum();
-            if(sendNum < 10)
+        if(sendNum < 10)
             	sendNumStr = "00"+sendNum;
             else if(sendNum < 100)
             	sendNumStr = "0"+sendNum;
@@ -628,6 +630,8 @@ public class DispatchService {
 			dataMap.put("dispatch", sc.gettSendNumStr()==null?"":sc.gettSendNumStr());
 			dataMap.put("plan", sc.gettSendQualityPlan()==null?"":sc.gettSendQualityPlan());
 			dataMap.put("time",sc.gettSendGoTime()==null?"":sc.gettSendGoTime());
+			dataMap.put("submission",sc.getsubmissions()==null?"":sc.getsubmissions());
+			dataMap.put("remark",sc.getremarks()==null?"":sc.getremarks());
 			dataMap.put("MLN",tUserMapper.selectByPrimaryKey(sc.gettManagerLeader()).getUserName()==null?"":tUserMapper.selectByPrimaryKey(sc.gettManagerLeader()).getUserName());
 			dataMap.put("MLM",tUserMapper.selectByPrimaryKey(sc.gettManagerLeader()).getMobile()==null?"":tUserMapper.selectByPrimaryKey(sc.gettManagerLeader()).getMobile());
 			dataMap.put("compiler",tUserMapper.selectByPrimaryKey(sc.gettBianzhiId()).getUserName()==null?"":tUserMapper.selectByPrimaryKey(sc.gettBianzhiId()).getUserName());
@@ -639,6 +643,8 @@ public class DispatchService {
 			dataMap.put("dispatch", "");
 			dataMap.put("plan", "");
 			dataMap.put("time","");
+			dataMap.put("submission","");
+			dataMap.put("remark","");
 			dataMap.put("MLN","");
 			dataMap.put("MLM","");
 			dataMap.put("compiler","");
