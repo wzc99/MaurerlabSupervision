@@ -36,23 +36,65 @@ public class TestController {
 	GoodTypeService typeService;
 	private static Map<String,List<String>> index;
 	static {
-		index = new HashMap<String,List<String>>();
-	   List<String> valve = Arrays.asList("faTiWaiGuan_", "zhaBanWaiGuan_", "faGanWaiGuan_","qiTa_","hanJie_","sheXianDiPian_","chaoShengBo_","ciFenJianCe_","shenTouJianCe_","faMenZuZhuang_","chuXiuYouQi_","baoZhuangFaYun_","yaLiShiYan_","faMenHuaXue_","laShenXingNeng_","faMenChongJi_","faMenWanQu_","faMenJinXiang_");
+		index = new HashMap<String,List<String>>();	   
+	   List<String> valve = Arrays.asList("faMenQiTa_", "faMenHanJie_",   "faMenSheXianGuoCheng_",   "faMenSheXianDiPian_",    
+	   "faMenChaoShengBo_",  "faMenCiFenJianCe_", "faMenShenTouJianCe_",  "faMenZuZhuang_",   
+	   "faMenChuXiuYouQi_",  "faMenBaoZhuangFaYun_",  "faMenYaLiShiYan_",  "faMenHuaXue_",   
+	   "faMenLaShenXingNeng_",  "faMenChongJi_",   "faMenWanQu_",  "faMenJinXiang_");
 	   index.put("valve", valve);
-	   List<String> equipment = Arrays.asList("qiTa_","hanJie_","sheXianDiPian_","chaoShengBo_","ciFenJianCe_","shenTouJianCe_","faMenZuZhuang_","baoZhuangFaYun_","faMenHuaXue_","laShenXingNeng_","faMenChongJi_","faMenWanQu_","faMenJinXiang_");
+	   List<String> equipment = Arrays.asList("shebeiQiTa_",  "sheBeiQuDong_",   "sheBeiXiaLiao_",   "sheBeiTongTi_",  
+	   "sheBeiHanJie_",  "sheBeiSheXianGuoCheng_",   "sheBeiChaoShengBo_",  
+	   "sheBeiCiFenJianCe_",  "sheBeiShenTouJianCe_",  "sheBeiSheXianDiPian_",  
+	   "sheBeiHuaXian_",   "sheBeiReChuLi_",  "sheBeiShuiYa_",  "sheBeiChuXiu_",   
+	   "sheBeiBaoZhuang_",  "sheBeiHuaXue_",   "sheBeiLaShen_",  "sheBeiChongJi_",    
+	   "sheBeiWanQu_",   "sheBeiJinXiang_");
 	   index.put("equipment", equipment);
-	   List<String> fittings = Arrays.asList("sheXianDiPian_","faMenHuaXue_","laShenXingNeng_","faMenChongJi_","faMenWanQu_","faMenJinXiang_","guanJianXiaLiao_","guanJianYuZhiChengXing_","guanJianReChuLi_","guanJianHanJie_","guanJianChaoShengBo_","guanJianCiFen_","guanJianShenTou_","guanJianShuiYaShiYan_","guanJianChuXiu_","guanJianFaYun_");
+	   List<String> fittings = Arrays.asList("guanJianQiTa_",  "guanJianYuZhiChengXing_",   "guanJianReChuLi_",    "guanJianHanJie_",   
+	   "guanJianSheXianGuoCheng_",   "guanJianChaoShengBo_",  "guanJianCiFenJianCe_",  
+	   "guanJianShenTouJianCe_",   "guanJianSheXianDiPian_",  "guanJianShuiYaShiYan_",   
+	   "guanJianChuXiu_",   "guanJianFaYun_",   "guanJianHuaXue_",  "guanJianLaShenXingNeng_",  
+	   "guanJianChongJi_",    "guanJianWanQu_",  "guanJianJinXiang_");
 	   index.put("fittings", fittings);
-	   List<String> bend = Arrays.asList("sheXianDiPian_","chaoShengBo_","ciFenJianCe_","shenTouJianCe_","faMenHuaXue_","laShenXingNeng_","faMenChongJi_","faMenWanQu_","faMenJinXiang_","guanJianShuiYaShiYan_","wanGuanMuGuan_","wanGuanWeiZhi_","wanGuanReChuLi_","wanGuanFang_","wanGuanQingJie_","wanGuanTuFu_","wanGuanXingNeng_","wanGuanWaiGuan_","wanGuanDui_","wanGuanBaoZhuang_","wanGuanHuaXue_","wanGuanLaShen_","wanGuanChongJi_","wanGuanJinXiang_","wanGuanLuochui_");
+	   List<String> bend = Arrays.asList("bendQiTa_",   "wanGuanMuGuan_",  "wanGuanWeiZhi_",   "wanGuanReChuLi_",  
+	   "wanGuanSheXianGuoCheng_",   "wanGuanChaoShengBo_",   "wanGuanCiFenJianCe_",   "wanGuanSheXianDiPian_",
+	   "wanGuanShenTouJianCe_",  "wanGuanShuiYaShiYan_",    "wanGuanFang_",  
+	   "wanGuanQingJie_",   "wanGuanTuFu_",   "wanGuanXingNeng_",  "wanGuanWaiGuan_",  
+	   "wanGuanDui_",   "wanGuanBaoZhuang_",   "wanGuanHuaXue_",  "wanGuanLaShen_",  
+	   "wanGuanJinXiang_",   "wanGuanHuaXue1_",  "wanGuanLaShenXingNeng_",  
+	   "wanGuanChongJi1_", "wanGuanChongJi_",  "wanGuanWanQu_",   "wanGuanLuochui_",   "wanGuanJinXiang1_");
 	   index.put("bend", bend);
-	   List<String> delivery = Arrays.asList("ciFenJianCe_","faMenHuaXue_","laShenXingNeng_","faMenChongJi_","faMenWanQu_","faMenJinXiang_","guanJianShuiYaShiYan_","wanGuanLuochui_","deliveryTouLiao_","deliveryChengXing_","deliverySheXian_","deliveryChaoShengBo_","deliveryGuangGuan_","deliveryReZha_","deliveryReChuLi_","deliveryWuFengChaoShengBo_","deliveryWuFengCiFen_","deliveryWoLiu_","deliveryLouCi_","deliveryFaYun_","deliveryLaShen_","deliveryJinXiang_","deliveryYaBian_");
+	   List<String> delivery = Arrays.asList("deliveryQiTa_", "deliveryReZha_", "deliveryReChuLi_", "deliveryWuFengChaoShengBo_",
+	   "deliveryWuFengCiFen_", "deliveryWoLiu_", "deliveryLouCi_", "deliveryShuiYa_",
+	   "deliveryFaYun_", "deliveryHuaXue_", "deliveryLaShen_", "deliveryChongJi_",
+	   "deliveryJinXiang_", "deliveryYaBian_", "deliveryQiTa2_", "deliveryTouLiao_",
+	   "deliveryChengXing_", "deliverySheXian_", "deliveryChaoShengBo_",
+	   "deliveryCiFen_", "deliveryShuiYaShiYan2_", "deliveryGuangGuan_", "deliveryHuaXue1_",
+	   "deliveryLaShenXingNeng_", "deliveryChongJi1_", "deliveryWanQu_",
+	   "deliveryLuochui_", "deliveryJinXiang1_");
 	   index.put("delivery", delivery);
-	   List<String> drillingTools = Arrays.asList("ciFenJianCe_","faMenHuaXue_","laShenXingNeng_","faMenChongJi_","deliveryChaoShengBo_","drillGuanDuan_","drillMoCaHan_","drillHanQu_","drillReChuLi_","drillBiaoMian_","drillNaiMo_","drillNeiTuCeng_","drillNeiTuCengHouDu_","drillBaoZhuang_","drillBeiLiao_","drillZuanKong_","drillJiJiaGong_");
+	   List<String> drillingTools = Arrays.asList("drillQiTa_", "drillGuanDuan_", "drillMoCaHan_", "drillHanQu_",
+	   "drillReChuLi_", "drillFaMenChongJi_", "drillBiaoMian_",
+	   "drillCiFenJianCe_", "drillNeiTuCeng_", "drillNeiTuCengHouDu_",
+	   "drillBaoZhuang_", "drillBeiLiao_", "drillZuanKong_", "drillChaoShengBo_",
+	   "drillChaoShengBo2_", "drillCiFenJianCe2_", "drillReChuLi2_", "drillHuaXue_",
+	   "drillLaShenXingNeng_", "drillChongJi_", "drillYingDu_", "drillJiJiaGong_",
+	   "drillNaiMo_", "drillNaiMo1_", "drillNeiTuCeng2_", "drillNeiTuCengHouDu2_", "drillBaoZhuang2_");
 	   index.put("drillingTools", drillingTools);
-	   List<String> oilPipe = Arrays.asList("faMenHuaXue_","laShenXingNeng_","faMenChongJi_","faMenWanQu_","faMenJinXiang_","wanGuanLuochui_","deliveryTouLiao_","deliveryChaoShengBo_","drillGuanDuan_","oilPipeChengXing_","oilPipeCiFen_","oilPipeJiaoZhi_","oilPipeLiHua_","oilPipeWuSun_","oilPipeJiaGong_","oilPipeTong_","oilPipeCe_","oilPipeReZha_","oilPipeReChuLi_","oilPipeFuShi_","oilPipeCui_","oilPipeNingJie_","oilPipeTongJing_","oilPipeShuiYa_","oilPipeBaoZhuang_");
+	   List<String> oilPipe = Arrays.asList("oilPipeQiTa_", "oilPipeTouLiao_", "oilPipeChengXing_", "oilPipeReZha_",
+	   "oilPipeGuanDuan_", "oilPipeReChuLi_", "oilPipeChaoShengBo_", "oilPipeCiFenJianCe_",
+	   "oilPipeShenTouJianCe_", "oilPipeNingJie_", "oilPipeTongJing_", "oilPipeShuiYa_",
+	   "oilPipeBaoZhuang_", "oilPipeHuaXue_", "oilPipeLaShenXingNeng_", "oilPipeChongJi_",
+	   "oilPipeWanQu_", "oilPipeJinXiang_", "oilPipeHuaXue1_", "oilPipeLaShenXingNeng1_",
+	   "oilPipeJinXiang_", "oilPipeChongJi1_", "oilPipeWanQu1_", "oilPipeLuochui_", "oilPipeJinXiang1_");
 	   index.put("oilPipe", oilPipe);
-	   List<String> delbend = Arrays.asList("wanGuanFang_","wanGuanQingJie_","wanGuanXingNeng_","wanGuanWaiGuan_","wanGuanDui_","delbendTufu_","delbendFa_","delbendJu_","delbendFangShi_","delbendWaiHu_","delbendBaoYuan_","delbendBaoWen_","delbendFangMao_","delbendBaoDui_","delbendBaoFa_","delbendFangXing_","delbendWaiXing_","delbendBao_","delbendHouDu_");
+	   List<String> delbend = Arrays.asList("fangFuQiTa_", "fangFuFang_", "fangFuQingJie_", "fangFuNeiTuCeng_",
+	   "fangFuXingNeng_", "fangFuWaiGuan_", "fangFuDui_", "fangFuFa_",
+	   "delbendJu_", "delbendFangShi_", "delbendWaiHu_", "delbendBaoYuan_",
+	   "delbendBaoWen_", "delbendFangMao_", "delbendBaoDui_", "delbendBaoFa_",
+	   "delbendFangXing_", "delbendWaiXing_", "delbendBao_", "delbendFang_",
+	   "delbendQingJie_", "delbendNeiTuCeng_", "delbendHouDu_", "delbendBaoDui1_");
 	   index.put("delbend", delbend);
+	   
 	}
 	
 	@ResponseBody  
@@ -123,7 +165,7 @@ public class TestController {
 					   }
 					   else{
 //						   data.put(Prefix1.get(i)+Prefix2.get(j)+k, "");
-//						   System.out.println(Prefix1.get(i)+Prefix2.get(j)+k+":"+0);
+						   System.out.println("pramter not found:"+table_prefix.get(tp)+Prefix2.get(j)+k);
 						   break;
 					   }
 				   }
@@ -206,7 +248,7 @@ public class TestController {
 		//mongodb中查询指定项目id的"data","people","QId","proId"信息
 		String proid = req.getParameter("proId");
 		List<String> projection_list = Arrays.asList("date","people","proId","_id");
-		MongoCursor<Document> result_cursor = mongo.query_all(projection_list,false);
+		MongoCursor<Document> result_cursor = mongo.query_all(proid,projection_list,false);
 		List<QualityInfo> data_list = new ArrayList<QualityInfo>();
 		while(result_cursor.hasNext()){
 			Document doc = result_cursor.next();
@@ -239,7 +281,7 @@ public class TestController {
 		List<String> projection_list = new ArrayList<String>();
 		//建立正则表达式
 		//([a-zA-Z]+)_([a-z]{1,3})[0-9]{1,2}_?[0-9]?[0-9]?
-		String pattern = "([a-zA-Z]+)_([a-z]{1,3})[0-9]{1,2}_?([0-9]{0,2})";
+		String pattern = "([a-zA-Z]+[0-9]*)_([a-z]{1,3})[0-9]{1,2}_?([0-9]{0,2})";
 		Pattern r = Pattern.compile(pattern);
 		MongoCursor<Document> result_cursor = mongo.query_byId(QId, projection_list,true);
 		//建立数据结构保存数据

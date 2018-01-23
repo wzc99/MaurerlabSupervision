@@ -57,7 +57,7 @@ public class MongodbDao {
     }
 	
 	//查询，不指定查询条件
-	public MongoCursor<Document> query_all(List<String> projection_str,boolean project_all){
+	public MongoCursor<Document> query_all(String proid,List<String> projection_str,boolean project_all){
 		
 		if(project_all==true){
 			FindIterable<Document> findIterable = collection.find();  
@@ -68,7 +68,7 @@ public class MongodbDao {
 		for(int i=0;i<projection_str.size();++i){
 			projection.append(projection_str.get(i), 1);
 		}
-		FindIterable<Document> findIterable = collection.find().projection(projection);  
+		FindIterable<Document> findIterable = collection.find(new Document("proId",proid)).projection(projection);  
         MongoCursor<Document> mongoCursor = findIterable.iterator();
         return mongoCursor;        
 	}

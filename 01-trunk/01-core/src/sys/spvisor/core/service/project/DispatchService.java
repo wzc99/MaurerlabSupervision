@@ -334,7 +334,7 @@ public class DispatchService {
 					tff.setFileFormType("Dispatch");
 					tff.setFileFormProjectId(projectId);
 					//tff.setFileFormCurrentStatus("W");
-					tff.setFileFormCurrentStatus("D");
+					tff.setFileFormCurrentStatus("W");
 					tff.setFileFormCurrentStatusNum(0);
 					tff.setFileFormNotpassTimes(0);
 					fileFormMapper.insert(tff);
