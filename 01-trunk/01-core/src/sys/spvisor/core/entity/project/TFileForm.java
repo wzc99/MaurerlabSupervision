@@ -1,6 +1,6 @@
 package sys.spvisor.core.entity.project;
 
-import java.sql.Date;
+import java.util.Date;
 
 public class TFileForm {
     private Integer fileFormId;
@@ -26,6 +26,8 @@ public class TFileForm {
     private Integer fileFormNotpassTimes;
 
     private String fileFormPath;
+
+    private Integer fileFormExaId;
 
     public Integer getFileFormId() {
         return fileFormId;
@@ -121,5 +123,13 @@ public class TFileForm {
 
     public void setFileFormPath(String fileFormPath) {
         this.fileFormPath = fileFormPath == null ? null : fileFormPath.trim();
+    }
+
+    public Integer getFileFormExaId() {
+        return fileFormExaId;
+    }
+
+    public void setFileFormExaId(Integer fileFormExaId) {
+        this.fileFormExaId = fileFormExaId;
     }
 }

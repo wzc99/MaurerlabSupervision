@@ -1,7 +1,7 @@
 package sys.spvisor.core.entity.project;
 
 import java.util.ArrayList;
-import java.sql.Date;
+import java.util.Date;
 import java.util.List;
 
 public class TFileFormExample {
@@ -882,6 +882,66 @@ public class TFileFormExample {
 
         public Criteria andFileFormPathNotBetween(String value1, String value2) {
             addCriterion("file_form_path not between", value1, value2, "fileFormPath");
+            return (Criteria) this;
+        }
+
+        public Criteria andFileFormExaIdIsNull() {
+            addCriterion("file_form_exa_id is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andFileFormExaIdIsNotNull() {
+            addCriterion("file_form_exa_id is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andFileFormExaIdEqualTo(Integer value) {
+            addCriterion("file_form_exa_id =", value, "fileFormExaId");
+            return (Criteria) this;
+        }
+
+        public Criteria andFileFormExaIdNotEqualTo(Integer value) {
+            addCriterion("file_form_exa_id <>", value, "fileFormExaId");
+            return (Criteria) this;
+        }
+
+        public Criteria andFileFormExaIdGreaterThan(Integer value) {
+            addCriterion("file_form_exa_id >", value, "fileFormExaId");
+            return (Criteria) this;
+        }
+
+        public Criteria andFileFormExaIdGreaterThanOrEqualTo(Integer value) {
+            addCriterion("file_form_exa_id >=", value, "fileFormExaId");
+            return (Criteria) this;
+        }
+
+        public Criteria andFileFormExaIdLessThan(Integer value) {
+            addCriterion("file_form_exa_id <", value, "fileFormExaId");
+            return (Criteria) this;
+        }
+
+        public Criteria andFileFormExaIdLessThanOrEqualTo(Integer value) {
+            addCriterion("file_form_exa_id <=", value, "fileFormExaId");
+            return (Criteria) this;
+        }
+
+        public Criteria andFileFormExaIdIn(List<Integer> values) {
+            addCriterion("file_form_exa_id in", values, "fileFormExaId");
+            return (Criteria) this;
+        }
+
+        public Criteria andFileFormExaIdNotIn(List<Integer> values) {
+            addCriterion("file_form_exa_id not in", values, "fileFormExaId");
+            return (Criteria) this;
+        }
+
+        public Criteria andFileFormExaIdBetween(Integer value1, Integer value2) {
+            addCriterion("file_form_exa_id between", value1, value2, "fileFormExaId");
+            return (Criteria) this;
+        }
+
+        public Criteria andFileFormExaIdNotBetween(Integer value1, Integer value2) {
+            addCriterion("file_form_exa_id not between", value1, value2, "fileFormExaId");
             return (Criteria) this;
         }
     }

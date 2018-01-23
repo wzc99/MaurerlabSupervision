@@ -161,7 +161,7 @@ public class ProjectService {
 					tPlanForm.setFileFormUserId((int)userId);
 					tPlanForm.setFileFormDate(new Date(new java.util.Date().getTime()));
 					tPlanForm.setFileFormProjectId(record.getProId());
-					tPlanForm.setFileFormCurrentStatus("D");
+					tPlanForm.setFileFormCurrentStatus("W");
 					tPlanForm.setFileFormCurrentStatusNum(0);
 					tPlanForm.setFileFormNotpassTimes(0);
 					tPlanForm.setFileFormType("委托信息");
@@ -170,15 +170,15 @@ public class ProjectService {
 					//设置存放的服务器路径
 					tPlanForm.setFileFormPath(targetFile.getName());
 					fileFormMapper.insert(tPlanForm);
-							
-							/*//发送文件审核消息
+					//TODO
+							//发送文件审核消息
 							ExamineInit examine = new ExamineInit();
 							examine.setSubmitId(new Long(userId).intValue());
 							//设置为文件消息
-							examine.setExaType(2);
-							examine.setExaTitle("有个文件需要你审核");
+							examine.setExaType(11);
+							examine.setExaTitle("有个"+name[index]+"文件需要你审核");
 							examine.setExaContent(name[index] + "需要你审核");
-							examine.setNodeName(name[index]);
+							//examine.setNodeName(name[index]);
 							examine.setExaFileFlag(1);
 							examine.setIsProType(1);
 							examine.setProId(record.getProId());
@@ -189,7 +189,7 @@ public class ProjectService {
 								examineService.insertExamine(examine);
 							} catch (Exception e) {
 								e.printStackTrace();
-							}*/
+							}
 						
 				}
 				index++;
@@ -278,22 +278,22 @@ public class ProjectService {
 						tPlanForm.setFileFormCurrentStatus("D");
 						tPlanForm.setFileFormCurrentStatusNum(0);
 						tPlanForm.setFileFormType("委托信息");
-						//TODO
+						
 						File targetFile = AutoCreateFileName.createFileName(request, mf,record.getProId());
 						//设置存放的服务器路径
 						tPlanForm.setFileFormPath(targetFile.getName());
 						//如果是没修改，那么文件未通过次数为0
 						tPlanForm.setFileFormNotpassTimes(0);
 						fileFormMapper.insert(tPlanForm);
-						
-						/*//发送文件审核消息
+						//TODO
+						//发送文件审核消息
 						ExamineInit examine = new ExamineInit();
 						examine.setSubmitId(new Long(userId).intValue());
 						//设置为文件消息
-						examine.setExaType(2);
-						examine.setExaTitle("有个文件需要你审核");
+						examine.setExaType(11);
+						examine.setExaTitle("有个"+name[index]+"文件需要你审核");
 						examine.setExaContent(name[index] + "需要你审核");
-						examine.setNodeName(name[index]);
+						//examine.setNodeName(name[index]);
 						examine.setExaFileFlag(1);
 						examine.setIsProType(1);
 						examine.setProId(record.getProId());
@@ -304,7 +304,7 @@ public class ProjectService {
 							examineService.insertExamine(examine);
 						} catch (Exception e) {
 							e.printStackTrace();
-						}*/
+						}
 						
 					} else {	//原来存在的，只需要修改文件名，和文件内容就可以了
 						//如果是修改的，那么文件未通过次数+1
@@ -319,15 +319,16 @@ public class ProjectService {
 						tPlanForm.setFileFormNotpassTimes(tPlanForm.getFileFormNotpassTimes() + 1);
 						System.out.println(tPlanForm.getFileFormId());
 						fileFormMapper.updateByPrimaryKey(tPlanForm);
-						
-						/*//发送文件审核消息
+						//TODO
+						//先撤销
+						//再重新发送文件审核消息
 						ExamineInit examine = new ExamineInit();
 						examine.setSubmitId(new Long(userId).intValue());
 						//设置为文件消息
-						examine.setExaType(2);
-						examine.setExaTitle("有个文件重新上传了，需要你审核");
+						examine.setExaType(11);
+						examine.setExaTitle("有个"+name[index]+"文件重新上传了，需要你审核");
 						examine.setExaContent(name[index] + "需要你的重新审核");
-						examine.setNodeName(name[index]);
+						//examine.setNodeName(name[index]);
 						examine.setExaFileFlag(1);
 						examine.setProId(record.getProId());
 						examine.setExaFilePath(targetFile.getName());
@@ -337,7 +338,7 @@ public class ProjectService {
 							examineService.insertExamine(examine);
 						} catch (Exception e) {
 							e.printStackTrace();
-						}*/
+						}
 					}
 					
 					
