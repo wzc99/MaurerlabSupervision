@@ -650,33 +650,33 @@ function init_projectFinishFileInfo(data){
 			var file0 = data.tFileForm[i].fileFormFilename;	//上传文件名称
 			
 			var sum0 = 0;	//文件数量
-			var uploadpeople0 = data.tFileForm[i].fileFormPeople; //上传人姓名
+			//var uploadpeople0 = data.tFileForm[i].fileFormPeople; //上传人姓名
 			if(file0) {
 				sum0 = 1;
 			}
-			//var name1 = "";
-			//var sum1 = "";
-			//if(i < data.length-1){
-			//	var name1 = data.tFileForm[i+1].fileFormName;//文件名称
-			//	var file1 = data.tFileForm[i+1].fileFormFilename;	//上传文件名称
-			///	var sum1 = 0;//文件数量	
-			//	if(file1) {
-				//	sum1 = 1;
-			//	}
-			//}
+			var name1 = "";
+			var sum1 = "";
+			if(i < data.length-1){
+				var name1 = data.tFileForm[i+1].fileFormName;//文件名称
+				var file1 = data.tFileForm[i+1].fileFormFilename;	//上传文件名称
+				var sum1 = 0;//文件数量	
+				if(file1) {
+					sum1 = 1;
+				}
+			}
 			
 			$str='';
 	        $str+='<tr>';
 			$str+='<td align="center" width="200px">'+ name0 + '</td>';
 			$str+='<td align="center" width="250px">'+ file0 + '</td>';
 			$str+='<td align="center" width="100px">' + sum0 + '</td>';
-			$str+='<td align="center" width="100px">' + uploadpeople0 + '</td>';
-			//$str+='<td align="center" width="200px">' + name1 + '</td>';
-			//$str+='<td align="center" width="250px">'+ file1 + '</td>';
-			//$str+='<td align="center" width="100px">' +  sum1 + '</td>';
+			//$str+='<td align="center" width="100px">' + uploadpeople0 + '</td>';
+			$str+='<td align="center" width="200px">' + name1 + '</td>';
+			$str+='<td align="center" width="250px">'+ file1 + '</td>';
+			$str+='<td align="center" width="100px">' +  sum1 + '</td>';
 		    $str+='</tr>';
 		    $("#projectFinishFileTab").append($str);
-		   // i=i+1;		}
+		    i=i+1;		}
 	}
 }
 //项目概况的字段
