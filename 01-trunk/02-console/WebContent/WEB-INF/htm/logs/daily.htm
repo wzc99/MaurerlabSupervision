@@ -61,6 +61,8 @@
 			$("#journalId").val(0);
 			$("#detail").html("日报未上传！");
 			$("#processType").val(0);
+			//$('#dailyDate').datebox('setValue', getCurentDateStr());  
+			$("#dailyDate").val(getCurentDateStr());
 		}
 		
 		
@@ -156,7 +158,7 @@
 			
 			
 		});
-		$('#dailyDate').datebox('setValue', getCurentDateStr());  
+		
 		
 	    $('#dailyDate').datebox('calendar').calendar({  
 	        validator : function(date){  

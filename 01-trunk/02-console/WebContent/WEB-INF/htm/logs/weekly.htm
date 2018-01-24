@@ -59,9 +59,10 @@
 				lineHeight : '30px',
 				border : '1px solid green'
 			})
-			$("#dailyDate").datebox({
+			/* $("#dailyDate").datebox({
 				readOnly : true
-			});
+			}); */
+			//$("#dailyDate").attr("readOnly","true");
 			/* 
 					$("#WeekDate").attr("disabled","disabled");
 					$("#YearDate").attr("disabled","disabled"); */
@@ -70,6 +71,17 @@
 			$("#journalId").val(0);
 			$("#detail").html("周报未上传！");
 			$("#processType").val(0);
+			//$('#dailyDate').datebox('setValue', getCurentDateStr());
+			$("#dailyDate").val(getCurentDateStr());
+			var date = getDate($("#dailyDate").val());
+			var year = date.getFullYear();
+			var week = getYearWeek(date.getFullYear(), date
+					.getMonth(), date.getDate());
+			//alert("year:"+year + ",week:"+ week);
+			$("#WeekDate").val(week);
+			$("#mydescription").html(
+					date.getFullYear() + '年,第' + week + '周');
+			$("#YearDate").val(date.getFullYear());
 		}
 
 		var jsonObject;
@@ -192,7 +204,7 @@
 					},
 					required : true
 				});
-		$('#dailyDate').datebox('setValue', getCurentDateStr());
+		
 		$('#dailyDate').datebox('calendar').calendar(
 				{
 					validator : function(date) {
