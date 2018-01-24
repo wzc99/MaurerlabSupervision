@@ -100,6 +100,27 @@ public class ExamineService {
 
 	}
 
+	@Transactional
+	public int getExamineIdByOtherTable(int type, int linkId) {
+		int result = 0;
+		TExamineExample example = new TExamineExample();
+		TExamineExample.Criteria cr = example.createCriteria();
+		cr.andExaTypeEqualTo(type);
+		cr.andExaLinkIdEqualTo(linkId);
+		List temp = new ArrayList<Integer>();
+		temp.add(0);
+		temp.add(2);
+		cr.andStatusIn(temp);
+		TExamine t = tExamineMapper.selectByExample(example).get(0);
+		if (t == null) {
+			result = -1;
+		} else {
+			result = t.getId();
+		}
+
+		return result;
+	}
+
 	/**
 	 * 获取由我审核的列表 待审核状态
 	 * 
@@ -235,7 +256,7 @@ public class ExamineService {
 	 */
 	public List<ExaSubAndExaBean> getExaSubAndExaList(int proId) {
 		List<ExaSubAndExaBean> result = new ArrayList<>();
-		
+
 		return result;
 	}
 
@@ -496,7 +517,7 @@ public class ExamineService {
 					} else {
 						return Enumerations.ServiceReturnCode.非法操作.getCode();
 					}
-				} else if (target.getExaType() == 10) {
+				} else if (target.getExaType() == 2) {
 					callBack.journalCall(target.getExaLinkId(), 3);
 				}
 				target = new TExamine();

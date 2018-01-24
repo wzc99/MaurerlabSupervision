@@ -7,10 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import sys.spvisor.core.dao.ana.TUserMapper;
+import sys.spvisor.core.dao.examine.ExamineDao;
 import sys.spvisor.core.dao.journal.TJournalMapper;
-import sys.spvisor.core.entity.ana.TUser;
-import sys.spvisor.core.entity.attendance.TAttendance;
 import sys.spvisor.core.entity.examine.ExamineInit;
 import sys.spvisor.core.entity.journal.TJournal;
 import sys.spvisor.core.entity.journal.TJournalExample;
@@ -30,6 +28,9 @@ public class JournalService {
 
 	@Autowired
 	private ExamineService exaService;
+	
+//	@Autowired
+//	private ExamineAndJournalDao tempDao;
 
 	public int countJournal(int proId, int type, int status) {
 		TJournalExample example = new TJournalExample();
@@ -52,7 +53,7 @@ public class JournalService {
 	}
 
 	@Transactional
-	public int examineJournal(int jId, int submitId) throws Exception {
+	public int examineJournal(int jId, int submitId,int proId) throws Exception {
 		int result = Enumerations.ServiceReturnCode.出错或异常.getCode();
 		TJournal ta = dao.selectByPrimaryKey(jId);
 		if (ta.getStatus() != 0) {
@@ -60,13 +61,14 @@ public class JournalService {
 		}
 		ExamineInit init = new ExamineInit();
 		init.setSubmitId(submitId);
-		init.setExaType(10);
+		init.setExaType(2);
 		init.setExaTitle("日志文件审核");
 		init.setExaContent(ta.getPname() + (ta.getType() == 0 ? "日报" + DatetimeUtil.date2StringDate(ta.getjTime())
 				: "周报" + ta.getYearInt() + "年 第" + ta.getWeek() + "周"));
 		init.setExaFileFlag(1);
 		init.setExaFilePath(ta.getFile());
 		init.setIsProType(1);
+		init.setProId(proId);
 		init.setExaLinkId(jId);
 		result = exaService.insertExamine(init);
 		if (result == Enumerations.ServiceReturnCode.操作成功.getCode()) {
@@ -80,17 +82,27 @@ public class JournalService {
 	}
 
 	@Transactional
-	public void insertJournal(TJournal journal) {
+	public void insertJournal(TJournal journal, int userID) throws Exception {
 		dao.insert(journal);
+		System.out.println("id"+"  "+journal.getId());
+		examineJournal(journal.getId(), userID,journal.getPid());
 	}
 
 	@Transactional
 	public void updateJournal(TJournal journal, int submitId) throws Exception {
 		TJournal temp = dao.selectByPrimaryKey(journal.getId());
-		if (temp.getStatus() == 0 || temp.getStatus() == 4) {
-			dao.updateByPrimaryKeySelective(journal);
-			examineJournal(journal.getId(), submitId);
+		// if (temp.getStatus() == 0 || temp.getStatus() == 4) {
+		dao.updateByPrimaryKeySelective(journal);
+		int exaId = exaService.getExamineIdByOtherTable(2, temp.getId());
+		if(exaId==-1){
+			return;
+		}else{
+			exaService.ToPullBackExamine(exaId, submitId);
+			exaService.ToInvisibleExamineOrProcess(exaId, 0);
+			examineJournal(journal.getId(), submitId,journal.getPid());
 		}
+		
+		// }
 	}
 
 	public void updateStatus(int id, int toStatus) {

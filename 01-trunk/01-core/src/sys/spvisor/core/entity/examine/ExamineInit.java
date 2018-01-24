@@ -3,9 +3,10 @@ package sys.spvisor.core.entity.examine;
 import java.sql.Date;
 
 public class ExamineInit {
-
+	
+	//提交者ID
 	private int submitId;
-
+	//0:
 	private int exaType;
 
 	private String exaTitle;

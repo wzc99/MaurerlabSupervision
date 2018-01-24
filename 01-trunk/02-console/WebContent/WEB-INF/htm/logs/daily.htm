@@ -51,16 +51,18 @@
 			$("#journalId").val(journalId);
 			$("#processType").val(processType);
 			$("#dailyDate").val(dailyDate);
+			//alert($("#dailyDate").val());
 			$("#btn_submit").html("重新生成");
 			$("#detail").html("日报已上传！");
 			$('#btn_submit').css({width:'100px',height:'30px',lineHeight:'30px',border:'1px solid green'})
 			//$("#dailyDate").datebox({ disabled: true });
+			$("#dailyDate").attr("readOnly","true");
 		}else {
 			$("#journalId").val(0);
 			$("#detail").html("日报未上传！");
 			$("#processType").val(0);
 		}
-		$("#dailyDate").attr("disabled","disabled");
+		
 		
 		var jsonObject;
 		//表单提交的ajax
@@ -154,7 +156,7 @@
 			
 			
 		});
-		//$('#dailyDate').datebox('setValue', getCurentDateStr());  
+		$('#dailyDate').datebox('setValue', getCurentDateStr());  
 		
 	    $('#dailyDate').datebox('calendar').calendar({  
 	        validator : function(date){  
@@ -186,7 +188,6 @@
 <body>
 <form id="new_form" method="post" enctype="multipart/form-data">
 	<input type="text" style="display: none;" name="proId" id="proId">
-	<input type="text" style="display:none" name="picDescription" id="picDescription">
 	<input type="text" name="processType" id="processType" style="display:none">
 	<input type="text" name="journalId" id="journalId" style="display: none;">
 	<input type="text" name="jType" id="jType" style="display: none;" value="0">
