@@ -552,7 +552,7 @@ public class ProjectService {
 			List<TFileForm> selectTFileForms = fileFormMapper.selectByExample(example);
 			addExistsFile("监造委托书",selectTFileForms,TFileForms);
 			addExistsFile("监理服务合同",selectTFileForms,TFileForms);
-			addExistsFile("监理委托单",selectTFileForms,TFileForms);
+			//addExistsFile("监理委托单",selectTFileForms,TFileForms);
 			addExistsFile("监理物资清单",selectTFileForms,TFileForms);
 			addExistsFile("技术协议",selectTFileForms,TFileForms);
 			//往TFileForms添加没有存储到数据库中的信息

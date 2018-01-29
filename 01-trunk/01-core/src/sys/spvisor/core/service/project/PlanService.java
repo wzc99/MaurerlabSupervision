@@ -179,7 +179,8 @@ public class PlanService {
 		addExistsFile("项目经理任命书",selectTFileForms,TFileForms);
 		addExistsFile("监造服务策划表",selectTFileForms,TFileForms);
 		addExistsFile("质量计划审批表",selectTFileForms,TFileForms);
-		addExistsFile("编制质量计划",selectTFileForms,TFileForms);
+		//addExistsFile("编制质量计划",selectTFileForms,TFileForms);
+		addExistsFile("质量计划",selectTFileForms,TFileForms);
 		addExistsFile("验收方案",selectTFileForms,TFileForms);
 		addExistsFile("监理细则",selectTFileForms,TFileForms);
 		//往TFileForms添加可有文件
