@@ -648,35 +648,41 @@ function init_projectFinishFileInfo(data){
 		for(var i = 0; i < data.length; i++){//一行显示两个
 			var name0 = data.tFileForm[i].fileFormName;//文件名称
 			var file0 = data.tFileForm[i].fileFormFilename;	//上传文件名称
-			
-			var sum0 = 0;	//文件数量
-			//var uploadpeople0 = data.tFileForm[i].fileFormPeople; //上传人姓名
-			if(file0) {
-				sum0 = 1;
+			var sum0 = 1;	//文件数量
+			if(file0 == null) {
+				sum0 = 0;
+				file0 = "未上传";
 			}
 			var name1 = "";
 			var sum1 = "";
 			if(i < data.length-1){
 				var name1 = data.tFileForm[i+1].fileFormName;//文件名称
 				var file1 = data.tFileForm[i+1].fileFormFilename;	//上传文件名称
-				var sum1 = 0;//文件数量	
-				if(file1) {
-					sum1 = 1;
+				var sum1 = 1;//文件数量	
+				if(file1 == null) {
+					sum1 = 0;
+					file1 = "未上传";
 				}
+				$str='';
+		        $str+='<tr>';
+				$str+='<td align="center" width="200px">'+ name0 + '</td>';
+				$str+='<td align="center" width="250px">'+ file0 + '</td>';
+				$str+='<td align="center" width="100px">' + sum0 + '</td>';
+				$str+='<td align="center" width="200px">' + name1 + '</td>';
+				$str+='<td align="center" width="250px">'+ file1 + '</td>';
+				$str+='<td align="center" width="100px">' +  sum1 + '</td>';
+			    $str+='</tr>';
+			} else {
+				$str='';
+		        $str+='<tr>';
+				$str+='<td align="center" width="200px">'+ name0 + '</td>';
+				$str+='<td align="center" width="250px">'+ file0 + '</td>';
+				$str+='<td align="center" width="100px">' + sum0 + '</td>';
+				$str+='</tr>';
 			}
-			
-			$str='';
-	        $str+='<tr>';
-			$str+='<td align="center" width="200px">'+ name0 + '</td>';
-			$str+='<td align="center" width="250px">'+ file0 + '</td>';
-			$str+='<td align="center" width="100px">' + sum0 + '</td>';
-			//$str+='<td align="center" width="100px">' + uploadpeople0 + '</td>';
-			$str+='<td align="center" width="200px">' + name1 + '</td>';
-			$str+='<td align="center" width="250px">'+ file1 + '</td>';
-			$str+='<td align="center" width="100px">' +  sum1 + '</td>';
-		    $str+='</tr>';
 		    $("#projectFinishFileTab").append($str);
-		    i=i+1;		}
+		    i=i+1;
+		}
 	}
 }
 //项目概况的字段
@@ -1012,6 +1018,11 @@ function do_preview(projectPlanFileId,type) {//预览。。。代码要修改哦
     form.submit();
     
     form.remove();
+}
+
+function downloadTable(type){//下载审核记录表单
+	var projectId = $.getUrlParam('proId');
+    parent.parent.open("../../file/downloadTable。ajax?proId="+projectId+"&type="+type);
 }
 
 function dateChange(ss){
@@ -1449,7 +1460,7 @@ function dateChange(ss){
 			<a id="btn_edit_staff" href="javascript:generate_dispatchForm()" class="easyui-linkbutton" iconCls="icon-tip">生成派遣单</a>
 		</div>
 	</div>
-	<!-- 完工资料 -->
+	<!-- 开工报审-->
 	<div id="tabs-4">
 		<table class="table_new">
 			<tr>
@@ -1478,7 +1489,8 @@ function dateChange(ss){
 		</br>
 		<table class="table_new" id="projectSystemTab">
 			<tr>
-				<td class="td_new_subtitle" colspan="8" ><strong>生产厂质量体系文件审核记录</strong></td>
+				<td class="td_new_subtitle" colspan="7" ><strong>生产厂质量体系文件审核记录</strong></td>
+				<td align="center" width="80px"><a id="btn_download_quality" href="javascript:downloadTable('qualityFileRecoder')" class="easyui-linkbutton" iconCls="icon-tip">下载表格</a></td>
 			</tr>
 			<tr>
 				<td align="center" width="200px"><strong>资质证书/工艺文件/设计图纸名称	</strong></td>
@@ -1494,7 +1506,8 @@ function dateChange(ss){
 		</br>
 		<table class="table_new" id="projectStaffTab">
 			<tr>
-				<td class="td_new_subtitle" colspan="10" ><strong>生产厂人员资质审查记录</strong></td>
+				<td class="td_new_subtitle" colspan="9" ><strong>生产厂人员资质审查记录</strong></td>
+				<td align="center" width="80px"><a id="btn_download_quality" href="javascript:downloadTable('qualityPeopleRecoder')" class="easyui-linkbutton" iconCls="icon-tip">下载表格</a></td>
 			</tr>
 			<tr>
 				<td align="center" width="80px"><strong>姓名	</strong></td>
@@ -1512,7 +1525,8 @@ function dateChange(ss){
 		</br>
 		<table class="table_new" id="projectEquipTab">
 			<tr>
-				<td class="td_new_subtitle" colspan="10" ><strong>生产厂设备仪器检定审查记录</strong></td>
+				<td class="td_new_subtitle" colspan="9" ><strong>生产厂设备仪器检定审查记录</strong></td>
+				<td align="center"  width="80px"><a id="btn_download_quality" href="javascript:downloadTable('qualityCheckRecoder')" class="easyui-linkbutton" iconCls="icon-tip">下载表格</a></td>
 			</tr>
 			<tr>
 				<td align="center" width="120px"><strong>设备名称	</strong></td>

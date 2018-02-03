@@ -168,13 +168,18 @@ public class WorkController {
 		Long userId =  (Long) session.getAttribute("USER_ID");
 		Map<String,Object> result = new HashMap<String,Object>();
 		Map<String, MultipartFile> fileMap 	= request.getFileMap();
-		int rows = workService.addOrUpdateBeginWork(fileNameTotal,fileMap,username,userId,req,proId);
-		if(rows != 0) {
-			result.put("message", "添加/修改开工报审文件成功");
-			result.put("success", true);
-		} else {
-			result.put("message", "添加/修改开工报审文件失败");
+		try{
+			int rows = workService.addOrUpdateBeginWork(fileNameTotal,fileMap,username,userId,req,proId);
+			if(rows != 0) {
+				result.put("message", "添加/修改开工报审文件成功");
+				result.put("success", true);
+			} else {
+				result.put("message", "添加/修改开工报审文件失败");
+				result.put("success", false);
+			}
+		} catch (Exception e) {
 			result.put("success", false);
+			result.put("message", "提交失败！");
 		}
 		return result;
 		

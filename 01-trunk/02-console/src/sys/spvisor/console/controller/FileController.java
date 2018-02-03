@@ -1,11 +1,13 @@
 package sys.spvisor.console.controller;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.sql.Date;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSession;
 
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +27,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import sys.spvisor.console.converter.WorkConverter;
+import sys.spvisor.console.general.DocCreator;
 import sys.spvisor.core.common.BaseController;
 import sys.spvisor.core.criteria.file.FileCriteria;
 import sys.spvisor.core.criteria.people.PeopleCriteria;
@@ -35,8 +40,12 @@ import sys.spvisor.core.result.work.TQualityFileRecoderModel;
 import sys.spvisor.core.service.file.FileManageService;
 import sys.spvisor.core.service.people.PeopleService;
 import sys.spvisor.core.entity.project.TFileForm;
+import sys.spvisor.core.entity.work.TQualityCheckRecoder;
+import sys.spvisor.core.entity.work.TQualityFileRecoder;
+import sys.spvisor.core.entity.work.TQualityPeopleRecoder;
 import sys.spvisor.core.service.file.FileDownAndPrewService;
 import sys.spvisor.core.service.project.FileService;
+import sys.spvisor.core.service.work.WorkService;
 import sys.spvisor.core.util.DecideFileType;
 
 @Controller
@@ -48,6 +57,9 @@ public class FileController extends BaseController {
 
 	@Autowired
 	FileService fileService;
+	
+	@Autowired
+	WorkService workService;
 
 	@Autowired
 	FileDownAndPrewService fileDownAndPrewService;
@@ -154,13 +166,46 @@ public class FileController extends BaseController {
 		return file;
 	}
 
+//	@RequestMapping("/selectByProId.ajax")
+//	public @ResponseBody Map<String, Object> selectByProId(int proId) {
+//		Map<String, Object> result = new HashMap<String, Object>(2);
+//		List<TFileForm> lists = fileService.selectByProId(proId);
+//		result.put("tFileForm", lists);
+//		result.put("length", lists.size());
+//		return result;
+//	}
+	
 	@RequestMapping("/selectByProId.ajax")
-	public @ResponseBody Map<String, Object> selectByProId(int proId) {
-		Map<String, Object> result = new HashMap<String, Object>(2);
-		List<TFileForm> lists = fileService.selectByProId(proId);
+	public @ResponseBody Map<String,Object> selectByProId(int proId) {
+		Map<String,Object> result = new HashMap<String,Object>(2);
+		List<TFileForm> lists = fileService.selectFileByProId(proId);
 		result.put("tFileForm", lists);
 		result.put("length", lists.size());
 		return result;
+	}
+	
+	@RequestMapping("/addOrUpdateFile.ajax")
+	public @ResponseBody Map<String, Object> addOrUpdateFile(@Param("proId") int proId,String fileNameTotal,MultipartHttpServletRequest request, HttpSession session, HttpServletRequest req) {
+		
+		String username = (String) session.getAttribute("USER_NAME");
+		Long userId =  (Long) session.getAttribute("USER_ID");
+		Map<String,Object> result = new HashMap<String,Object>();
+		Map<String, MultipartFile> fileMap 	= request.getFileMap();
+		try{
+			int rows = fileService.addOrUpdateFile(fileNameTotal,fileMap,username,userId,req,proId);
+			if(rows != 0) {
+				result.put("message", "添加/修改完工资料成功");
+				result.put("success", true);
+			} else {
+				result.put("message", "添加/修改完工资料失败");
+				result.put("success", false);
+			}
+		} catch (Exception e) {
+			result.put("success", false);
+			result.put("message", "提交失败！");
+		}
+		return result;
+		
 	}
 
 	/* @RequestMapping("/selectByProId.ajax") */
@@ -207,6 +252,51 @@ public class FileController extends BaseController {
 	@RequestMapping("/download.ajax")
 	public void downLoad(HttpServletResponse response, HttpServletRequest request, int type, int fileId) {
 		fileDownAndPrewService.download(response, request, type, fileId);
+	}
+	
+	//生成开工报审生产厂质量记录
+	@RequestMapping("/downloadTable。ajax")
+	public void DownloadTable(HttpServletResponse response, HttpServletRequest request,int proId,String type){
+		System.out.println("开始下载项目"+proId+"文件");
+			
+		WorkConverter workConverter  = new WorkConverter();
+			
+		DocCreator docCreater = new DocCreator();
+		Map<String, Object> dataMap = new HashMap<>();
+		List<Map<String, String>> qualityList = new ArrayList<>();
+		if(type.equals("qualityFileRecoder")){
+			System.out.println("下载生产厂质量体系文件审核记录");
+			List<TQualityFileRecoder> lists = workService.initTQualityFileRecoder(proId);
+			System.out.println(lists.size());
+			for(TQualityFileRecoder tQualityFileRecoder : lists){
+				Map<String, String> quality = workConverter.qualityFileRecoderConverter(tQualityFileRecoder);
+				qualityList.add(quality);
+			}
+		}
+		else if (type.equals("qualityPeopleRecoder")) {
+			System.out.println("下载生产厂人员资质审查记录");
+			List<TQualityPeopleRecoder> lists = workService.initTQualityPeopleRecoder(proId);
+			System.out.println(lists.size());
+			for(TQualityPeopleRecoder tQualityPeopleRecoder : lists){
+				Map<String, String> quality = workConverter.qualityPeopleRecoderConverter(tQualityPeopleRecoder);
+				qualityList.add(quality);
+			}
+		}
+		else if (type.equals("qualityCheckRecoder")) {
+			System.out.println("下载生产厂设备仪器检定审查记录");
+			List<TQualityCheckRecoder> lists = workService.initTQualityCheckRecoder(proId);
+			System.out.println(lists.size());
+			for(TQualityCheckRecoder tQualityCheckRecoder : lists){
+				Map<String, String> quality = workConverter.qualityCheckRecoderConverter(tQualityCheckRecoder);
+				qualityList.add(quality);
+			}
+		}
+		dataMap.put("qualityList", qualityList);
+		try {
+			docCreater.downloadWord(request, response, dataMap, type);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@RequestMapping("/preview.ajax")
