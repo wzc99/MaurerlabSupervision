@@ -30,10 +30,14 @@ import sys.spvisor.core.entity.work.TQualityPeopleRecoderExample;
 import sys.spvisor.core.result.work.TQualityCheckRecoderModel;
 import sys.spvisor.core.result.work.TQualityFileRecoderModel;
 import sys.spvisor.core.result.work.TQualityPeopleRecoderModel;
+import sys.spvisor.core.service.project.FileService;
 
 
 @Service
 public class WorkService {
+	
+	@Autowired
+	FileService fileService;
 	
 	@Autowired
 	TFileFormMapper tFileFormMapper;
@@ -76,6 +80,7 @@ public class WorkService {
 	public int addOrUpdateBeginWork(String fileNametotal,
 			Map<String, MultipartFile> fileMap, String username, Long userId,
 			HttpServletRequest request, int proId) {
+		
 		//保存运行结果
 		int rows  = 0;
 		
@@ -84,10 +89,12 @@ public class WorkService {
 		criteria.andFileFormProjectIdEqualTo(proId);
 		criteria.andFileFormTypeEqualTo("开工报审");
 		List<TFileForm> lists = tFileFormMapper.selectByExample(tFileFormExample);
+		
+		String[] fileNames = fileNametotal.split("&");
+		
 		//判断是否是第一次提交
 		if(lists.size() == 0) {
 			if(fileNametotal!=null||fileNametotal!="") {
-				String[] fileNames = fileNametotal.split("&");
 				int index = 0;
 				for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
 					MultipartFile mf 	= entity.getValue();
@@ -117,15 +124,19 @@ public class WorkService {
 					index++;
 				}
 			}
-		}else {
+		}
+		else {
 			if(fileNametotal!=null||fileNametotal!="") {
-				String[] fileNames = fileNametotal.split("&");
+				
 				int index = 0;
 				for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
 					MultipartFile mf 	= entity.getValue();
 					System.out.println(mf.getOriginalFilename());
 					System.out.println("index:" + index);
 					if(!mf.getOriginalFilename().equals("")){
+						for(TFileForm tFileForm:lists){
+							System.out.println(tFileForm.getFileFormName());
+						}
 						System.out.println(decideIsHave(lists,fileNames[index]));
 						if(decideIsHave(lists,fileNames[index])!=null) {
 							TFileForm tPlanForm = decideIsHave(lists,fileNames[index]);
@@ -165,9 +176,29 @@ public class WorkService {
 				}
 			}
 		}
+		
+		System.out.println("删除需要从数据库删除的开工报审文件");
+		
+		//需要从数据库删除的开工报审文件
+		List<TFileForm> fLists = initBeginWorkByProId(proId);
+		for(String n : fileNames)
+		{
+			for(TFileForm tFileForm : fLists){
+				if(n.equals(tFileForm.getFileFormName())){
+					fLists.remove(tFileForm);
+					break;
+				}
+			}
+		}
+		for(TFileForm tFileForm : fLists){
+			fileService.deleteByTypeAndNameAndMsgId(proId, "开工报审", tFileForm.getFileFormName());
+			
+		}
+		
 		return rows;
 	}
 	
+	//获取数据库中的开工报审文件
 	@Transactional
 	public List<TFileForm> initBeginWorkByProId(int proId) {
 		TFileFormExample tFileFormExample = new TFileFormExample();
@@ -176,11 +207,16 @@ public class WorkService {
 		criteria.andFileFormTypeEqualTo("开工报审");
 		List<TFileForm> lists = tFileFormMapper.selectByExample(tFileFormExample);
 		List<TFileForm> results = new ArrayList<TFileForm>();
+		//判断数据库的开工报审文件中是否有以下文件，如果没有则加上
 		addExistsFile("开工报审表",lists,results);
 		addExistsFile("方案报审表",lists,results);
 		addExistsFile("检验设备仪器检定证书",lists,results);
-		addExistsFile("原材料质量证明书",lists,results);
-		addExistsFile("原材料复验报告",lists,results);
+		addExistsFile("入厂监理会议纪要",lists,results);
+		addExistsFile("进度计划表",lists,results);
+		//加入其余数据库中的文件
+		for(TFileForm tFileForm : lists){
+			results.add(tFileForm);
+		}
 		return results;
 	}
 	
