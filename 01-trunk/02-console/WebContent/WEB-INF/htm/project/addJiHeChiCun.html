@@ -1,0 +1,3436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<link rel="stylesheet" type="text/css" href="../../themes/general.css"  />
+	<link rel="stylesheet" type="text/css" href="../../themes/icon.css" 			/>
+	<link rel="stylesheet" type="text/css" href="../../themes/jquery-ui.css" 		/>
+	<link rel="stylesheet" type="text/css" href="../../themes/default/easyui.css" 	/>
+		<script type="text/javascript" src="../../scripts/jquery-1.8.0.min.js"></script>
+		<script type="text/javascript" src="../../scripts/jquery.easyui.min.js"></script>
+		<script type="text/javascript" src="../../scripts/locale/easyui-lang-zh_CN.js"></script>
+		<script type="text/javascript" src="../../scripts/src/jquery.parser.js"></script>
+		<script type="text/javascript" src="../../scripts/general.js"></script>
+		<script type="text/javascript" src="../../scripts/sessionExpriation.js"></script>
+		<script type="text/javascript" src="../../scripts/leibie/jihechicun.js"></script>
+		
+	<style type="text/css">	
+		html,body {
+			height: 100%;
+			width: 100%;
+		}
+		.inbe{
+			border: 1px solid #95B8E7;
+			border-radius: 5px 5px 5px 5px;
+			height: 25px;
+		}
+		#tableWork td{
+			padding-left:0;
+			padding-right:0;	
+		}
+		select{
+			border: 1px solid #95B8E7;
+			border-radius: 5px 5px 5px 5px;
+			height: 25px;
+		}
+		.title {
+			color: green;margin: 20px;font-size: 20px;
+		}
+		.wenzi {
+			font-size: 23px;
+			font-weight: bolder;
+		}
+
+
+ 
+	</style>
+	<script type="text/javascript">
+		$(function(){
+
+			//项目的id作为隐藏值保存在表单中
+			var projectId = $.getUrlParam('projectId');
+			$("#proId").val(projectId);
+
+			$("input[type='text']").val(1);
+			
+			$('[id^="new_form"]').form({
+				url : "../../test/testResult.ajax",//ajax地址待修改
+				onSubmit : function() {				
+				},
+				success : function(data) {
+					var obj = $.parseJSON(data);//将json字符串转换为object对象
+					if (obj.success) {
+						$.messager.alert('提示', obj.message, 'info', function(){
+							 //刷新项目详述页面
+							 href="./project/view.html?proId="+projectId;
+							// alert(href);
+							var content = '<iframe scrolling="auto" frameborder="0"  src="'+href+'" style="width:100%;height:100%;"></iframe>';  
+						    var tt = parent.$('#tabs');  	   
+						    if (tt.tabs('exists', "项目详述")){//如果tab已经存在,则选中该tab，并更新内容          
+						        tt.tabs('select', "项目详述");  
+						        var tab =parent.$('#tabs').tabs('getSelected'); 
+						        parent.$('#tabs').tabs('update', {
+						        	tab: tab,
+						        	options: {
+						        		content:content
+						        	}
+						        });
+						    }
+						    //关闭当前页面
+						 	parent.$('#tabs').tabs('close','新增质量控制');
+						});
+					} else {
+						$.messager.alert('错误', obj.message, 'error');
+					}
+				}
+			}); 
+
+			$('#btn_submit').bind('click', function() {
+				//alert('hello');
+				$('[id^="new_form"]').submit();
+			}); 
+		});
+	</script>
+</head>
+<body>
+	<form id="new_form0" method="post" enctype="multipart/form-data">
+		<input type="text" name="proId" id="proId" >
+		<input type="text" name="proType" id="proType" value="jiHeChiCun">
+		<table class="table_new2 aa">
+			<tr>
+				<td>日期/班次</td>
+				<td><input class="easyui-validatebox input_180" type="date" name="date" required="required"/></td>
+				<td>填写人</td>
+				<td><input class="easyui-validatebox input_180" type="text" name="people" required="required"/></td>
+			</tr>
+		</table>
+		<div class="title">
+			<span class="wenzi">焊管几何尺寸抽检记录</span>
+		</div>
+		<table class="table_new2 value">
+			<tr>
+				<td align="center" colspan="3">项目名称</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="hanGuanJiHe_a1"></td>
+				<td align="center" colspan="3">生产厂家</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="hanGuanJiHe_a2"></td>
+				<td align="center" colspan="3">规格/材质</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="hanGuanJiHe_a3"></td>
+				<td align="center" colspan="2">检验依据</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="hanGuanJiHe_a4"></td>
+			</tr>
+			<tr>
+				<td align="center" rowspan="3">管号</td>
+				<td align="center" colspan="3">周长（mm）</td>
+				<td align="center" colspan="3">壁厚（mm）</td>
+				<td align="center" colspan="3">椭圆度（mm）</td>
+				<td align="center" colspan="2">坡口角度（°）</td>
+				<td align="center" rowspan="3">切斜mm</td>
+				<td align="center" rowspan="3">钝边mm</td>
+				<td align="center" colspan="2">焊缝错边（mm）</td>
+				<td align="center" colspan="2">焊缝余高（mm）</td>
+				<td align="center" rowspan="3">直度mm</td>
+				<td align="center" rowspan="3">管端剩磁（GS）</td>
+				<td align="center" rowspan="3">外观标识</td>
+				<td align="center" rowspan="3">结论</td>
+				<td align="center" rowspan="3"><a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addHanGuanJiHe">
+			</tr>
+			<tr>
+				<td align="center" rowspan="2">管体</td>
+				<td align="center" colspan="2">管端</td>
+				<td align="center" rowspan="2">管体</td>
+				<td align="center" colspan="2">管端</td>
+				<td align="center" rowspan="2">管体</td>
+				<td align="center" colspan="2">管端</td>
+				<td align="center" rowspan="2">A端</td>
+				<td align="center" rowspan="2">B端</td>
+				<td align="center" rowspan="2">管端</td>
+				<td align="center" rowspan="2">管体</td>
+				<td align="center" rowspan="2">内</td>
+				<td align="center" rowspan="2">外</td>
+
+			</tr>
+			<tr>
+				<td align="center" >A端</td>
+				<td align="center" >B端</td>
+				<td align="center" >A端</td>
+				<td align="center" >B端</td>
+				<td align="center" >A端</td>
+				<td align="center" >B端</td>
+			</tr>
+			<tr>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="hanGuanJiHe_l1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="hanGuanJiHe_l2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="hanGuanJiHe_l3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="hanGuanJiHe_l4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="hanGuanJiHe_l5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="hanGuanJiHe_l6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="hanGuanJiHe_l7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="hanGuanJiHe_l8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="hanGuanJiHe_l9" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="hanGuanJiHe_l10" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="hanGuanJiHe_l11" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="hanGuanJiHe_l12" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="hanGuanJiHe_l13" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="hanGuanJiHe_l14" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="hanGuanJiHe_l15" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="hanGuanJiHe_l16" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="hanGuanJiHe_l17" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="hanGuanJiHe_l18" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="hanGuanJiHe_l19" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="hanGuanJiHe_l20" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="hanGuanJiHe_l21" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="hanGuanJiHe_l22" /></td>
+				<td align="center"></td>
+			</tr>
+			
+			<tr id="hanGuanJiHe">
+				<td align="center">标准要求</td>
+				<td align="center">            <input class="input_60 easyui-validatebox" type="text" name="hanGuanJiHe_b1" /></td>
+				<td align="center" colspan="2"><input class="input_60 easyui-validatebox" type="text" name="hanGuanJiHe_b2" /></td>
+				<td align="center" colspan="3"><input class="input_60 easyui-validatebox" type="text" name="hanGuanJiHe_b3" /></td>
+				<td align="center">            <input class="input_60 easyui-validatebox" type="text" name="hanGuanJiHe_b4" /></td>
+				<td align="center" colspan="2"><input class="input_60 easyui-validatebox" type="text" name="hanGuanJiHe_b5" /></td>
+				<td align="center" colspan="2"><input class="input_60 easyui-validatebox" type="text" name="hanGuanJiHe_b6" /></td>
+				<td align="center">            <input class="input_60 easyui-validatebox" type="text" name="hanGuanJiHe_b7" /></td>
+				<td align="center">            <input class="input_60 easyui-validatebox" type="text" name="hanGuanJiHe_b8" /></td>
+				<td align="center">            <input class="input_60 easyui-validatebox" type="text" name="hanGuanJiHe_b9" /></td>
+				<td align="center">            <input class="input_60 easyui-validatebox" type="text" name="hanGuanJiHe_b10" /></td>
+				<td align="center">            <input class="input_60 easyui-validatebox" type="text" name="hanGuanJiHe_b11" /></td>
+				<td align="center">            <input class="input_60 easyui-validatebox" type="text" name="hanGuanJiHe_b12" /></td>
+				<td align="center">            <input class="input_60 easyui-validatebox" type="text" name="hanGuanJiHe_b13" /></td>
+				<td align="center">            <input class="input_60 easyui-validatebox" type="text" name="hanGuanJiHe_b14" /></td>
+				<td align="center">            <input class="input_60 easyui-validatebox" type="text" name="hanGuanJiHe_b15" /></td>
+				<td align="center">            <input class="input_60 easyui-validatebox" type="text" name="hanGuanJiHe_b16" /></td>
+				<td align="center"></td>
+			</tr>
+			<tr>
+				<td align="center" colspan="2">存在问题及处理情况</td>
+				<td  colspan="20"><input class="input_360 easyui-validatebox" type="text" name="hanGuanJiHe_c1" /></td>
+			</tr>
+		</table>
+
+
+		<div class="title">
+			<span class="wenzi">无缝钢管几何尺寸检验记录</span>
+		</div>
+		<table class="table_new2 value">
+			<tr>
+				<td align="center" colspan="3">项目名称</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="wuFengGangGuan_a1"></td>
+				<td align="center" colspan="3">生产厂家</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="wuFengGangGuan_a2"></td>
+				<td align="center" colspan="3">产品名称</td>
+				<td colspan="4"><input class="input_100 easyui-validatebox" type="text" name="wuFengGangGuan_a3"></td>
+			</tr>
+			<tr>
+				<td align="center" colspan="3">规格/材质</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="wuFengGangGuan_b1"></td>
+				<td align="center" colspan="3">检验依据</td>
+				<td colspan="10"><input class="input_100 easyui-validatebox" type="text" name="wuFengGangGuan_b2"></td>
+			</tr>
+			<tr>
+				<td align="center" rowspan="2">炉批号</td>
+				<td align="center" rowspan="2">管号</td>
+				<td align="center" colspan="2">外径（mm）</td>
+				<td align="center" colspan="3">壁厚（mm）</td>
+				<td align="center" rowspan="2">椭圆度（mm）</td>
+				<td align="center" colspan="2">坡口角度（°）</td>
+				<td align="center" colspan="2">切斜（mm）</td>
+				<td align="center" colspan="2">钝边（mm）</td>
+				<td align="center" rowspan="2">直度（mm）</td>
+				<td align="center" rowspan="2">长度（mm）</td>
+				<td align="center" rowspan="2">外观标识</td>
+				<td align="center" rowspan="2">结论</td>
+				<td align="center" rowspan="2"><a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addWuFengGangGuan">
+			</tr>
+			<tr>
+				<td align="center" >A端</td>
+				<td align="center" >B端</td>
+				<td align="center" >A端</td>
+				<td align="center" >B端</td>
+				<td align="center" >管体</td>
+				<td align="center" >A端</td>
+				<td align="center" >B端</td>
+				<td align="center" >A端</td>
+				<td align="center" >B端</td>
+				<td align="center" >A端</td>
+				<td align="center" >B端</td>
+			</tr>
+			<tr>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wuFengGangGuan_l1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wuFengGangGuan_l2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wuFengGangGuan_l3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wuFengGangGuan_l4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wuFengGangGuan_l5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wuFengGangGuan_l6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wuFengGangGuan_l7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wuFengGangGuan_l8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wuFengGangGuan_l9" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wuFengGangGuan_l10" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wuFengGangGuan_l11" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wuFengGangGuan_l12" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wuFengGangGuan_l13" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wuFengGangGuan_l14" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wuFengGangGuan_l15" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wuFengGangGuan_l16" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wuFengGangGuan_l17" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wuFengGangGuan_l18" /></td>
+				<td align="center"></td>
+			</tr>
+			
+			<tr id="wuFengGangGuan">
+				<td align="center">标准要求</td>
+				<td align="center">            <input class="input_60 easyui-validatebox" type="text" name="wuFengGangGuan_c1" /></td>
+				<td align="center" colspan="2"><input class="input_60 easyui-validatebox" type="text" name="wuFengGangGuan_c2" /></td>
+				<td align="center" colspan="3"><input class="input_60 easyui-validatebox" type="text" name="wuFengGangGuan_c3" /></td>
+				<td align="center">            <input class="input_60 easyui-validatebox" type="text" name="wuFengGangGuan_c4" /></td>
+				<td align="center" colspan="2"><input class="input_60 easyui-validatebox" type="text" name="wuFengGangGuan_c5" /></td>
+				<td align="center" colspan="2"><input class="input_60 easyui-validatebox" type="text" name="wuFengGangGuan_c6" /></td>
+				<td align="center" colspan="2"><input class="input_60 easyui-validatebox" type="text" name="wuFengGangGuan_c7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wuFengGangGuan_c8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wuFengGangGuan_c9" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wuFengGangGuan_c10" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wuFengGangGuan_c11" /></td>
+				<td align="center"></td>
+			</tr>
+			
+		</table>
+
+		<div class="title">
+			<span class="wenzi">无缝钢管几何尺寸检验记录（油套管用）</span>
+		</div>
+		<table class="table_new2 value">
+			<tr>
+				<td align="center" colspan="3">项目名称</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="youTaoGuan_a1"></td>
+				<td align="center" colspan="3">生产厂家</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="youTaoGuan_a2"></td>
+				<td align="center" colspan="2">产品名称</td>
+				<td colspan="4"><input class="input_100 easyui-validatebox" type="text" name="youTaoGuan_a3"></td>
+			</tr>
+			<tr>
+				<td align="center" colspan="3">规格/材质</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="youTaoGuan_b1"></td>
+				<td align="center" colspan="3">检验依据</td>
+				<td colspan="10"><input class="input_100 easyui-validatebox" type="text" name="youTaoGuan_b2"></td>
+			</tr>
+			<tr>
+				<td align="center" rowspan="2">炉号-批号</td>
+				<td align="center" rowspan="2">管号</td>
+				<td align="center" colspan="2">外径（mm）</td>
+				<td align="center" colspan="3">壁厚（mm）</td>
+				<td align="center" colspan="2">椭圆度（mm）</td>
+				<td align="center" colspan="2">管端直度（mm）</td>
+				<td align="center" rowspan="2">全长直度（mm）</td>
+				<td align="center" rowspan="2">长度（mm）</td>
+				<td align="center" rowspan="2">外观标识</td>
+				<td align="center" rowspan="2">结论</td>
+				<td align="center" rowspan="2"><a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addYouTaoGuan">
+			</tr>
+			<tr>
+				<td align="center" >A端</td>
+				<td align="center" >B端</td>
+				<td align="center" >A端</td>
+				<td align="center" >B端</td>
+				<td align="center" >管体</td>
+				<td align="center" >A端</td>
+				<td align="center" >B端</td>
+				<td align="center" >A端</td>
+				<td align="center" >B端</td>
+			</tr>
+			<tr>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuan_l1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuan_l2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuan_l3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuan_l4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuan_l5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuan_l6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuan_l7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuan_l8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuan_l9" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuan_l10" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuan_l11" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuan_l12" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuan_l13" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuan_l14" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuan_l15" /></td>
+				<td align="center"></td>
+			</tr>
+			
+			<tr id="youTaoGuan">
+				<td align="center" colspan="2">标准要求</td>
+				<td align="center" colspan="2"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuan_c1" /></td>
+				<td align="center" colspan="3"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuan_c2" /></td>
+				<td align="center" colspan="2"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuan_c3" /></td>
+				<td align="center" colspan="2"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuan_c4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuan_c5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuan_c6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuan_c7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuan_c8" /></td>
+				<td align="center"></td>
+			</tr>
+			<tr>
+				<td align="center">备注</td>
+				<td  colspan="20"><input class="input_360 easyui-validatebox" type="text" name="youTaoGuan_d1" /></td>
+			</tr>
+			
+		</table>
+
+		<div class="title">
+			<span class="wenzi">弯管几何尺寸抽检监督记录</span>
+		</div>
+		<table class="table_new2 value">
+			<tr>
+				<td align="center" colspan="3">项目名称</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="wanGuanJiHe_a1"></td>
+				<td align="center" colspan="3">生产厂家</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="wanGuanJiHe_a2"></td>
+				<td align="center" colspan="3">规格/材质</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="wanGuanJiHe_a3"></td>
+				<td align="center" colspan="2">检验依据</td>
+				<td colspan="6"><input class="input_100 easyui-validatebox" type="text" name="wanGuanJiHe_a4"></td>
+			</tr>
+			
+			<tr>
+				<td align="center" rowspan="2">管号</td>
+				<td align="center" colspan="3">外径（mm）</td>
+				<td align="center" colspan="3">壁厚（mm）</td>
+				<td align="center" rowspan="2">壁厚减薄率（%）</td>
+				<td align="center" colspan="2">椭圆度（mm）</td>
+				<td align="center" colspan="2">外坡口角度（°）</td>
+				<td align="center" colspan="2">钝边（mm）</td>
+				<td align="center" colspan="2">管端垂直度（mm）</td>
+				<td align="center" colspan="2">管端平面度（mm）</td>
+				<td align="center" rowspan="2">弯曲角度（°）</td>
+				<td align="center" rowspan="2">弯曲半径mm</td>
+				<td align="center" rowspan="2">弯管平面度mm</td>
+				<td align="center" rowspan="2">表面硬度（HB）</td>
+				<td align="center" rowspan="2">外观标识</td>
+				<td align="center" rowspan="2">结论</td>
+				<td align="center" rowspan="2"><a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addWanGuanJiHe">
+			</tr>
+			<tr>
+				<td align="center" >A端</td>
+				<td align="center" >B端</td>
+				<td align="center" >管体</td>
+				<td align="center" >直管段</td>
+				<td align="center" >外弧侧</td>
+				<td align="center" >内弧侧</td>
+				<td align="center" >A端</td>
+				<td align="center" >B端</td>
+				<td align="center" >A端</td>
+				<td align="center" >B端</td>
+				<td align="center" >A端</td>
+				<td align="center" >B端</td>
+				<td align="center" >A端</td>
+				<td align="center" >B端</td>
+				<td align="center" >A端</td>
+				<td align="center" >B端</td>
+			</tr>
+			<tr>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wanGuanJiHe_l1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wanGuanJiHe_l2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wanGuanJiHe_l3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wanGuanJiHe_l4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wanGuanJiHe_l5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wanGuanJiHe_l6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wanGuanJiHe_l7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wanGuanJiHe_l8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wanGuanJiHe_l9" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wanGuanJiHe_l10" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wanGuanJiHe_l11" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wanGuanJiHe_l12" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wanGuanJiHe_l13" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wanGuanJiHe_l14" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wanGuanJiHe_l15" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wanGuanJiHe_l16" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wanGuanJiHe_l17" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wanGuanJiHe_l18" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wanGuanJiHe_l19" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wanGuanJiHe_l20" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wanGuanJiHe_l21" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wanGuanJiHe_l22" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wanGuanJiHe_l23" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wanGuanJiHe_l24" /></td>
+				<td align="center"></td>
+			</tr>
+			
+			<tr id="wanGuanJiHe">
+				<td align="center">标准要求</td>
+				<td align="center" colspan="3"><input class="input_60 easyui-validatebox" type="text" name="wanGuanJiHe_b1" /></td>
+				<td align="center" colspan="3"><input class="input_60 easyui-validatebox" type="text" name="wanGuanJiHe_b2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wanGuanJiHe_b3" /></td>
+				<td align="center" colspan="2"><input class="input_60 easyui-validatebox" type="text" name="wanGuanJiHe_b4" /></td>
+				<td align="center" colspan="2"><input class="input_60 easyui-validatebox" type="text" name="wanGuanJiHe_b5" /></td>
+				<td align="center" colspan="2"><input class="input_60 easyui-validatebox" type="text" name="wanGuanJiHe_b6" /></td>
+				<td align="center" colspan="2"><input class="input_60 easyui-validatebox" type="text" name="wanGuanJiHe_b7" /></td>
+				<td align="center" colspan="2"><input class="input_60 easyui-validatebox" type="text" name="wanGuanJiHe_b8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wanGuanJiHe_b9" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wanGuanJiHe_b10" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wanGuanJiHe_b11" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wanGuanJiHe_b12" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wanGuanJiHe_b13" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="wanGuanJiHe_b14" /></td>
+				<td align="center"></td>
+			</tr>
+			<tr>
+				<td align="center">备注</td>
+				<td  colspan="20"><input class="input_360 easyui-validatebox" type="text" name="wanGuanJiHe_c1" /></td>
+			</tr>
+			
+		</table>
+
+		<div class="title">
+			<span class="wenzi">90°焊接弯头几何尺寸抽检记录</span>
+		</div>
+		<table class="table_new2 value">
+			<tr>
+				<td align="center" colspan="2">项目名称</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="jiuShiTou_a1"></td>
+				<td align="center" colspan="2">生产厂家</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="jiuShiTou_a2"></td>
+				<td align="center" colspan="2">规格/材质</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="jiuShiTou_a3"></td>
+				<td align="center" colspan="2">检验依据</td>
+				<td colspan="6"><input class="input_100 easyui-validatebox" type="text" name="jiuShiTou_a4"></td>
+			</tr>
+
+			<tr>
+				<td align="center" rowspan="2">编号</td>
+				<td align="center" colspan="3">壁厚（mm）</td>
+				<td align="center" colspan="2">坡口处外径（mm）</td>
+				<td align="center" colspan="2">圆度（mm）</td>
+				<td align="center" colspan="2">坡口角度（°）</td>
+				<td align="center" colspan="2">钝边（mm）</td>
+				<td align="center" rowspan="2">中心至端面（mm）</td>
+				<td align="center" colspan="2">形位公差（mm）</td>
+				<td align="center">硬度（mm）</td>
+				<td align="center" rowspan="2">外观标识</td>
+				<td align="center" rowspan="2">检验结论</td>
+				<td align="center" rowspan="2"><a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addJiuShiTou">
+			</tr>
+
+			<tr>
+				<td align="center" >点1</td>
+				<td align="center" >点2</td>
+				<td align="center" >点3</td>
+				<td align="center" >A端</td>
+				<td align="center" >B端</td>
+				<td align="center" >A端</td>
+				<td align="center" >B端</td>
+				<td align="center" >A端</td>
+				<td align="center" >B端</td>
+				<td align="center" >A端</td>
+				<td align="center" >B端</td>
+				<td align="center" >Q</td>
+				<td align="center" >P</td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jiuShiTou_b1"></td>
+
+			</tr>
+			<tr>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jiuShiTou_l1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jiuShiTou_l2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jiuShiTou_l3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jiuShiTou_l4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jiuShiTou_l5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jiuShiTou_l6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jiuShiTou_l7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jiuShiTou_l8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jiuShiTou_l9" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jiuShiTou_l10" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jiuShiTou_l11" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jiuShiTou_l12" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jiuShiTou_l13" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jiuShiTou_l14" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jiuShiTou_l15" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jiuShiTou_l16" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jiuShiTou_l17" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jiuShiTou_l18" /></td>
+				<td align="center"></td>
+			</tr>
+			
+			<tr id="jiuShiTou">
+				<td align="center">标准值</td>
+				<td align="center" colspan="3"><input class="input_60 easyui-validatebox" type="text" name="jiuShiTou_c1" /></td>
+				<td align="center" colspan="2"><input class="input_60 easyui-validatebox" type="text" name="jiuShiTou_c2" /></td>
+				<td align="center" colspan="2"><input class="input_60 easyui-validatebox" type="text" name="jiuShiTou_c3" /></td>
+				<td align="center" colspan="2"><input class="input_60 easyui-validatebox" type="text" name="jiuShiTou_c4" /></td>
+				<td align="center" colspan="2"><input class="input_60 easyui-validatebox" type="text" name="jiuShiTou_c5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jiuShiTou_c6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jiuShiTou_c7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jiuShiTou_c8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jiuShiTou_c9" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jiuShiTou_c10" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jiuShiTou_c11" /></td>
+				<td align="center"></td>
+			</tr>
+			<tr>
+				<td align="center">备注</td>
+				<td  colspan="20"><input class="input_360 easyui-validatebox" type="text" name="jiuShiTou_d1" /></td>
+			</tr>
+			
+		</table>
+
+		<div class="title">
+			<span class="wenzi">45°焊接弯头几何尺寸抽检记录</span>
+		</div>
+		<table class="table_new2 value">
+			<tr>
+				<td align="center" colspan="2">项目名称</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="siShiWuTou_a1"></td>
+				<td align="center" colspan="2">生产厂家</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="siShiWuTou_a2"></td>
+				<td align="center" colspan="2">规格/材质</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="siShiWuTou_a3"></td>
+				<td align="center" colspan="2">检验依据</td>
+				<td colspan="6"><input class="input_100 easyui-validatebox" type="text" name="siShiWuTou_a4"></td>
+			</tr>
+
+			<tr>
+				<td align="center" rowspan="2">编号</td>
+				<td align="center" colspan="3">壁厚（mm）</td>
+				<td align="center" colspan="2">坡口处外径（mm）</td>
+				<td align="center" colspan="2">圆度（mm）</td>
+				<td align="center" colspan="2">坡口角度（°）</td>
+				<td align="center" colspan="2">钝边（mm）</td>
+				<td align="center" rowspan="2">中心至端面（mm）</td>
+				<td align="center" colspan="2">形位公差（mm）</td>
+				<td align="center">硬度（mm）</td>
+				<td align="center" rowspan="2">外观标识</td>
+				<td align="center" rowspan="2">检验结论</td>
+				<td align="center" rowspan="2"><a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addSiShiWuTou">
+			</tr>
+
+			<tr>
+				<td align="center" >点1</td>
+				<td align="center" >点2</td>
+				<td align="center" >点3</td>
+				<td align="center" >A端</td>
+				<td align="center" >B端</td>
+				<td align="center" >A端</td>
+				<td align="center" >B端</td>
+				<td align="center" >A端</td>
+				<td align="center" >B端</td>
+				<td align="center" >A端</td>
+				<td align="center" >B端</td>
+				<td align="center" >Q</td>
+				<td align="center" >P</td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="siShiWuTou_b1"></td>
+
+			</tr>
+			<tr>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="siShiWuTou_l1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="siShiWuTou_l2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="siShiWuTou_l3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="siShiWuTou_l4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="siShiWuTou_l5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="siShiWuTou_l6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="siShiWuTou_l7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="siShiWuTou_l8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="siShiWuTou_l9" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="siShiWuTou_l10" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="siShiWuTou_l11" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="siShiWuTou_l12" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="siShiWuTou_l13" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="siShiWuTou_l14" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="siShiWuTou_l15" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="siShiWuTou_l16" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="siShiWuTou_l17" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="siShiWuTou_l18" /></td>
+				<td align="center"></td>
+			</tr>
+			
+			<tr id="siShiWuTou">
+				<td align="center">标准值</td>
+				<td align="center" colspan="3"><input class="input_60 easyui-validatebox" type="text" name="siShiWuTou_c1" /></td>
+				<td align="center" colspan="2"><input class="input_60 easyui-validatebox" type="text" name="siShiWuTou_c2" /></td>
+				<td align="center" colspan="2"><input class="input_60 easyui-validatebox" type="text" name="siShiWuTou_c3" /></td>
+				<td align="center" colspan="2"><input class="input_60 easyui-validatebox" type="text" name="siShiWuTou_c4" /></td>
+				<td align="center" colspan="2"><input class="input_60 easyui-validatebox" type="text" name="siShiWuTou_c5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="siShiWuTou_c6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="siShiWuTou_c7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="siShiWuTou_c8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="siShiWuTou_c9" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="siShiWuTou_c10" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="siShiWuTou_c11" /></td>
+				<td align="center"></td>
+			</tr>
+			<tr>
+				<td align="center">备注</td>
+				<td  colspan="20"><input class="input_360 easyui-validatebox" type="text" name="siShiWuTou_d1" /></td>
+			</tr>
+			
+		</table>
+
+
+		<div class="title">
+			<span class="wenzi">等径三通几何尺寸抽检记录</span>
+		</div>
+		<table class="table_new2 value">
+			<tr>
+				<td align="center" colspan="2">项目名称</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="dengJingSanTong_a1"></td>
+				<td align="center" colspan="2">生产厂家</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="dengJingSanTong_a2"></td>
+				<td align="center" colspan="2">规格/材质</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="dengJingSanTong_a3"></td>
+				<td align="center" colspan="2">检验依据</td>
+				<td colspan="6"><input class="input_100 easyui-validatebox" type="text" name="dengJingSanTong_a4"></td>
+			</tr>
+
+			<tr>
+				<td align="center" rowspan="2">编号</td>
+				<td align="center" colspan="5">主管1</td>
+				<td align="center" colspan="5">主管2</td>
+				<td align="center" colspan="5">支管</td>
+				<td align="center" colspan="2">中心至端面</td>
+				<td align="center">形位公差</td>
+				<td align="center">硬度</td>
+				<td align="center" rowspan="2">外观标识</td>
+				<td align="center" rowspan="2">检验结论</td>
+				<td align="center" rowspan="2"><a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addDengJingSanTong">
+			</tr>
+
+			<tr>
+				<td align="center" >外径（mm）</td>
+				<td align="center" >内径（mm）</td>
+				<td align="center" >壁厚（mm）</td>
+				<td align="center" >坡口角度（°）</td>
+				<td align="center" >钝边（mm）</td>
+				<td align="center" >外径（mm）</td>
+				<td align="center" >内径（mm）</td>
+				<td align="center" >壁厚（mm）</td>
+				<td align="center" >坡口角度（°）</td>
+				<td align="center" >钝边（mm）</td>
+				<td align="center" >外径（mm）</td>
+				<td align="center" >内径（mm）</td>
+				<td align="center" >壁厚（mm）</td>
+				<td align="center" >坡口角度（°）</td>
+				<td align="center" >钝边（mm）</td>
+				<td align="center" >C（mm）</td>
+				<td align="center" >M（mm）</td>
+				<td align="center" >Q（mm）</td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingSanTong_b1"></td>
+
+			</tr>
+			<tr>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingSanTong_l1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingSanTong_l2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingSanTong_l3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingSanTong_l4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingSanTong_l5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingSanTong_l6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingSanTong_l7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingSanTong_l8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingSanTong_l9" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingSanTong_l10" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingSanTong_l11" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingSanTong_l12" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingSanTong_l13" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingSanTong_l14" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingSanTong_l15" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingSanTong_l16" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingSanTong_l17" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingSanTong_l18" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingSanTong_l19" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingSanTong_l20" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingSanTong_l21" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingSanTong_l22" /></td>
+				<td align="center"></td>
+			</tr>
+			
+			<tr id="dengJingSanTong">
+				<td align="center">标准值</td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingSanTong_c1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingSanTong_c2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingSanTong_c3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingSanTong_c4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingSanTong_c5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingSanTong_c6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingSanTong_c7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingSanTong_c8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingSanTong_c9" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingSanTong_c10" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingSanTong_c11" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingSanTong_c12" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingSanTong_c13" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingSanTong_c14" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingSanTong_c15" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingSanTong_c16" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingSanTong_c17" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingSanTong_c18" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingSanTong_c19" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingSanTong_c20" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingSanTong_c21" /></td>
+				<td align="center"></td>
+			</tr>
+			<tr>
+				<td align="center">备注</td>
+				<td  colspan="20"><input class="input_360 easyui-validatebox" type="text" name="dengJingSanTong_d1" /></td>
+			</tr>
+			
+		</table>
+
+		<div class="title">
+			<span class="wenzi">异径三通几何尺寸抽检记录</span>
+		</div>
+		<table class="table_new2 value">
+			<tr>
+				<td align="center" colspan="2">项目名称</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="yiJingSanTong_a1"></td>
+				<td align="center" colspan="2">生产厂家</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="yiJingSanTong_a2"></td>
+				<td align="center" colspan="2">规格/材质</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="yiJingSanTong_a3"></td>
+				<td align="center" colspan="2">检验依据</td>
+				<td colspan="6"><input class="input_100 easyui-validatebox" type="text" name="yiJingSanTong_a4"></td>
+			</tr>
+
+			<tr>
+				<td align="center" rowspan="2">编号</td>
+				<td align="center" colspan="5">主管1</td>
+				<td align="center" colspan="5">主管2</td>
+				<td align="center" colspan="5">支管</td>
+				<td align="center" colspan="2">中心至端面</td>
+				<td align="center">形位公差</td>
+				<td align="center">硬度</td>
+				<td align="center" rowspan="2">外观标识</td>
+				<td align="center" rowspan="2">检验结论</td>
+				<td align="center" rowspan="2"><a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addYiJingSanTong">
+			</tr>
+
+			<tr>
+				<td align="center" >外径（mm）</td>
+				<td align="center" >内径（mm）</td>
+				<td align="center" >壁厚（mm）</td>
+				<td align="center" >坡口角度（°）</td>
+				<td align="center" >钝边（mm）</td>
+				<td align="center" >外径（mm）</td>
+				<td align="center" >内径（mm）</td>
+				<td align="center" >壁厚（mm）</td>
+				<td align="center" >坡口角度（°）</td>
+				<td align="center" >钝边（mm）</td>
+				<td align="center" >外径（mm）</td>
+				<td align="center" >内径（mm）</td>
+				<td align="center" >壁厚（mm）</td>
+				<td align="center" >坡口角度（°）</td>
+				<td align="center" >钝边（mm）</td>
+				<td align="center" >C（mm）</td>
+				<td align="center" >M（mm）</td>
+				<td align="center" >Q（mm）</td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="yiJingSanTong_b1"></td>
+
+			</tr>
+			<tr>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="yiJingSanTong_l1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="yiJingSanTong_l2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="yiJingSanTong_l3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="yiJingSanTong_l4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="yiJingSanTong_l5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="yiJingSanTong_l6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="yiJingSanTong_l7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="yiJingSanTong_l8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="yiJingSanTong_l9" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="yiJingSanTong_l10" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="yiJingSanTong_l11" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="yiJingSanTong_l12" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="yiJingSanTong_l13" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="yiJingSanTong_l14" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="yiJingSanTong_l15" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="yiJingSanTong_l16" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="yiJingSanTong_l17" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="yiJingSanTong_l18" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="yiJingSanTong_l19" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="yiJingSanTong_l20" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="yiJingSanTong_l21" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="yiJingSanTong_l22" /></td>
+				<td align="center"></td>
+			</tr>
+			
+			<tr id="yiJingSanTong">
+				<td align="center">标准值</td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="yiJingSanTong_c1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="yiJingSanTong_c2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="yiJingSanTong_c3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="yiJingSanTong_c4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="yiJingSanTong_c5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="yiJingSanTong_c6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="yiJingSanTong_c7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="yiJingSanTong_c8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="yiJingSanTong_c9" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="yiJingSanTong_c10" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="yiJingSanTong_c11" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="yiJingSanTong_c12" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="yiJingSanTong_c13" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="yiJingSanTong_c14" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="yiJingSanTong_c15" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="yiJingSanTong_c16" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="yiJingSanTong_c17" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="yiJingSanTong_c18" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="yiJingSanTong_c19" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="yiJingSanTong_c20" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="yiJingSanTong_c21" /></td>
+				<td align="center"></td>
+			</tr>
+			<tr>
+				<td align="center">备注</td>
+				<td  colspan="20"><input class="input_360 easyui-validatebox" type="text" name="yiJingSanTong_d1" /></td>
+			</tr>
+			
+		</table>
+
+		<div class="title">
+			<span class="wenzi">同心异径接头几何尺寸抽检记录</span>
+		</div>
+		<table class="table_new2 value">
+			<tr>
+				<td align="center" colspan="2">项目名称</td>
+				<td colspan="2"><input class="input_100 easyui-validatebox" type="text" name="tongXinYiJing_a1"></td>
+				<td align="center" colspan="2">生产厂家</td>
+				<td colspan="2"><input class="input_100 easyui-validatebox" type="text" name="tongXinYiJing_a2"></td>
+				<td align="center" colspan="2">规格/材质</td>
+				<td colspan="2"><input class="input_100 easyui-validatebox" type="text" name="tongXinYiJing_a3"></td>
+				<td align="center" colspan="2">检验依据</td>
+				<td colspan="6"><input class="input_100 easyui-validatebox" type="text" name="tongXinYiJing_a4"></td>
+			</tr>
+
+			<tr>
+				<td align="center" rowspan="2">编号</td>
+				<td align="center" colspan="4">大端口A</td>
+				<td align="center" colspan="4">小端口B</td>
+				<td align="center" rowspan="2">长度（mm）</td>
+				<td align="center" colspan="2">壁厚（mm）</td>
+				<td align="center" rowspan="2">形位偏差Q（mm）</td>
+				<td align="center">硬度</td>
+				<td align="center" rowspan="2">外观标识</td>
+				<td align="center" rowspan="2">检验结论</td>
+				<td align="center" rowspan="2"><a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addTongXinYiJing">
+			</tr>
+
+			<tr>
+				<td align="center" >外径（mm）</td>
+				<td align="center" >内径（mm）</td>
+				<td align="center" >坡口角度（°）</td>
+				<td align="center" >钝边（mm）</td>
+				<td align="center" >外径（mm）</td>
+				<td align="center" >内径（mm）</td>
+				<td align="center" >坡口角度（°）</td>
+				<td align="center" >钝边（mm）</td>
+				<td align="center" >大头</td>
+				<td align="center" >小头</td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="tongXinYiJing_b1"></td>
+
+			</tr>
+			<tr>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="tongXinYiJing_l1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="tongXinYiJing_l2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="tongXinYiJing_l3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="tongXinYiJing_l4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="tongXinYiJing_l5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="tongXinYiJing_l6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="tongXinYiJing_l7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="tongXinYiJing_l8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="tongXinYiJing_l9" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="tongXinYiJing_l10" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="tongXinYiJing_l11" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="tongXinYiJing_l12" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="tongXinYiJing_l13" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="tongXinYiJing_l14" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="tongXinYiJing_l15" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="tongXinYiJing_l16" /></td>
+				<td align="center"></td>
+			</tr>
+			
+			<tr id="tongXinYiJing">
+				<td align="center">标准值</td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="tongXinYiJing_c1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="tongXinYiJing_c2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="tongXinYiJing_c3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="tongXinYiJing_c4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="tongXinYiJing_c5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="tongXinYiJing_c6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="tongXinYiJing_c7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="tongXinYiJing_c8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="tongXinYiJing_c9" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="tongXinYiJing_c10" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="tongXinYiJing_c11" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="tongXinYiJing_c12" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="tongXinYiJing_c13" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="tongXinYiJing_c14" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="tongXinYiJing_c15" /></td>
+				<td align="center"></td>
+			</tr>
+			<tr>
+				<td align="center">备注</td>
+				<td  colspan="20"><input class="input_360 easyui-validatebox" type="text" name="tongXinYiJing_d1" /></td>
+			</tr>
+			
+		</table>
+
+		<div class="title">
+			<span class="wenzi">偏心异径接头几何尺寸抽检记录</span>
+		</div>
+		<table class="table_new2 value">
+			<tr>
+				<td align="center" colspan="1">项目名称</td>
+				<td colspan="2"><input class="input_100 easyui-validatebox" type="text" name="pianXinYiJing_a1"></td>
+				<td align="center" colspan="1">生产厂家</td>
+				<td colspan="2"><input class="input_100 easyui-validatebox" type="text" name="pianXinYiJing_a2"></td>
+				<td align="center" colspan="1">规格/材质</td>
+				<td colspan="2"><input class="input_100 easyui-validatebox" type="text" name="pianXinYiJing_a3"></td>
+				<td align="center" colspan="1">检验依据</td>
+				<td colspan="6"><input class="input_100 easyui-validatebox" type="text" name="pianXinYiJing_a4"></td>
+			</tr>
+
+			<tr>
+				<td align="center" rowspan="2">编号</td>
+				<td align="center" colspan="3">大端口A</td>
+				<td align="center" colspan="3">小端口B</td>
+				<td align="center" rowspan="2">长度（mm）</td>
+				<td align="center" colspan="2">壁厚（mm）</td>
+				<td align="center" rowspan="2">硬度</td>
+				<td align="center" rowspan="2">外观标识</td>
+				<td align="center" rowspan="2">检验结论</td>
+				<td align="center" rowspan="2"><a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addPianXinYiJing">
+			</tr>
+
+			<tr>
+				<td align="center" >外径（mm）</td>
+				<td align="center" >坡口角度（°）</td>
+				<td align="center" >钝边（mm）</td>
+				<td align="center" >外径（mm）</td>
+				<td align="center" >坡口角度（°）</td>
+				<td align="center" >钝边（mm）</td>
+				<td align="center" >大头</td>
+				<td align="center" >小头</td>
+
+			</tr>
+			<tr>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="pianXinYiJing_l1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="pianXinYiJing_l2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="pianXinYiJing_l3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="pianXinYiJing_l4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="pianXinYiJing_l5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="pianXinYiJing_l6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="pianXinYiJing_l7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="pianXinYiJing_l8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="pianXinYiJing_l9" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="pianXinYiJing_l10" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="pianXinYiJing_l11" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="pianXinYiJing_l12" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="pianXinYiJing_l13" /></td>
+				<td align="center"></td>
+			</tr>
+			
+			<tr id="pianXinYiJing">
+				<td align="center">标准值</td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="pianXinYiJing_b1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="pianXinYiJing_b2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="pianXinYiJing_b3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="pianXinYiJing_b4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="pianXinYiJing_b5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="pianXinYiJing_b6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="pianXinYiJing_b7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="pianXinYiJing_b8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="pianXinYiJing_b9" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="pianXinYiJing_b10" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="pianXinYiJing_b11" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="pianXinYiJing_b12" /></td>
+				<td align="center"></td>
+			</tr>
+			<tr>
+				<td align="center">备注</td>
+				<td  colspan="20"><input class="input_360 easyui-validatebox" type="text" name="pianXinYiJing_c1" /></td>
+			</tr>
+			
+		</table>
+
+		<div class="title">
+			<span class="wenzi">支管座几何尺寸抽检记录</span>
+		</div>
+		<table class="table_new2 value">
+			<tr>
+				<td align="center" colspan="1">项目名称</td>
+				<td colspan="1"><input class="input_100 easyui-validatebox" type="text" name="zhiGuanZuo_a1"></td>
+				<td align="center" colspan="1">生产厂家</td>
+				<td colspan="1"><input class="input_100 easyui-validatebox" type="text" name="zhiGuanZuo_a2"></td>
+				<td align="center" colspan="1">规格/材质</td>
+				<td colspan="1"><input class="input_100 easyui-validatebox" type="text" name="zhiGuanZuo_a3"></td>
+				<td align="center" colspan="1">检验依据</td>
+				<td colspan="2"><input class="input_100 easyui-validatebox" type="text" name="zhiGuanZuo_a4"></td>
+			</tr>
+
+			<tr>
+				<td align="center">编号</td>
+				<td align="center">端部外径（mm）</td>
+				<td align="center">端部内径（mm）</td>
+				<td align="center">结构高度（mm）</td>
+				<td align="center">外观标识</td>
+				<td align="center">检验结论</td>
+				<td align="center" colspan="2"><a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addZhiGuanZuo">
+			</tr>
+
+			<tr>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zhiGuanZuo_l1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zhiGuanZuo_l2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zhiGuanZuo_l3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zhiGuanZuo_l4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zhiGuanZuo_l5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zhiGuanZuo_l6" /></td>
+				<td align="center"></td>
+			</tr>
+			
+			<tr id="zhiGuanZuo">
+				<td align="center">标准值</td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zhiGuanZuo_b1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zhiGuanZuo_b2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zhiGuanZuo_b3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zhiGuanZuo_b4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zhiGuanZuo_b5" /></td>
+				<td align="center"></td>
+			</tr>
+			<tr>
+				<td align="center">备注</td>
+				<td  colspan="6"><input class="input_360 easyui-validatebox" type="text" name="zhiGuanZuo_c1" /></td>
+			</tr>
+			
+		</table>
+
+		<div class="title">
+			<span class="wenzi">90°螺纹弯头几何尺寸抽检记录</span>
+		</div>
+		<table class="table_new2 value">
+			<tr>
+				<td align="center" colspan="1">项目名称</td>
+				<td colspan="1"><input class="input_100 easyui-validatebox" type="text" name="jiuShiLuoWen_a1"></td>
+				<td align="center" colspan="1">生产厂家</td>
+				<td colspan="1"><input class="input_100 easyui-validatebox" type="text" name="jiuShiLuoWen_a2"></td>
+				<td align="center" colspan="1">规格/材质</td>
+				<td colspan="1"><input class="input_100 easyui-validatebox" type="text" name="jiuShiLuoWen_a3"></td>
+				<td align="center" colspan="1">检验依据</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="jiuShiLuoWen_a4"></td>
+			</tr>
+
+			<tr>
+				<td align="center" rowspan="2">编号</td>
+				<td align="center" colspan="3">端口A</td>
+				<td align="center" colspan="3">端口B</td>
+				<td align="center" rowspan="2">外观标识</td>
+				<td align="center" rowspan="2">检验结论</td>
+				<td align="center" rowspan="2"><a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addJiuShiLuoWen">
+			</tr>
+
+			<tr>
+				<td align="center" >有效螺纹长度（mm）</td>
+				<td align="center" >端部外径H（mm）</td>
+				<td align="center" >中心至内螺纹端面A（mm）</td>
+				<td align="center" >有效螺纹长度（mm）</td>
+				<td align="center" >端部外径H（mm）</td>
+				<td align="center" >中心至内螺纹端面A（mm）</td>
+
+			</tr>
+
+			<tr>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jiuShiLuoWen_l1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jiuShiLuoWen_l2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jiuShiLuoWen_l3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jiuShiLuoWen_l4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jiuShiLuoWen_l5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jiuShiLuoWen_l6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jiuShiLuoWen_l7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jiuShiLuoWen_l8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jiuShiLuoWen_l9" /></td>
+
+				<td align="center"></td>
+			</tr>
+			
+			<tr id="jiuShiLuoWen">
+				<td align="center">标准值</td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jiuShiLuoWen_b1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jiuShiLuoWen_b2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jiuShiLuoWen_b3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jiuShiLuoWen_b4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jiuShiLuoWen_b5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jiuShiLuoWen_b6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jiuShiLuoWen_b7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jiuShiLuoWen_b8" /></td>
+				<td align="center"></td>
+			</tr>
+			<tr>
+				<td align="center">备注</td>
+				<td  colspan="20"><input class="input_360 easyui-validatebox" type="text" name="jiuShiLuoWen_c1" /></td>
+			</tr>
+			
+		</table>
+
+		<div class="title">
+			<span class="wenzi">双丝头短节几何尺寸抽检记录</span>
+		</div>
+		<table class="table_new2 value">
+			<tr>
+				<td align="center" colspan="1">项目名称</td>
+				<td colspan="1"><input class="input_100 easyui-validatebox" type="text" name="shuangSiTou_a1"></td>
+				<td align="center" colspan="1">生产厂家</td>
+				<td colspan="1"><input class="input_100 easyui-validatebox" type="text" name="shuangSiTou_a2"></td>
+				<td align="center" colspan="1">规格/材质</td>
+				<td colspan="1"><input class="input_100 easyui-validatebox" type="text" name="shuangSiTou_a3"></td>
+				<td align="center" colspan="1">检验依据</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="shuangSiTou_a4"></td>
+			</tr>
+
+			<tr>
+				<td align="center" rowspan="2">编号</td>
+				<td align="center" colspan="2">端口A</td>
+				<td align="center" colspan="2">端口B</td>
+				<td align="center" rowspan="2">接头长度（mm）</td>
+				<td align="center" rowspan="2">外观标识</td>
+				<td align="center" rowspan="2">检验结论</td>
+				<td align="center" rowspan="2"><a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addShuangSiTou">
+			</tr>
+
+			<tr>
+				<td align="center" >端部外径（mm）</td>
+				<td align="center" >螺纹长度（mm）</td>
+				<td align="center" >端部外径（mm）</td>
+				<td align="center" >螺纹长度（mm）</td>
+			</tr>
+
+			<tr>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="shuangSiTou_l1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="shuangSiTou_l2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="shuangSiTou_l3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="shuangSiTou_l4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="shuangSiTou_l5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="shuangSiTou_l6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="shuangSiTou_l7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="shuangSiTou_l8" /></td>
+				<td align="center"></td>
+			</tr>
+			
+			<tr id="shuangSiTou">
+				<td align="center">标准值</td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="shuangSiTou_b1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="shuangSiTou_b2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="shuangSiTou_b3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="shuangSiTou_b4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="shuangSiTou_b5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="shuangSiTou_b6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="shuangSiTou_b7" /></td>
+				<td align="center"></td>
+			</tr
+			>
+			<tr>
+				<td align="center">备注</td>
+				<td  colspan="20"><input class="input_360 easyui-validatebox" type="text" name="shuangSiTou_c1" /></td>
+			</tr>
+			
+		</table>
+
+		<div class="title">
+			<span class="wenzi">单丝头短节几何尺寸抽检记录</span>
+		</div>
+		<table class="table_new2 value">
+			<tr>
+				<td align="center" colspan="1">项目名称</td>
+				<td colspan="1"><input class="input_100 easyui-validatebox" type="text" name="danSiTou_a1"></td>
+				<td align="center" colspan="1">生产厂家</td>
+				<td colspan="1"><input class="input_100 easyui-validatebox" type="text" name="danSiTou_a2"></td>
+				<td align="center" colspan="1">规格/材质</td>
+				<td colspan="1"><input class="input_100 easyui-validatebox" type="text" name="danSiTou_a3"></td>
+				<td align="center" colspan="1">检验依据</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="danSiTou_a4"></td>
+			</tr>
+
+			<tr>
+				<td align="center" rowspan="2">编号</td>
+				<td align="center" colspan="2">端口A</td>
+				<td align="center">端口B</td>
+				<td align="center" rowspan="2">接头长度（mm）</td>
+				<td align="center" rowspan="2">外观标识</td>
+				<td align="center" rowspan="2">检验结论</td>
+				<td align="center" rowspan="2"><a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addDanSiTou">
+			</tr>
+
+			<tr>
+				<td align="center" >端部外径（mm）</td>
+				<td align="center" >螺纹长度（mm）</td>
+				<td align="center" >端部外径（mm）</td>
+			</tr>
+
+			<tr>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="danSiTou_l1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="danSiTou_l2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="danSiTou_l3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="danSiTou_l4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="danSiTou_l5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="danSiTou_l6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="danSiTou_l7" /></td>
+				<td align="center"></td>
+			</tr>
+			
+			<tr id="danSiTou">
+				<td align="center">标准值</td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="danSiTou_b1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="danSiTou_b2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="danSiTou_b3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="danSiTou_b4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="danSiTou_b5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="danSiTou_b6" /></td>
+				<td align="center"></td>
+			</tr>
+
+			<tr>
+				<td align="center">备注</td>
+				<td  colspan="20"><input class="input_360 easyui-validatebox" type="text" name="danSiTou_c1" /></td>
+			</tr>
+			
+		</table>
+
+		<div class="title">
+			<span class="wenzi">螺纹活接头几何尺寸抽检记录</span>
+		</div>
+		<table class="table_new2 value">
+			<tr>
+				<td align="center" colspan="2">项目名称</td>
+				<td colspan="1"><input class="input_100 easyui-validatebox" type="text" name="luoWenHuo_a1"></td>
+				<td align="center" colspan="2">生产厂家</td>
+				<td colspan="1"><input class="input_100 easyui-validatebox" type="text" name="luoWenHuo_a2"></td>
+				<td align="center" colspan="2">规格/材质</td>
+				<td colspan="1"><input class="input_100 easyui-validatebox" type="text" name="luoWenHuo_a3"></td>
+				<td align="center" colspan="2">检验依据</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="luoWenHuo_a4"></td>
+			</tr>
+
+			<tr>
+				<td align="center" rowspan="2">编号</td>
+				<td align="center" colspan="2">扳手拧紧段</td>
+				<td align="center" colspan="2">螺母</td>
+				<td align="center" colspan="2">法兰段</td>
+				<td align="center" colspan="3">其他参数</td>
+				<td align="center" rowspan="2">外观标识</td>
+				<td align="center" rowspan="2">检验结论</td>
+				<td align="center" rowspan="2"><a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addLuoWenHuo">
+			</tr>
+
+			<tr>
+				<td align="center" >紧密距（mm）</td>
+				<td align="center" >外观质量</td>
+				<td align="center" >紧密距（mm）</td>
+				<td align="center" >外观质量</td>
+				<td align="center" >公法兰厚度F（mm）</td>
+				<td align="center" >外观质量</td>
+				<td align="center" >管道孔D（mm）</td>
+				<td align="center" >每英寸螺纹牙数H</td>
+				<td align="center" >管端外径（mm）</td>
+			</tr>
+
+			<tr>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenHuo_l1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenHuo_l2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenHuo_l3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenHuo_l4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenHuo_l5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenHuo_l6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenHuo_l7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenHuo_l8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenHuo_l9" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenHuo_l10" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenHuo_l11" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenHuo_l12" /></td>
+				<td align="center"></td>
+			</tr>
+			
+			<tr id="luoWenHuo">
+				<td align="center">标准值</td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenHuo_b1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenHuo_b2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenHuo_b3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenHuo_b4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenHuo_b5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenHuo_b6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenHuo_b7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenHuo_b8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenHuo_b9" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenHuo_b10" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenHuo_b11" /></td>
+				<td align="center"></td>
+			</tr>
+
+			<tr>
+				<td align="center">备注</td>
+				<td  colspan="20"><input class="input_360 easyui-validatebox" type="text" name="luoWenHuo_c1" /></td>
+			</tr>
+			
+		</table>
+
+		<div class="title">
+			<span class="wenzi">管帽几何尺寸抽检记录</span>
+		</div>
+		<table class="table_new2 value">
+			<tr>
+				<td align="center">项目名称</td>
+				<td colspan="1"><input class="input_100 easyui-validatebox" type="text" name="guanMao_a1"></td>
+				<td align="center">生产厂家</td>
+				<td colspan="1"><input class="input_100 easyui-validatebox" type="text" name="guanMao_a2"></td>
+				<td align="center">规格/材质</td>
+				<td colspan="1"><input class="input_100 easyui-validatebox" type="text" name="guanMao_a3"></td>
+				<td align="center">检验依据</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="guanMao_a4"></td>
+			</tr>
+
+			<tr>
+				<td align="center">编号</td>
+				<td align="center">外径（mm）</td>
+				<td align="center">厚度（mm）</td>
+				<td align="center">钝边（mm）</td>
+				<td align="center">坡口角度（°）</td>
+				<td align="center">背面至端面尺寸E（mm）</td>
+				<td align="center">硬度<input class="input_60 easyui-validatebox" type="text" name="guanMao_b1"></td>
+				<td align="center">外观标识</td>
+				<td align="center">检验结论</td>
+				<td align="center"><a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addGuanMao">
+			</tr>
+
+			<tr>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="guanMao_l1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="guanMao_l2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="guanMao_l3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="guanMao_l4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="guanMao_l5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="guanMao_l6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="guanMao_l7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="guanMao_l8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="guanMao_l9" /></td>
+				<td align="center"></td>
+			</tr>
+			
+			<tr id="guanMao">
+				<td align="center">标准值</td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="guanMao_c1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="guanMao_c2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="guanMao_c3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="guanMao_c4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="guanMao_c5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="guanMao_c6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="guanMao_c7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="guanMao_c8" /></td>
+				<td align="center"></td>
+			</tr>
+
+			<tr>
+				<td align="center">备注</td>
+				<td  colspan="9"><input class="input_360 easyui-validatebox" type="text" name="guanMao_d1" /></td>
+			</tr>
+			
+		</table>
+
+		<div class="title">
+			<span class="wenzi">等径螺纹三通几何尺寸抽检记录</span>
+		</div>
+		<table class="table_new2 value">
+			<tr>
+				<td align="center" colspan="2">项目名称</td>
+				<td colspan="2"><input class="input_100 easyui-validatebox" type="text" name="dengJingLuoWen_a1"></td>
+				<td align="center" colspan="2">生产厂家</td>
+				<td colspan="2"><input class="input_100 easyui-validatebox" type="text" name="dengJingLuoWen_a2"></td>
+				<td align="center" colspan="2">规格/材质</td>
+				<td colspan="2"><input class="input_100 easyui-validatebox" type="text" name="dengJingLuoWen_a3"></td>
+				<td align="center" colspan="2">检验依据</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="dengJingLuoWen_a4"></td>
+			</tr>
+
+			<tr>
+				<td align="center" rowspan="2">编号</td>
+				<td align="center" colspan="4">主管1</td>
+				<td align="center" colspan="4">主管2</td>
+				<td align="center" colspan="4">支管</td>
+				<td align="center">硬度</td>
+				<td align="center" rowspan="2">外观标识</td>
+				<td align="center" rowspan="2">检验结论</td>
+				<td align="center" rowspan="2"><a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addDengJingLuoWen">
+			</tr>
+
+			<tr>
+				<td align="center" >外径（mm）</td>
+				<td align="center" >壁厚（mm）</td>
+				<td align="center" >螺纹长度（mm）</td>
+				<td align="center" >中心至端面A（mm）</td>
+				<td align="center" >外径（mm）</td>
+				<td align="center" >壁厚（mm）</td>
+				<td align="center" >螺纹长度（mm）</td>
+				<td align="center" >中心至端面A（mm）</td>
+				<td align="center" >外径（mm）</td>
+				<td align="center" >壁厚（mm）</td>
+				<td align="center" >螺纹长度（mm）</td>
+				<td align="center" >中心至端面A（mm）</td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingLuoWen_b1"></td>
+
+			</tr>
+			<tr>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingLuoWen_l1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingLuoWen_l2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingLuoWen_l3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingLuoWen_l4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingLuoWen_l5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingLuoWen_l6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingLuoWen_l7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingLuoWen_l8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingLuoWen_l9" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingLuoWen_l10" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingLuoWen_l11" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingLuoWen_l12" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingLuoWen_l13" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingLuoWen_l14" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingLuoWen_l15" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingLuoWen_l16" /></td>
+				<td align="center"></td>
+			</tr>
+			
+			<tr id="dengJingLuoWen">
+				<td align="center">标准值</td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingLuoWen_c1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingLuoWen_c2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingLuoWen_c3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingLuoWen_c4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingLuoWen_c5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingLuoWen_c6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingLuoWen_c7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingLuoWen_c8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingLuoWen_c9" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingLuoWen_c10" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingLuoWen_c11" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingLuoWen_c12" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingLuoWen_c13" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingLuoWen_c14" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="dengJingLuoWen_c15" /></td>
+				<td align="center"></td>
+			</tr>
+			<tr>
+				<td align="center">备注</td>
+				<td  colspan="20"><input class="input_360 easyui-validatebox" type="text" name="dengJingLuoWen_d1" /></td>
+			</tr>
+			
+		</table>
+
+		<div class="title">
+			<span class="wenzi">小螺纹钢几何尺寸抽检记录</span>
+		</div>
+		<table class="table_new2 value">
+			<tr>
+				<td align="center">项目名称</td>
+				<td colspan="2"><input class="input_100 easyui-validatebox" type="text" name="xiaoLuoWen_a1"></td>
+				<td align="center">生产厂家</td>
+				<td colspan="2"><input class="input_100 easyui-validatebox" type="text" name="xiaoLuoWen_a2"></td>
+				<td align="center">规格/材质</td>
+				<td colspan="2"><input class="input_100 easyui-validatebox" type="text" name="xiaoLuoWen_a3"></td>
+				<td align="center">检验依据</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="xiaoLuoWen_a4"></td>
+			</tr>
+
+			<tr>
+				<td align="center" rowspan="2">炉批号</td>
+				<td align="center" rowspan="2">编号</td>
+				<td align="center" colspan="3">外径/mm</td>
+				<td align="center" rowspan="2">横肋高/mm</td>
+				<td align="center" rowspan="2">纵肋高/mm</td>
+				<td align="center" rowspan="2">长度/m</td>
+				<td align="center" rowspan="2">横肋间距/m</td>
+				<td align="center" rowspan="2">外观标识</td>
+				<td align="center" rowspan="2">结论</td>
+				<td align="center" rowspan="2"><a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addXiaoLuoWen">
+			</tr>
+
+			<tr>
+				<td align="center" >带横肋</td>
+				<td align="center" >内径</td>
+				<td align="center" >带纵肋</td>
+			</tr>
+
+			<tr>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="xiaoLuoWen_l1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="xiaoLuoWen_l2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="xiaoLuoWen_l3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="xiaoLuoWen_l4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="xiaoLuoWen_l5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="xiaoLuoWen_l6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="xiaoLuoWen_l7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="xiaoLuoWen_l8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="xiaoLuoWen_l9" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="xiaoLuoWen_l10" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="xiaoLuoWen_l11" /></td>
+				<td align="center"></td>
+			</tr>
+			
+			<tr id="xiaoLuoWen">
+				<td align="center" colspan="2">标准要求</td>
+				<td align="center" colspan="3"><input class="input_60 easyui-validatebox" type="text" name="xiaoLuoWen_b1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="xiaoLuoWen_b2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="xiaoLuoWen_b3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="xiaoLuoWen_b4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="xiaoLuoWen_b5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="xiaoLuoWen_b6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="xiaoLuoWen_b7" /></td>
+				<td align="center"></td>			
+			</tr>
+			<tr>
+				<td align="center">备注</td>
+				<td  colspan="20"><input class="input_360 easyui-validatebox" type="text" name="xiaoLuoWen_c1" /></td>
+			</tr>
+			
+		</table>
+
+		<div class="title">
+			<span class="wenzi">特殊螺纹尺寸抽检记录（管体）</span>
+		</div>
+		<table class="table_new2 value">
+			<tr>
+				<td align="center" colspan="2">项目名称</td>
+				<td colspan="2"><input class="input_100 easyui-validatebox" type="text" name="luoWenGuanTi_a1"></td>
+				<td align="center" colspan="2">生产厂家</td>
+				<td colspan="2"><input class="input_100 easyui-validatebox" type="text" name="luoWenGuanTi_a2"></td>
+				<td align="center" colspan="2">名称规格</td>
+				<td colspan="2"><input class="input_100 easyui-validatebox" type="text" name="luoWenGuanTi_a3"></td>
+				<td align="center" colspan="2">螺纹形式</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="luoWenGuanTi_a4"></td>
+			</tr>
+
+			<tr>
+				<td align="center" colspan="2">检验量具编号</td>
+				<td colspan="6"><input class="input_100 easyui-validatebox" type="text" name="luoWenGuanTi_b1"></td>
+				<td align="center" colspan="2">检验依据</td>
+				<td colspan="7"><input class="input_100 easyui-validatebox" type="text" name="luoWenGuanTi_b2"></td>
+			</tr>
+
+			<tr>
+				<td align="center" >管体编号</td>
+				<td align="center" >检查外观</td>
+				<td align="center" >最小完整螺纹长度mm</td>
+				<td align="center" >密封面平均直径mm</td>
+				<td align="center" >密封面椭圆度mm</td>
+				<td align="center" >螺纹平均直径mm</td>
+				<td align="center" >螺纹直径椭圆度mm</td>
+				<td align="center" >锥度mm/m</td>
+				<td align="center" >齿高mm</td>
+				<td align="center" >螺距mm/25.4mm</td>
+				<td align="center" >圆柱面直径mm</td>
+				<td align="center" >鼻端长度mm</td>
+				<td align="center" >镗孔直径mm</td>
+				<td align="center" >镗孔长度mm</td>
+				<td align="center" >螺纹螺尾mm</td>
+				<td align="center" >结论</td>
+				<td align="center"><a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addLuoWenGuanTi">
+			</tr>
+
+			<tr>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenGuanTi_l1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenGuanTi_l2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenGuanTi_l3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenGuanTi_l4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenGuanTi_l5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenGuanTi_l6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenGuanTi_l7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenGuanTi_l8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenGuanTi_l9" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenGuanTi_l10" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenGuanTi_l11" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenGuanTi_l12" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenGuanTi_l13" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenGuanTi_l14" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenGuanTi_l15" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenGuanTi_l16" /></td>
+				<td align="center"></td>
+			</tr>
+			
+			<tr id="luoWenGuanTi">
+				<td align="center">标准要求</td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenGuanTi_c1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenGuanTi_c2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenGuanTi_c3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenGuanTi_c4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenGuanTi_c5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenGuanTi_c6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenGuanTi_c7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenGuanTi_c8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenGuanTi_c9" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenGuanTi_c10" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenGuanTi_c11" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenGuanTi_c12" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenGuanTi_c13" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenGuanTi_c14" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenGuanTi_c15" /></td>
+				<td align="center"></td>			
+			</tr>
+			<tr>
+				<td align="center">备注</td>
+				<td  colspan="18"><input class="input_360 easyui-validatebox" type="text" name="luoWenGuanTi_d1" /></td>
+			</tr>
+			
+		</table>
+
+		<div class="title">
+			<span class="wenzi">特殊螺纹尺寸抽检记录（接箍）</span>
+		</div>
+		<table class="table_new2 value">
+			<tr>
+				<td align="center" colspan="4">项目名称</td>
+				<td colspan="4"><input class="input_100 easyui-validatebox" type="text" name="luoWenJieGu_a1"></td>
+				<td align="center" colspan="4">生产厂家</td>
+				<td colspan="4"><input class="input_100 easyui-validatebox" type="text" name="luoWenJieGu_a2"></td>
+				<td align="center" colspan="4">名称规格</td>
+				<td colspan="4"><input class="input_100 easyui-validatebox" type="text" name="luoWenJieGu_a3"></td>
+				<td align="center" colspan="4">螺纹形式</td>
+				<td colspan="4"><input class="input_100 easyui-validatebox" type="text" name="luoWenJieGu_a4"></td>
+			</tr>
+
+			<tr>
+				<td align="center" colspan="4">检验量具编号</td>
+				<td colspan="12"><input class="input_100 easyui-validatebox" type="text" name="luoWenJieGu_b1"></td>
+				<td align="center" colspan="4">检验依据</td>
+				<td colspan="16"><input class="input_100 easyui-validatebox" type="text" name="luoWenJieGu_b2"></td>
+			</tr>
+
+			<tr>
+				<td align="center" rowspan="2" >接箍编号</td>
+				<td align="center" colspan="2" >检查外观</td>
+				<td align="center" colspan="2">密封面直径（mm）</td>
+				<td align="center" colspan="2">密封面椭圆度（mm）</td>
+				<td align="center" colspan="2">螺纹平均直径（mm）</td>
+				<td align="center" colspan="2">螺纹直径椭圆度（mm）</td>
+				<td align="center" colspan="2">锥度（mm/25.4m）</td>
+				<td align="center" colspan="2">密封面深度（mm）</td>
+				<td align="center" colspan="2">齿高（mm）</td>
+				<td align="center" colspan="2">螺距（mm/25.4mm）</td>
+				<td align="center" colspan="2">螺纹长度（mm）</td>
+				<td align="center" colspan="2">接箍长度（mm）</td>
+				<td align="center" colspan="2">通孔直径（mm）</td>
+				<td align="center" colspan="2">接箍外径（mm）</td>
+				<td align="center" colspan="2">圆柱面直径mm</td>
+				<td align="center" colspan="2">结论</td>
+				<td align="center" rowspan="2"><a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addLuoWenJieGu">
+			</tr>
+
+			<tr>
+				<td align="center" >A端</td>
+				<td align="center" >B端</td>
+				<td align="center" >A端</td>
+				<td align="center" >B端</td>
+				<td align="center" >A端</td>
+				<td align="center" >B端</td>
+				<td align="center" >A端</td>
+				<td align="center" >B端</td>
+				<td align="center" >A端</td>
+				<td align="center" >B端</td>
+				<td align="center" >A端</td>
+				<td align="center" >B端</td>
+				<td align="center" >A端</td>
+				<td align="center" >B端</td>
+				<td align="center" >A端</td>
+				<td align="center" >B端</td>
+				<td align="center" >A端</td>
+				<td align="center" >B端</td>
+				<td align="center" >A端</td>
+				<td align="center" >B端</td>
+				<td align="center" >A端</td>
+				<td align="center" >B端</td>
+				<td align="center" >A端</td>
+				<td align="center" >B端</td>
+				<td align="center" >A端</td>
+				<td align="center" >B端</td>
+				<td align="center" >A端</td>
+				<td align="center" >B端</td>
+				<td align="center" >A端</td>
+				<td align="center" >B端</td>
+			</tr>
+
+			<tr>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenJieGu_l1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenJieGu_l2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenJieGu_l3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenJieGu_l4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenJieGu_l5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenJieGu_l6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenJieGu_l7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenJieGu_l8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenJieGu_l9" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenJieGu_l10" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenJieGu_l11" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenJieGu_l12" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenJieGu_l13" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenJieGu_l14" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenJieGu_l15" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenJieGu_l16" /></td>
+			 	<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenJieGu_l17" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenJieGu_l18" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenJieGu_l19" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenJieGu_l20" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenJieGu_l21" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenJieGu_l22" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenJieGu_l23" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenJieGu_l24" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenJieGu_l25" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenJieGu_l26" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenJieGu_l27" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenJieGu_l28" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenJieGu_l29" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenJieGu_l30" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="luoWenJieGu_l31" /></td>
+				<td align="center"></td>
+			 </tr>
+
+			
+			<tr id="luoWenJieGu">
+				<td align="center">标准要求</td>
+				<td align="center" colspan="2"><input class="input_60 easyui-validatebox" type="text" name="luoWenJieGu_c1" /></td>
+				<td align="center" colspan="2"><input class="input_60 easyui-validatebox" type="text" name="luoWenJieGu_c2" /></td>
+				<td align="center" colspan="2"><input class="input_60 easyui-validatebox" type="text" name="luoWenJieGu_c3" /></td>
+				<td align="center" colspan="2"><input class="input_60 easyui-validatebox" type="text" name="luoWenJieGu_c4" /></td>
+				<td align="center" colspan="2"><input class="input_60 easyui-validatebox" type="text" name="luoWenJieGu_c5" /></td>
+				<td align="center" colspan="2"><input class="input_60 easyui-validatebox" type="text" name="luoWenJieGu_c6" /></td>
+				<td align="center" colspan="2"><input class="input_60 easyui-validatebox" type="text" name="luoWenJieGu_c7" /></td>
+				<td align="center" colspan="2"><input class="input_60 easyui-validatebox" type="text" name="luoWenJieGu_c8" /></td>
+				<td align="center" colspan="2"><input class="input_60 easyui-validatebox" type="text" name="luoWenJieGu_c9" /></td>
+				<td align="center" colspan="2"><input class="input_60 easyui-validatebox" type="text" name="luoWenJieGu_c10" /></td>
+				<td align="center" colspan="2"><input class="input_60 easyui-validatebox" type="text" name="luoWenJieGu_c11" /></td>
+				<td align="center" colspan="2"><input class="input_60 easyui-validatebox" type="text" name="luoWenJieGu_c12" /></td>
+				<td align="center" colspan="2"><input class="input_60 easyui-validatebox" type="text" name="luoWenJieGu_c13" /></td>
+				<td align="center" colspan="2"><input class="input_60 easyui-validatebox" type="text" name="luoWenJieGu_c14" /></td>
+				<td align="center" colspan="2"><input class="input_60 easyui-validatebox" type="text" name="luoWenJieGu_c15" /></td>
+				<td align="center"></td>			
+			</tr>
+			<tr>
+				<td align="center">备注</td>
+				<td  colspan="32"><input class="input_360 easyui-validatebox" type="text" name="luoWenJieGu_d1" /></td>
+			</tr>
+			
+		</table>
+
+		<div class="title">
+			<span class="wenzi">抽油杆几何尺寸抽检记录（杆体）</span>
+		</div>
+		<table class="table_new2 value">
+			<tr>
+				<td align="center" colspan="2">项目名称</td>
+				<td colspan="2"><input class="input_100 easyui-validatebox" type="text" name="chouYouGanTi_a1"></td>
+				<td align="center" colspan="2">生产厂家</td>
+				<td colspan="2"><input class="input_100 easyui-validatebox" type="text" name="chouYouGanTi_a2"></td>
+				<td align="center" colspan="2">规格/钢级</td>
+				<td colspan="2"><input class="input_100 easyui-validatebox" type="text" name="chouYouGanTi_a3"></td>
+				<td align="center" colspan="2">检验依据</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="chouYouGanTi_a4"></td>
+			</tr>
+
+			<tr>
+				<td align="center" colspan="2">检验量具编号</td>
+				<td colspan="20"><input class="input_100 easyui-validatebox" type="text" name="chouYouGanTi_b1"></td>
+			</tr>
+
+			<tr>
+				<td align="center" >编号</td>
+				<td align="center" >最小螺纹尺寸T</td>
+				<td align="center" >最大螺纹尺寸Z</td>
+				<td align="center" >外螺纹台肩面平行度（mm）</td>
+				<td align="center" >卸荷槽直径D<sub>1</sub>（mm）</td>
+				<td align="center" >台肩直径D<sub>f</sub>（mm）</td>
+				<td align="center" >凸缘直径D<sub>u</sub>（mm）</td>
+				<td align="center" >卸荷槽长度L<sub>R</sub>（mm）</td>
+				<td align="center" >接头长度L<sub>S</sub>（mm）</td>
+				<td align="center" >杆体直径（mm）</td>
+				<td align="center" >抽油杆长度（mm）</td>
+				<td align="center" >扳手方宽度W<sub>S</sub>（mm）</td>
+				<td align="center" >扳手方长度W<sub>1</sub>（mm）</td>
+				<td align="center" >外观标识</td>
+				<td align="center" >结论</td>
+				<td align="center"><a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addChouYouGanTi">
+			</tr>
+
+			<tr>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="chouYouGanTi_l1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="chouYouGanTi_l2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="chouYouGanTi_l3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="chouYouGanTi_l4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="chouYouGanTi_l5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="chouYouGanTi_l6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="chouYouGanTi_l7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="chouYouGanTi_l8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="chouYouGanTi_l9" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="chouYouGanTi_l10" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="chouYouGanTi_l11" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="chouYouGanTi_l12" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="chouYouGanTi_l13" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="chouYouGanTi_l14" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="chouYouGanTi_l15" /></td>
+				<td align="center"></td>
+			</tr>
+			
+			<tr id="chouYouGanTi">
+				<td align="center">标准规定</td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="chouYouGanTi_c1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="chouYouGanTi_c2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="chouYouGanTi_c3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="chouYouGanTi_c4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="chouYouGanTi_c5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="chouYouGanTi_c6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="chouYouGanTi_c7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="chouYouGanTi_c8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="chouYouGanTi_c9" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="chouYouGanTi_c10" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="chouYouGanTi_c11" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="chouYouGanTi_c12" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="chouYouGanTi_c13" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="chouYouGanTi_c14" /></td>
+				<td align="center"></td>			
+			</tr>
+			<tr>
+				<td align="center">备注</td>
+				<td  colspan="18"><input class="input_360 easyui-validatebox" type="text" name="chouYouGanTi_d1" /></td>
+			</tr>
+		</table>
+
+			<div class="title">
+			<span class="wenzi">抽油杆几何尺寸抽检记录（接箍）</span>
+		</div>
+		<table class="table_new2 value">
+			<tr>
+				<td align="center" colspan="1">项目名称</td>
+				<td colspan="2"><input class="input_100 easyui-validatebox" type="text" name="chouYouJieGu_a1"></td>
+				<td align="center" colspan="1">生产厂家</td>
+				<td colspan="2"><input class="input_100 easyui-validatebox" type="text" name="chouYouJieGu_a2"></td>
+				<td align="center" colspan="1">规格/钢级</td>
+				<td colspan="2"><input class="input_100 easyui-validatebox" type="text" name="chouYouJieGu_a3"></td>
+				<td align="center" colspan="1">检验依据</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="chouYouJieGu_a4"></td>
+			</tr>
+
+			<tr>
+				<td align="center" colspan="2">检验量具编号</td>
+				<td colspan="20"><input class="input_100 easyui-validatebox" type="text" name="chouYouJieGu_b1"></td>
+			</tr>
+
+			<tr>
+				<td align="center" >编号</td>
+				<td align="center" >最大螺纹尺寸Z</td>
+				<td align="center" >最小螺纹尺寸T</td>
+				<td align="center" >接箍端面垂直度（mm）</td>	
+				<td align="center" >内螺纹接头沉孔Q（mm）</td>			
+				
+				<td align="center" >接触面小径D<sub>m</sub>（mm）</td>
+				<td align="center" >接触外径W（mm）</td>
+				<td align="center" >接触面宽度C<sub>f</sub>（mm）</td>
+				<td align="center" >接箍长度N<sub>L</sub>（mm）</td>
+				<td align="center" >端面外径D<sub>c</sub>（mm）</td>
+				<td align="center" >外观标识</td>
+				<td align="center" >结论</td>
+				<td align="center"><a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addChouYouJieGu">
+			</tr>
+
+			<tr>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="chouYouJieGu_l1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="chouYouJieGu_l2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="chouYouJieGu_l3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="chouYouJieGu_l4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="chouYouJieGu_l5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="chouYouJieGu_l6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="chouYouJieGu_l7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="chouYouJieGu_l8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="chouYouJieGu_l9" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="chouYouJieGu_l10" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="chouYouJieGu_l11" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="chouYouJieGu_l12" /></td>
+				<td align="center"></td>
+			</tr>
+			
+			<tr id="chouYouJieGu">
+				<td align="center">标准规定</td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="chouYouJieGu_c1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="chouYouJieGu_c2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="chouYouJieGu_c3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="chouYouJieGu_c4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="chouYouJieGu_c5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="chouYouJieGu_c6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="chouYouJieGu_c7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="chouYouJieGu_c8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="chouYouJieGu_c9" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="chouYouJieGu_c10" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="chouYouJieGu_c11" /></td>
+				<td align="center"></td>			
+			</tr>
+			<tr>
+				<td align="center">备注</td>
+				<td  colspan="18"><input class="input_360 easyui-validatebox" type="text" name="chouYouJieGu_d1" /></td>
+			</tr>
+		</table>
+
+		<div class="title">
+			<span class="wenzi">阀门几何尺寸抽检记录（法兰连接）</span>
+		</div>
+		<table class="table_new2 value">
+			<tr>
+				<td align="center" colspan="2">项目名称</td>
+				<td colspan="2"><input class="input_100 easyui-validatebox" type="text" name="faMenFaLan_a1"></td>
+				<td align="center" colspan="2">生产厂家</td>
+				<td colspan="2"><input class="input_100 easyui-validatebox" type="text" name="faMenFaLan_a2"></td>
+				<td align="center" colspan="2">产品名称</td>
+				<td colspan="2"><input class="input_100 easyui-validatebox" type="text" name="faMenFaLan_a3"></td>
+				<td align="center" colspan="2">检验依据</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="faMenFaLan_a4"></td>
+			</tr>
+
+			<tr>
+				<td align="center" >编号</td>
+				<td align="center" >规格型号</td>
+				<td align="center" >出厂编号</td>
+				<td align="center" >结构长度L（mm）</td>	
+				<td align="center" >法兰外径D（mm）</td>	
+				<td align="center" >法兰内径（mm）</td>
+				<td align="center" >法兰厚度C（mm）</td>
+				<td align="center" >环形槽中径P（mm）</td>
+				<td align="center" >密封面外径d（mm）</td>
+				<td align="center" >密封面高度\深度E（mm）</td>
+				<td align="center" >螺栓孔中心距K（mm）</td>
+				<td align="center" >孔径（mm）</td>
+				<td align="center" >孔数（个）</td>
+				<td align="center" >阀体厚度（mm）</td>		
+				<td align="center" >外观标识</td>
+				<td align="center" >结论</td>
+				<td align="center"><a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addFaMenFaLan">
+			</tr>
+
+			<tr>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenFaLan_l1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenFaLan_l2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenFaLan_l3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenFaLan_l4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenFaLan_l5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenFaLan_l6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenFaLan_l7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenFaLan_l8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenFaLan_l9" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenFaLan_l10" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenFaLan_l11" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenFaLan_l12" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenFaLan_l13" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenFaLan_l14" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenFaLan_l15" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenFaLan_l16" /></td>
+				<td align="center"></td>
+			</tr>
+			
+			<tr id="faMenFaLan">
+				<td align="center" colspan="3">标准值</td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenFaLan_b1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenFaLan_b2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenFaLan_b3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenFaLan_b4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenFaLan_b5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenFaLan_b6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenFaLan_b7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenFaLan_b8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenFaLan_b9" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenFaLan_b10" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenFaLan_b11" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenFaLan_b12" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenFaLan_b13" /></td>
+				<td align="center"></td>			
+			</tr>
+			<tr>
+				<td align="center">备注</td>
+				<td  colspan="18"><input class="input_360 easyui-validatebox" type="text" name="faMenFaLan_c1" /></td>
+			</tr>
+		</table>
+
+
+		<div class="title">
+			<span class="wenzi">阀门几何尺寸抽检记录（焊接连接）</span>
+		</div>
+		<table class="table_new2 value">
+			<tr>
+				<td align="center" colspan="2">项目名称</td>
+				<td colspan="2"><input class="input_100 easyui-validatebox" type="text" name="faMenHanJie_a1"></td>
+				<td align="center" colspan="2">生产厂家</td>
+				<td colspan="2"><input class="input_100 easyui-validatebox" type="text" name="faMenHanJie_a2"></td>
+				<td align="center" colspan="2">产品名称</td>
+				<td colspan="2"><input class="input_100 easyui-validatebox" type="text" name="faMenHanJie_a3"></td>
+				<td align="center" colspan="2">检验依据</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="faMenHanJie_a4"></td>
+			</tr>
+
+			<tr>
+				<td align="center" rowspan="2">编号</td>
+				<td align="center" rowspan="2">规格型号</td>
+				<td align="center" rowspan="2">出厂编号</td>
+				<td align="center" rowspan="2">结构长度L（mm）</td>
+				<td align="center" colspan="4">焊接端A端</td>
+				<td align="center" colspan="4">焊接端B端</td>
+				<td align="center" rowspan="2">阀体厚度（mm）</td>		
+				<td align="center" rowspan="2">外观标识</td>
+				<td align="center" rowspan="2">结论</td>
+				<td align="center" rowspan="2"><a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addFaMenHanJie">
+			</tr>
+
+			<tr>
+				<td align="center">外径（mm）</td>
+				<td align="center">内径（mm）</td>
+				<td align="center">坡口角度（°）</td>
+				<td align="center">钝边（mm）</td>
+				<td align="center">外径（mm）</td>
+				<td align="center">内径（mm）</td>
+				<td align="center">坡口角度（°）</td>
+				<td align="center">钝边（mm）</td>
+			</tr>
+
+			<tr>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenHanJie_l1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenHanJie_l2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenHanJie_l3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenHanJie_l4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenHanJie_l5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenHanJie_l6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenHanJie_l7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenHanJie_l8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenHanJie_l9" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenHanJie_l10" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenHanJie_l11" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenHanJie_l12" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenHanJie_l13" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenHanJie_l14" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenHanJie_l15" /></td>
+				<td align="center"></td>
+			</tr>
+			
+			<tr id="faMenHanJie">
+				<td align="center" colspan="3">标准值</td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenHanJie_b1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenHanJie_b2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenHanJie_b3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenHanJie_b4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenHanJie_b5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenHanJie_b6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenHanJie_b7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenHanJie_b8" /></td>
+				<td align="center" colspan="2"><input class="input_60 easyui-validatebox" type="text" name="faMenHanJie_b9" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenHanJie_b10" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faMenHanJie_b11" /></td>
+				<td align="center"></td>			
+			</tr>
+			<tr>
+				<td align="center">备注</td>
+				<td  colspan="18"><input class="input_360 easyui-validatebox" type="text" name="faMenHanJie_c1" /></td>
+			</tr>
+		</table>
+
+		<div class="title">
+			<span class="wenzi">绝缘接头成品检验记录</span>
+		</div>
+		<table class="table_new2 value">
+			<tr>
+				<td align="center" colspan="2">项目名称</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="jueYuanJieTou_a1"></td>
+				<td align="center" colspan="2">生产厂家</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="jueYuanJieTou_a2"></td>
+				<td align="center" colspan="2">规格/材质</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="jueYuanJieTou_a3"></td>
+				<td align="center" colspan="2">检验依据</td>
+				<td colspan="5"><input class="input_100 easyui-validatebox" type="text" name="jueYuanJieTou_a4"></td>
+			</tr>
+
+			<tr>
+				<td align="center" rowspan="2">编号</td>
+				<td align="center" colspan="6">法兰I</td>
+				<td align="center" colspan="6">法兰II</td>
+				<td align="center" colspan="5">固定环尺寸</td>
+				<td align="center" rowspan="2">绝缘电阻MΩ</td>
+				<td align="center" rowspan="2">外观标识</td>
+				<td align="center" rowspan="2">结论</td>
+				<td align="center" rowspan="2"><a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addJueYuanJieTou">
+			</tr>
+
+			<tr>
+				<td align="center">外径mm</td>
+				<td align="center">内径mm</td>
+				<td align="center">高度mm</td>
+				<td align="center">密封槽宽度mm</td>
+				<td align="center">密封槽深度mm</td>
+				<td align="center">坡口角度°</td>
+				<td align="center">外径mm</td>
+				<td align="center">内径mm</td>
+				<td align="center">高度mm</td>
+				<td align="center">密封槽宽度mm</td>
+				<td align="center">密封槽深度mm</td>
+				<td align="center">坡口角度°</td>
+				<td align="center">外径mm</td>
+				<td align="center">内径mm</td>
+				<td align="center">高度mm</td>
+				<td align="center">坡口角度°</td>
+				<td align="center">钝边mm</td>
+			</tr>
+
+			<tr>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_l1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_l2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_l3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_l4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_l5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_l6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_l7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_l8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_l9" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_l10" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_l11" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_l12" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_l13" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_l14" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_l15" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_l16" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_l17" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_l18" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_l19" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_l20" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_l21" /></td>
+				<td align="center"></td>
+			</tr>
+			
+			<tr id="jueYuanJieTou">
+				<td align="center">标准要求</td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_b1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_b2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_b3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_b4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_b5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_b6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_b7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_b8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_b9" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_b10" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_b11" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_b12" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_b13" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_b14" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_b15" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_b16" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_b17" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_b18" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_b19" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_b20" /></td>
+				<td align="center"></td>			
+			</tr>
+
+			<tr>
+				<td align="center" rowspan="5" colspan="2">电绝缘强度试验</td>
+				<td align="center" colspan="6">产品编号</td>
+				<td align="center" colspan="6">交流电压（KV）</td>
+				<td align="center" colspan="8">保持时间（S）</td>	
+			</tr>
+
+			<tr id="jueYuanJieTou">
+				<td align="center" colspan="6"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_c1" /></td>
+				<td align="center" colspan="6"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_c2" /></td>
+				<td align="center" colspan="7"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_c3" /></td>
+				<td align="center"></td>			
+			</tr>
+
+			<tr id="jueYuanJieTou">
+				<td align="center" colspan="6"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_d1" /></td>
+				<td align="center" colspan="6"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_d2" /></td>
+				<td align="center" colspan="7"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_d3" /></td>
+				<td align="center"></td>			
+			</tr>
+
+			<tr id="jueYuanJieTou">
+				<td align="center" colspan="6"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_e1" /></td>
+				<td align="center" colspan="6"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_e2" /></td>
+				<td align="center" colspan="7"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_e3" /></td>
+				<td align="center"></td>			
+			</tr>
+
+			<tr id="jueYuanJieTou">
+				<td align="center" colspan="6"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_f1" /></td>
+				<td align="center" colspan="6"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_f2" /></td>
+				<td align="center" colspan="7"><input class="input_60 easyui-validatebox" type="text" name="jueYuanJieTou_f3" /></td>
+				<td align="center"></td>			
+			</tr>
+
+			<tr>
+				<td align="center">备注</td>
+				<td  colspan="21"><input class="input_360 easyui-validatebox" type="text" name="jueYuanJieTou_g1" /></td>
+			</tr>
+		</table>
+
+
+		<div class="title">
+			<span class="wenzi">法兰几何尺寸抽检记录</span>
+		</div>
+		<table class="table_new2 value">
+			<tr>
+				<td align="center" colspan="2">项目名称</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="faLanJiHe_a1"></td>
+				<td align="center" colspan="2">生产厂家</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="faLanJiHe_a2"></td>
+				<td align="center" colspan="2">检验依据</td>
+				<td colspan="4"><input class="input_100 easyui-validatebox" type="text" name="faLanJiHe_a3"></td>
+			</tr>
+
+			<tr>
+				<td align="center" rowspan="2">规格名称</td>
+				<td align="center" rowspan="2">编号</td>
+				<td align="center" colspan="5">连接尺寸</td>
+				<td align="center" colspan="2">密封尺寸（mm）</td>
+				<td align="center" rowspan="2">法兰外径（mm）</td>
+				<td align="center" rowspan="2">法兰高度（mm）</td>
+				<td align="center" rowspan="2">法兰厚度（mm）</td>
+				<td rowspan="2"><input class="input_100 easyui-validatebox" type="text" name="faLanJiHe_b1"></td>	
+				<td align="center" rowspan="2">外观标识</td>
+				<td align="center" rowspan="2">结论</td>
+				<td align="center" rowspan="2"><a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addFaLanJiHe">
+			</tr>
+			    <td>颈部外径（mm）</td>
+			    <td>颈部壁厚（mm）</td>
+			    <td>螺栓孔直径（mm）</td>
+			    <td>螺栓孔数量（个）</td>
+			    <td>螺栓孔中心圆直径（mm）</td>
+			    <td>密封面直径</td>
+			    <td>密封面高度</td>
+			<tr>
+				
+			</tr>
+
+			<tr>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faLanJiHe_l1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faLanJiHe_l2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faLanJiHe_l3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faLanJiHe_l4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faLanJiHe_l5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faLanJiHe_l6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faLanJiHe_l7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faLanJiHe_l8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faLanJiHe_l9" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faLanJiHe_l10" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faLanJiHe_l11" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faLanJiHe_l12" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faLanJiHe_l13" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faLanJiHe_l14" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faLanJiHe_l15" /></td>
+				<td align="center"></td>
+			</tr>
+			
+			<tr id="faLanJiHe">
+				<td align="center" colspan="2">标准公差</td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faLanJiHe_c1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faLanJiHe_c2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faLanJiHe_c3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faLanJiHe_c4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faLanJiHe_c5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faLanJiHe_c6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faLanJiHe_c7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faLanJiHe_c8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faLanJiHe_c9" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faLanJiHe_c10" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faLanJiHe_c11" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faLanJiHe_c12" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faLanJiHe_c13" /></td>
+				<td align="center"></td>			
+			</tr>
+			<tr>
+				<td align="center">备注</td>
+				<td  colspan="18"><input class="input_360 easyui-validatebox" type="text" name="faLanJiHe_d1" /></td>
+			</tr>
+		</table>
+
+		<div class="title">
+			<span class="wenzi">防腐管成品检验记录</span>
+		</div>
+		<table class="table_new2 value">
+			<tr>
+				<td align="center" colspan="2">项目名称</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="fangFuGuan_a1"></td>
+				<td align="center" colspan="2">生产厂家</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="fangFuGuan_a2"></td>
+				<td align="center" colspan="2">产品名称</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="fangFuGuan_a3"></td>
+				<td align="center" colspan="2">产品规格</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="fangFuGuan_a4"></td>
+			</tr>
+
+			<tr>
+				<td align="center" colspan="2">防腐类型</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="fangFuGuan_b1"></td>
+				<td align="center" colspan="2">防腐级别</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="fangFuGuan_b2"></td>
+				<td align="center" colspan="2">检验依据</td>
+				<td colspan="10"><input class="input_100 easyui-validatebox" type="text" name="fangFuGuan_b3"></td>
+			</tr>
+
+			<tr>
+				<td align="center" rowspan="3">出厂编号</td>
+				<td align="center" colspan="12">防腐层厚度（mm）</td>
+				<td align="center" colspan="2" rowspan="2">管端预留</td>
+				<td align="center" colspan="2" rowspan="2">剥离强度（N/CM）</td>
+				<td align="center" rowspan="3">外观标识</td>
+				<td align="center" rowspan="3">结论</td>
+				<td align="center" rowspan="3"><a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addFangFuGuan">
+			</tr>
+
+			<tr>
+				<td align="center" colspan="4">位置1<input class="input_60 easyui-validatebox" type="text" name="fangFuGuan_c1"></td>
+				<td align="center" colspan="4">位置2<input class="input_60 easyui-validatebox" type="text" name="fangFuGuan_c2"></td>
+				<td align="center" colspan="4">位置3<input class="input_60 easyui-validatebox" type="text" name="fangFuGuan_c3"></td>				
+			</tr>
+
+			<tr>
+				<td align="center">0°</td>
+				<td align="center">90°</td>
+				<td align="center">180°</td>
+				<td align="center">270°</td>
+				<td align="center">0°</td>
+				<td align="center">90°</td>
+				<td align="center">180°</td>
+				<td align="center">270°</td>
+				<td align="center">0°</td>
+				<td align="center">90°</td>
+				<td align="center">180°</td>
+				<td align="center">270°</td>
+				<td align="center">A端</td>
+				<td align="center">B端</td>
+				<td align="center">温度（℃）</td>
+				<td align="center">结果</td>
+			</tr>
+		
+			<tr>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="fangFuGuan_l1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="fangFuGuan_l2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="fangFuGuan_l3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="fangFuGuan_l4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="fangFuGuan_l5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="fangFuGuan_l6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="fangFuGuan_l7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="fangFuGuan_l8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="fangFuGuan_l9" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="fangFuGuan_l10" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="fangFuGuan_l11" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="fangFuGuan_l12" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="fangFuGuan_l13" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="fangFuGuan_l14" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="fangFuGuan_l15" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="fangFuGuan_l16" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="fangFuGuan_l17" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="fangFuGuan_l18" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="fangFuGuan_l19" /></td>
+				<td align="center"></td>
+			</tr>
+			
+			<tr id="fangFuGuan">
+				<td align="center">标准值</td>
+				<td align="center" colspan="12"><input class="input_60 easyui-validatebox" type="text" name="fangFuGuan_d1" /></td>
+				<td align="center" colspan="2"><input class="input_60 easyui-validatebox" type="text" name="fangFuGuan_d2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="fangFuGuan_d3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="fangFuGuan_d4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="fangFuGuan_d5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="fangFuGuan_d6" /></td>
+				<td align="center"></td>
+			</tr>
+			<tr>
+				<td align="center">备注</td>
+				<td  colspan="20"><input class="input_360 easyui-validatebox" type="text" name="fangFuGuan_e1" /></td>
+			</tr>
+		</table>
+
+		<div class="title">
+			<span class="wenzi">油套管螺纹尺寸抽检记录（管体）</span>
+		</div>
+		<table class="table_new2 value">
+			<tr>
+				<td align="center">项目名称</td>
+				<td colspan="2"><input class="input_100 easyui-validatebox" type="text" name="youTaoGuanGuanTi_a1"></td>
+				<td align="center">生产厂家</td>
+				<td colspan="2"><input class="input_100 easyui-validatebox" type="text" name="youTaoGuanGuanTi_a2"></td>
+				<td align="center">产品名称规格</td>
+				<td colspan="2"><input class="input_100 easyui-validatebox" type="text" name="youTaoGuanGuanTi_a3"></td>
+				<td align="center">螺纹形式</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="youTaoGuanGuanTi_a4"></td>
+			</tr>
+
+			<tr>
+				<td align="center">检验量具编号</td>
+				<td colspan="2"><input class="input_100 easyui-validatebox" type="text" name="youTaoGuanGuanTi_b1"></td>
+				<td align="center">P<sub>1</sub></td>
+				<td colspan="2"><input class="input_100 easyui-validatebox" type="text" name="youTaoGuanGuanTi_b2"></td>
+				<td align="center">检验依据</td>
+				<td colspan="7"><input class="input_100 easyui-validatebox" type="text" name="youTaoGuanGuanTi_b3"></td>
+			</tr>
+
+			<tr>
+				<td align="center" >批号</td>
+				<td align="center" >编号</td>
+				<td align="center" >外观检查</td>
+				<td align="center" >紧密距（mm）</td>
+				<td align="center" >锥度（mm/m）</td>
+				<td align="center" >螺距偏差（mm/in）</td>
+				<td align="center" >齿高偏差（mm）</td>
+				<td align="center" >LC（mm）</td>
+				<td align="center" >A1（mm）</td>
+				<td align="center" >螺尾（mm）</td>
+				<td align="center" >结论</td>
+				<td align="center"><a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addYouTaoGuanGuanTi">
+			</tr>
+
+			<tr>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuanGuanTi_l1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuanGuanTi_l2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuanGuanTi_l3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuanGuanTi_l4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuanGuanTi_l5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuanGuanTi_l6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuanGuanTi_l7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuanGuanTi_l8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuanGuanTi_l9" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuanGuanTi_l10" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuanGuanTi_l11" /></td>
+				<td align="center"></td>
+			</tr>
+			
+			<tr id="youTaoGuanGuanTi">
+				<td align="center" colspan="2">标准要求</td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuanGuanTi_c1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuanGuanTi_c2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuanGuanTi_c3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuanGuanTi_c4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuanGuanTi_c5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuanGuanTi_c6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuanGuanTi_c7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuanGuanTi_c8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuanGuanTi_c9" /></td>
+				<td align="center"></td>			
+			</tr>
+			<tr>
+				<td align="center">备注</td>
+				<td  colspan="18"><input class="input_360 easyui-validatebox" type="text" name="youTaoGuanGuanTi_d1" /></td>
+			</tr>
+			
+		</table>
+
+		<div class="title">
+			<span class="wenzi">油套管螺纹尺寸抽检记录（接箍）</span>
+		</div>
+		<table class="table_new2 value">
+			<tr>
+				<td align="center" colspan="2">项目名称</td>
+				<td colspan="2"><input class="input_100 easyui-validatebox" type="text" name="youTaoGuanJieGu_a1"></td>
+				<td align="center" colspan="2">生产厂家</td>
+				<td colspan="2"><input class="input_100 easyui-validatebox" type="text" name="youTaoGuanJieGu_a2"></td>
+				<td align="center" colspan="2">名称规格</td>
+				<td colspan="2"><input class="input_100 easyui-validatebox" type="text" name="youTaoGuanJieGu_a3"></td>
+				<td align="center" colspan="2">螺纹形式</td>
+				<td colspan="10"><input class="input_100 easyui-validatebox" type="text" name="youTaoGuanJieGu_a4"></td>
+			</tr>
+
+			<tr>
+				<td align="center" colspan="2">检验量具编号</td>
+				<td colspan="2"><input class="input_100 easyui-validatebox" type="text" name="youTaoGuanJieGu_b1"></td>
+				<td align="center" colspan="2">S<sub>1</sub></td>
+				<td colspan="2"><input class="input_100 easyui-validatebox" type="text" name="youTaoGuanJieGu_b2"></td>
+				<td align="center" colspan="2">S</td>
+				<td colspan="2"><input class="input_100 easyui-validatebox" type="text" name="youTaoGuanJieGu_b3"></td>
+				<td align="center" colspan="2">检验依据</td>
+				<td colspan="10"><input class="input_100 easyui-validatebox" type="text" name="youTaoGuanJieGu_b4"></td>
+			</tr>
+
+			<tr>
+				<td align="center" rowspan="2" >批号</td>
+				<td align="center" rowspan="2" >编号</td>
+				<td align="center" colspan="2">外观检查</td>
+				<td align="center" colspan="2">紧密距（mm）</td>
+				<td align="center" colspan="2">锥度（mm/m）</td>
+				<td align="center" colspan="2">螺距偏差（mm/in）</td>
+				<td align="center" colspan="2">齿高偏差（mm）</td>
+				<td align="center" colspan="2">Q（mm）</td>
+				<td align="center" colspan="2">W（mm）</td>
+				<td align="center" colspan="2">NL（mm）</td>
+				<td align="center" colspan="2">b（mm）</td>
+				<td align="center" colspan="2" >结论</td>
+				<td align="center" rowspan="2"><a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addYouTaoGuanJieGu">
+			</tr>
+
+			<tr>
+				<td align="center" >A端</td>
+				<td align="center" >B端</td>
+				<td align="center" >A端</td>
+				<td align="center" >B端</td>
+				<td align="center" >A端</td>
+				<td align="center" >B端</td>
+				<td align="center" >A端</td>
+				<td align="center" >B端</td>
+				<td align="center" >A端</td>
+				<td align="center" >B端</td>
+				<td align="center" >A端</td>
+				<td align="center" >B端</td>
+				<td align="center" >A端</td>
+				<td align="center" >B端</td>
+				<td align="center" >A端</td>
+				<td align="center" >B端</td>
+				<td align="center" >A端</td>
+				<td align="center" >B端</td>
+				<td align="center" >A端</td>
+				<td align="center" >B端</td>
+			</tr>
+
+
+			<tr>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuanJieGu_l1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuanJieGu_l2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuanJieGu_l3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuanJieGu_l4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuanJieGu_l5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuanJieGu_l6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuanJieGu_l7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuanJieGu_l8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuanJieGu_l9" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuanJieGu_l10" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuanJieGu_l11" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuanJieGu_l12" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuanJieGu_l13" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuanJieGu_l14" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuanJieGu_l15" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuanJieGu_l16" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuanJieGu_l17" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuanJieGu_l18" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuanJieGu_l19" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuanJieGu_l20" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuanJieGu_l21" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuanJieGu_l22" /></td>
+				<td align="center"></td>
+			 </tr>
+
+			
+			<tr id="youTaoGuanJieGu">
+				<td align="center" colspan="4">标准要求</td>
+				<td align="center" colspan="2"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuanJieGu_c1" /></td>
+				<td align="center" colspan="2"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuanJieGu_c2" /></td>
+				<td align="center" colspan="2"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuanJieGu_c3" /></td>
+				<td align="center" colspan="2"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuanJieGu_c4" /></td>
+				<td align="center" colspan="2"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuanJieGu_c5" /></td>
+				<td align="center" colspan="2"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuanJieGu_c6" /></td>
+				<td align="center" colspan="2"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuanJieGu_c7" /></td>
+				<td align="center" colspan="2"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuanJieGu_c8" /></td>
+				<td align="center" colspan="2"><input class="input_60 easyui-validatebox" type="text" name="youTaoGuanJieGu_c9" /></td>
+				<td align="center"></td>
+
+			</tr>
+			<tr>
+				<td align="center">备注</td>
+				<td  colspan="22"><input class="input_360 easyui-validatebox" type="text" name="youTaoGuanJieGu_d1" /></td>
+			</tr>
+			
+		</table>
+
+
+		<div class="title">
+			<span class="wenzi">钻具螺纹几何尺寸抽检记录</span>
+		</div>
+		<table class="table_new2 value">
+			<tr>
+				<td align="center" colspan="3">项目名称</td>
+				<td colspan="4"><input class="input_100 easyui-validatebox" type="text" name="zuanJuLuoWen_a1"></td>
+				<td align="center" colspan="3">生产厂家</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="zuanJuLuoWen_a2"></td>
+			</tr>
+
+			<tr>
+				<td align="center" colspan="3">规格/材质</td>
+				<td colspan="4"><input class="input_100 easyui-validatebox" type="text" name="zuanJuLuoWen_b1"></td>
+				<td align="center" colspan="3">检验依据</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="zuanJuLuoWen_b2"></td>
+			</tr>
+
+			<tr>
+				<td align="center" colspan="13">外螺纹检验情况</td>
+			</tr>
+
+			<tr>
+			    <td align="center" colspan="2">外螺纹</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="zuanJuLuoWen_c1"></td>
+				<td align="center" colspan="2">量规编号</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="zuanJuLuoWen_c2"></td>
+				<td align="center" colspan="1">P<sub>1</sub></td>
+				<td colspan="2"><input class="input_100 easyui-validatebox" type="text" name="zuanJuLuoWen_c3"></td>
+            </tr>
+			
+			<tr>
+				<td align="center">管号</td>
+				<td align="center">紧密距mm</td>
+				<td align="center">锥度mm/m</td>
+				<td align="center">螺距mm/25.4mm</td>
+				<td align="center">垂直度mm</td>
+				<td align="center">锥部长度LPC</td>
+				<td align="center">根部圆柱直径DLFmm</td>
+				<td align="center">倒角直径DFmm</td>
+				<td align="center">外径Dmm</td>
+				<td align="center">内径dmm</td>
+				<td><input class="input_60 easyui-validatebox" type="text" name="zuanJuLuoWen_d1"></td>
+				<td align="center">结论</td>
+				<td align="center"><a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addZuanJuLuoWen1">
+			</tr>
+
+			<tr>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zuanJuLuoWen_l1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zuanJuLuoWen_l2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zuanJuLuoWen_l3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zuanJuLuoWen_l4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zuanJuLuoWen_l5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zuanJuLuoWen_l6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zuanJuLuoWen_l7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zuanJuLuoWen_l8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zuanJuLuoWen_l9" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zuanJuLuoWen_l10" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zuanJuLuoWen_l11" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zuanJuLuoWen_l12" /></td>
+				<td align="center"></td>
+			</tr>
+			
+			<tr id="zuanJuLuoWen1">
+				<td align="center">标准要求</td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zuanJuLuoWen_e1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zuanJuLuoWen_e2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zuanJuLuoWen_e3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zuanJuLuoWen_e4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zuanJuLuoWen_e5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zuanJuLuoWen_e6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zuanJuLuoWen_e7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zuanJuLuoWen_e8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zuanJuLuoWen_e9" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zuanJuLuoWen_e10" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zuanJuLuoWen_e11" /></td>
+				<td align="center"></td>
+			</tr>
+
+			<tr>
+				<td align="center" colspan="13">内螺纹检验情况</td>
+			</tr>
+
+			<tr>
+			    <td align="center" colspan="2">内螺纹</td>
+				<td colspan="2"><input class="input_100 easyui-validatebox" type="text" name="zuanJuLuoWen_f1"></td>
+				<td align="center" colspan="2">量规编号</td>
+				<td colspan="1"><input class="input_100 easyui-validatebox" type="text" name="zuanJuLuoWen_f2"></td>
+				<td align="center" colspan="1">S<sub>1</sub></td>
+				<td colspan="2"><input class="input_100 easyui-validatebox" type="text" name="zuanJuLuoWen_f3"></td>
+				<td align="center" colspan="1">S</td>
+				<td colspan="2"><input class="input_100 easyui-validatebox" type="text" name="zuanJuLuoWen_f4"></td>
+            </tr>
+			
+			<tr>
+				<td align="center">管号</td>
+				<td align="center">紧密距mm</td>
+				<td align="center">锥度mm/m</td>
+				<td align="center">螺距mm/25.4mm</td>
+				<td align="center">垂直度mm</td>
+				<td align="center">锥部长度LBCmm</td>
+				<td align="center">有效螺纹长度LBTmm</td>
+				<td align="center">扩锥孔大端直径QCmm</td>
+				<td align="center">倒角直径DFmm</td>
+				<td align="center">外径Dmm</td>
+				<td align="center">内径d</td>
+				<td align="center">结论</td>
+				<td align="center"><a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addZuanJuLuoWen2">
+			</tr>
+
+			<tr>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zuanJuLuoWen_ll1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zuanJuLuoWen_ll2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zuanJuLuoWen_ll3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zuanJuLuoWen_ll4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zuanJuLuoWen_ll5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zuanJuLuoWen_ll6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zuanJuLuoWen_ll7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zuanJuLuoWen_ll8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zuanJuLuoWen_ll9" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zuanJuLuoWen_ll10" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zuanJuLuoWen_ll11" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zuanJuLuoWen_ll12" /></td>
+				<td align="center"></td>
+			</tr>
+			
+			<tr id="zuanJuLuoWen2">
+				<td align="center">标准要求</td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zuanJuLuoWen_g1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zuanJuLuoWen_g2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zuanJuLuoWen_g3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zuanJuLuoWen_g4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zuanJuLuoWen_g5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zuanJuLuoWen_g6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zuanJuLuoWen_g7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zuanJuLuoWen_g8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zuanJuLuoWen_g9" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zuanJuLuoWen_g10" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="zuanJuLuoWen_g11" /></td>
+				<td align="center"></td>
+			</tr>
+
+			<tr>
+				<td align="center">备注</td>
+				<td  colspan="20"><input class="input_360 easyui-validatebox" type="text" name="zuanJuLuoWen_h1" /></td>
+			</tr>
+		</table>
+
+
+		<div class="title">
+			<span class="wenzi">钢板外观尺寸抽检记录</span>
+		</div>
+		<table class="table_new2 value">
+			<tr>
+				<td align="center" colspan="2">项目名称</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="gangBanWaiGuan_a1"></td>
+				<td align="center" colspan="2">生产厂家</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="gangBanWaiGuan_a2"></td>
+			</tr>
+
+			<tr>
+				<td align="center" colspan="2">钢板规格</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="gangBanWaiGuan_b1"></td>
+				<td align="center" colspan="2">材质/牌号</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="gangBanWaiGuan_b2"></td>
+			</tr>
+			    <td align="center" colspan="2">依据标准</td>
+				<td colspan="8"><input class="input_100 easyui-validatebox" type="text" name="gangBanWaiGuan_c1"></td>
+
+			<tr>
+				<td align="center" colspan="12">抽检内容及抽检项目</td>
+			</tr>
+				
+			<tr>
+				<td align="center" rowspan="2">板/卷号</td>
+				<td align="center" rowspan="2">炉批号</td>
+				<td align="center" rowspan="2">表面质量</td>
+				<td align="center" colspan="3">壁厚（mm）</td>
+				<td align="center" rowspan="2">板宽（mm）</td>
+				<td align="center" rowspan="2">标识</td>
+				<td align="center" rowspan="2">结论</td>
+				<td align="center" rowspan="2"><a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addGangBanWaiGuan">
+			</tr>
+			
+			<tr>
+				<td align="center" >板头</td>
+				<td align="center" >板中</td>
+				<td align="center" >板尾</td>
+			</tr>
+
+			<tr>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="gangBanWaiGuan_l1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="gangBanWaiGuan_l2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="gangBanWaiGuan_l3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="gangBanWaiGuan_l4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="gangBanWaiGuan_l5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="gangBanWaiGuan_l6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="gangBanWaiGuan_l7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="gangBanWaiGuan_l8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="gangBanWaiGuan_l9" /></td>
+				<td align="center"></td>
+			</tr>
+			
+			<tr id="gangBanWaiGuan">
+				<td align="center" colspan="2">标准要求</td>
+				<td align="center">            <input class="input_60 easyui-validatebox" type="text" name="gangBanWaiGuan_d1" /></td>
+				<td align="center" colspan="3"><input class="input_60 easyui-validatebox" type="text" name="gangBanWaiGuan_d2" /></td>
+				<td align="center">            <input class="input_60 easyui-validatebox" type="text" name="gangBanWaiGuan_d3" /></td>
+				<td align="center">            <input class="input_60 easyui-validatebox" type="text" name="gangBanWaiGuan_d4" /></td>
+				<td align="center">            <input class="input_60 easyui-validatebox" type="text" name="gangBanWaiGuan_d5" /></td>
+				<td align="center"></td>
+			</tr>
+
+			<tr>
+				<td align="center" colspan="2">存在问题及处理情况</td>
+				<td  colspan="20"><input class="input_360 easyui-validatebox" type="text" name="gangBanWaiGuan_e1" /></td>
+			</tr>
+		</table>
+
+
+		<div class="title">
+			<span class="wenzi">封头几何尺寸抽检记录</span>
+		</div>
+		<table class="table_new2 value">
+			<tr>
+				<td align="center" colspan="2">项目名称</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="fengTouJiHe_a1"></td>
+				<td align="center" colspan="2">生产厂家</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="fengTouJiHe_a2"></td>
+			</tr>
+
+			<tr>
+				<td align="center" colspan="2">规格型号</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="fengTouJiHe_b1"></td>
+				<td align="center" colspan="2">材质/牌号</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="fengTouJiHe_b2"></td>
+			</tr>
+
+			<tr>
+			    <td align="center" colspan="2">检验依据</td>
+				<td colspan="8"><input class="input_100 easyui-validatebox" type="text" name="fengTouJiHe_c1"></td>
+			</tr>
+
+			<tr>
+				<td align="center" colspan="12">抽检内容及抽检项目</td>
+			</tr>
+				
+			<tr>
+				<td align="center">封头编号</td>
+				<td align="center">炉批号</td>
+				<td align="center"><input  type="radio" name="fengTouJiHe_d1" value="内径"/>内径&nbsp;&nbsp;
+					               <input  type="radio" name="fengTouJiHe_d1" value="外径"/>外径</td>
+				<td align="center">壁厚（mm）</td>
+				<td align="center">直边高度（mm）</td>
+				<td align="center">总高度（mm）</td>
+				<td align="center">外观标识</td>
+				<td align="center">结论</td>
+				<td align="center"><a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addFengTouJiHe">
+			</tr>
+
+			<tr>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="fengTouJiHe_l1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="fengTouJiHe_l2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="fengTouJiHe_l3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="fengTouJiHe_l4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="fengTouJiHe_l5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="fengTouJiHe_l6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="fengTouJiHe_l7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="fengTouJiHe_l8" /></td>
+				<td align="center"></td>
+			</tr>
+			
+			<tr id="fengTouJiHe">
+				<td align="center" colspan="2">标准范围</td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="fengTouJiHe_e1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="fengTouJiHe_e2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="fengTouJiHe_e3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="fengTouJiHe_e4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="fengTouJiHe_e5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="fengTouJiHe_e6" /></td>
+				<td align="center"></td>
+			</tr>
+
+			<tr>
+				<td align="center">备注</td>
+				<td  colspan="20"><input class="input_360 easyui-validatebox" type="text" name="fengTouJiHe_f1" /></td>
+			</tr>
+		</table>
+
+
+		<div class="title">
+			<span class="wenzi">压力容器外观尺寸检验记录</span>
+		</div>
+		<table class="table_new2 value">
+			<tr>
+				<td align="center">项目名称</td>
+				<td><input class="input_100 easyui-validatebox" type="text" name="yaLiRongQi_a1"></td>
+				<td align="center">生产厂家</td>
+				<td colspan="2"><input class="input_100 easyui-validatebox" type="text" name="yaLiRongQi_a2"></td>
+			</tr>
+
+			<tr>
+				<td align="center">产品型号</td>
+				<td><input class="input_100 easyui-validatebox" type="text" name="yaLiRongQi_b1"></td>
+				<td align="center">图号</td>
+				<td colspan="2"><input class="input_100 easyui-validatebox" type="text" name="yaLiRongQi_b2"></td>
+			</tr>
+			    <td align="center">产品编号</td>
+				<td><input class="input_100 easyui-validatebox" type="text" name="yaLiRongQi_c1"></td>
+				<td align="center">检验依据</td>
+				<td colspan="2"><input class="input_100 easyui-validatebox" type="text" name="yaLiRongQi_c2"></td>
+				
+			<tr>
+				<td align="center" colspan="2">检查项目</td>
+				<td align="center">标准规定</td>
+				<td align="center">实测结果</td>
+				<td align="center">检查结论</td>
+			</tr>
+
+			<tr>
+				<td align="center" colspan="2">产品<input  type="radio" name="yaLiRongQi_d1" value="总长"/>总长&nbsp;&nbsp;
+					                   <input  type="radio" name="yaLiRongQi_d1" value="总高"/>总高（mm）</td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_d2"></td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_d3"></td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_d4"></td>
+			</tr>
+
+			<tr>
+				<td align="center" colspan="2">壳体内径（mm）</td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_e1"></td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_e2"></td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_e3"></td>
+			</tr>
+
+			<tr>
+				<td align="center" colspan="2">壳体长度（mm）</td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_f1"></td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_f2"></td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_f3"></td>
+			</tr>
+
+			<tr>
+				<td align="center" colspan="2">冷卷筒节投料钢材厚度（mm）</td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_g1"></td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_g2"></td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_g3"></td>
+			</tr>
+
+			<tr>
+				<td align="center" colspan="2">封头成型后最小厚度（mm）</td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_h1"></td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_h2"></td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_h3"></td>
+			</tr>
+
+			<tr>
+				<td align="center" colspan="2">A类焊缝最大棱角度（mm）</td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_i1"></td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_i2"></td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_i3"></td>
+			</tr>
+
+			<tr>
+				<td align="center" colspan="2">B类焊缝最大棱角度（mm）</td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_j1"></td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_j2"></td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_j3"></td>
+			</tr>
+
+			<tr>
+				<td align="center" colspan="2">A类焊缝最大错边量（mm）</td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_k1"></td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_k2"></td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_k3"></td>
+			</tr>
+
+			<tr>
+				<td align="center" colspan="2">B类焊缝最大错边量（mm）</td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_ff1"></td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_ff2"></td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_ff3"></td>
+			</tr>
+
+			<tr>
+				<td align="center" colspan="2">焊缝最大咬边深度、长度连续长度（mm）</td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_m1"></td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_m2"></td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_m3"></td>
+			</tr>
+
+			<tr>
+				<td align="center" rowspan="2">焊缝余高</td>
+				<td align="center">单面坡口（mm）</td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_n1"></td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_n2"></td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_n3"></td>
+			</tr>
+
+			<tr>
+				<td align="center">双面坡口（mm）</td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_o1"></td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_o2"></td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_o3"></td>
+			</tr>
+
+			<tr>
+				<td align="center" colspan="2">接管、弯管外观尺寸</td>
+				<td align="center">符合图样及标准</td>
+				<td align="center"><input  type="radio" name="yaLiRongQi_p1" value="符合"/>符合&nbsp;&nbsp;
+					               <input  type="radio" name="yaLiRongQi_p1" value="不符合"/>不符合</td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_p2"></td>
+			</tr>
+
+			<tr>
+				<td align="center" colspan="2">焊缝外观质量</td>
+				<td align="center">符合图样及标准</td>
+				<td align="center"><input  type="radio" name="yaLiRongQi_q1" value="符合"/>符合&nbsp;&nbsp;
+					               <input  type="radio" name="yaLiRongQi_q1" value="不符合"/>不符合</td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_q2"></td>
+			</tr>
+
+			<tr>
+				<td align="center" colspan="2">角焊缝质量</td>
+				<td align="center">符合图样及标准</td>
+				<td align="center"><input  type="radio" name="yaLiRongQi_r1" value="符合"/>符合&nbsp;&nbsp;
+					               <input  type="radio" name="yaLiRongQi_r1" value="不符合"/>不符合</td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_r2"></td>
+			</tr>
+
+			<tr> 
+				<td align="center" colspan="2">端盖开合及联锁</td>
+				<td align="center">符合图样及标准</td>
+				<td align="center"><input  type="radio" name="yaLiRongQi_s1" value="符合"/>符合&nbsp;&nbsp;
+					               <input  type="radio" name="yaLiRongQi_s1" value="不符合"/>不符合</td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_s2"></td>
+			</tr>
+
+			<tr>
+				<td align="center" colspan="2">法兰面垂直于接管或筒体</td>
+				<td align="center">符合图样及标准</td>
+				<td align="center"><input  type="radio" name="yaLiRongQi_t1" value="符合"/>符合&nbsp;&nbsp;
+					               <input  type="radio" name="yaLiRongQi_t1" value="不符合"/>不符合</td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_t2"></td>
+			</tr>
+
+			<tr>
+				<td align="center" colspan="2">法兰密封面质量</td>
+				<td align="center">无径向贯穿伤痕</td>
+				<td align="center"><input  type="radio" name="yaLiRongQi_u1" value="符合"/>符合&nbsp;&nbsp;
+					               <input  type="radio" name="yaLiRongQi_u1" value="不符合"/>不符合</td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_u2"></td>
+			</tr>
+
+			<tr>
+				<td align="center" colspan="2">法兰螺栓孔于设备主轴中心线位置</td>
+				<td align="center"><input  type="radio" name="yaLiRongQi_v1" value="对中"/>对中&nbsp;&nbsp;
+					               <input  type="radio" name="yaLiRongQi_v1" value="跨中"/>跨中</td>
+				<td align="center"><input  type="radio" name="yaLiRongQi_v2" value="符合"/>符合&nbsp;&nbsp;
+					               <input  type="radio" name="yaLiRongQi_v2" value="不符合"/>不符合</td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_v3"></td>
+			</tr>
+
+			<tr>
+				<td align="center" colspan="2">支座位置及地脚螺栓孔间距</td>
+				<td align="center">符合图样及标准</td>
+				<td align="center"><input  type="radio" name="yaLiRongQi_w1" value="符合"/>符合&nbsp;&nbsp;
+					               <input  type="radio" name="yaLiRongQi_w1" value="不符合"/>不符合</td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_w2"></td>
+			</tr>
+
+			<tr>
+				<td align="center" colspan="2">管口方位及尺寸</td>
+				<td align="center">符合图样及标准</td>
+				<td align="center"><input  type="radio" name="yaLiRongQi_x1" value="符合"/>符合&nbsp;&nbsp;
+					               <input  type="radio" name="yaLiRongQi_x1" value="不符合"/>不符合</td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_x2"></td>
+			</tr>
+
+			<tr>
+				<td align="center" colspan="2">补强圈</td>
+				<td align="center">符合图样及标准</td>
+				<td align="center"><input  type="radio" name="yaLiRongQi_y1" value="符合"/>符合&nbsp;&nbsp;
+					               <input  type="radio" name="yaLiRongQi_y1" value="不符合"/>不符合</td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_y2"></td>
+			</tr>
+
+			<tr>
+				<td align="center" colspan="2">主要内件位置及尺寸</td>
+				<td align="center">符合图样及标准</td>
+				<td align="center"><input  type="radio" name="yaLiRongQi_z1" value="符合"/>符合&nbsp;&nbsp;
+					               <input  type="radio" name="yaLiRongQi_z1" value="不符合"/>不符合</td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_z2"></td>
+			</tr>
+
+			<tr>
+				<td align="center" colspan="2">容器内外表面质量</td>
+				<td align="center">符合图样及标准</td>
+				<td align="center"><input  type="radio" name="yaLiRongQi_aa1" value="符合"/>符合&nbsp;&nbsp;
+					               <input  type="radio" name="yaLiRongQi_aa1" value="不符合"/>不符合</td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_aa2"></td>
+			</tr>
+
+			<tr>
+				<td align="center" colspan="2">表面油漆厚度</td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_bb1"></td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_bb2"></td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_bb3"></td>
+			</tr>
+
+			<tr>
+				<td align="center" colspan="2">铭牌安装位置及拓印图</td>
+				<td align="center">符合图样及标准</td>
+				<td align="center"><input  type="radio" name="yaLiRongQi_cc1" value="符合"/>符合&nbsp;&nbsp;
+					               <input  type="radio" name="yaLiRongQi_cc1" value="不符合"/>不符合</td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_cc2"></td>
+			</tr>
+
+			<tr>
+				<td align="center" colspan="2">标志、油漆、包装</td>
+				<td align="center">符合图样及标准</td>
+				<td align="center"><input  type="radio" name="yaLiRongQi_dd1" value="符合"/>符合&nbsp;&nbsp;
+					               <input  type="radio" name="yaLiRongQi_dd1" value="不符合"/>不符合</td>
+			    <td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_dd2"></td>
+			    <td align="center"><a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addYaLiRongQi">
+			</tr>
+
+
+			<tr>
+				<td align="center" colspan="2"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_l1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_l2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_l3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="yaLiRongQi_l4" /></td>
+				<td align="center"></td>
+			</tr>
+			
+			<tr id="yaLiRongQi">
+				<td align="center">结论</td>
+				<td  colspan="4"><input class="input_360 easyui-validatebox" type="text" name="yaLiRongQi_ee1" /></td>
+			</tr>
+		</table>
+
+
+		<div class="title">
+			<span class="wenzi">冷弯管外观尺寸抽检记录</span>
+		</div>
+		<table class="table_new2 value">
+			<tr>
+				<td align="center" colspan="2">产品规格</td>
+				<td colspan="6"><input class="input_100 easyui-validatebox" type="text" name="lengWanGuan_a1"></td>
+				<td align="center" colspan="2">监督依据</td>
+				<td colspan="10"><input class="input_100 easyui-validatebox" type="text" name="lengWanGuan_a2"></td>
+			</tr>
+
+			<tr>
+				<td align="center" colspan="2">编号</td>
+				<td align="center" colspan="6">冷弯管预制</td>
+				<td align="center" colspan="2">保温预制</td>
+				<td align="center" colspan="6">防水帽安装</td>
+				<td align="center" rowspan="3">外观质量</td>
+				<td align="center" rowspan="3">结论</td>
+				<td align="center" rowspan="3"><a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addLengWanGuan">
+			</tr>
+
+			<tr>
+				<td align="center" rowspan="2">弯管编号</td>
+				<td align="center" rowspan="2">母管编号</td>
+				<td align="center" rowspan="2">角度</td>
+				<td align="center" rowspan="2">实测角度</td>
+				<td align="center" rowspan="2">弯曲段椭圆度</td>
+				<td align="center" colspan="2">起波高度及波峰间距（mm）</td>
+				<td align="center" rowspan="2">漏点检测</td>
+				<td align="center" rowspan="2">保温层厚度</td>
+				<td align="center" rowspan="2">轴线偏心距</td>
+				<td align="center" colspan="2">防水帽与外护管搭接宽度</td>
+				<td align="center" colspan="2">防水帽与防腐层搭接宽度</td>
+				<td align="center" colspan="2">保温管预留端长度</td>		
+			</tr>
+
+			<tr>
+				<td align="center">h</td>
+				<td align="center">f</td>
+				<td align="center">A端</td>
+				<td align="center">B端</td>
+				<td align="center">A端</td>
+				<td align="center">B端</td>
+			    <td align="center">A端</td>
+				<td align="center">B端</td>
+			</tr>
+
+			<tr>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="lengWanGuan_l1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="lengWanGuan_l2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="lengWanGuan_l3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="lengWanGuan_l4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="lengWanGuan_l5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="lengWanGuan_l6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="lengWanGuan_l7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="lengWanGuan_l8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="lengWanGuan_l9" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="lengWanGuan_l10" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="lengWanGuan_l11" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="lengWanGuan_l12" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="lengWanGuan_l13" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="lengWanGuan_l14" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="lengWanGuan_l15" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="lengWanGuan_l16" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="lengWanGuan_l17" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="lengWanGuan_l18" /></td>
+				<td align="center"></td>
+			</tr>
+			
+			<tr id="lengWanGuan">
+				<td align="center" colspan="3">标准范围</td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="lengWanGuan_b1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="lengWanGuan_b2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="lengWanGuan_b3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="lengWanGuan_b4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="lengWanGuan_b5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="lengWanGuan_b6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="lengWanGuan_b7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="lengWanGuan_b8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="lengWanGuan_b9" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="lengWanGuan_b10" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="lengWanGuan_b11" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="lengWanGuan_b12" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="lengWanGuan_b13" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="lengWanGuan_b14" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="lengWanGuan_b15" /></td>
+				<td align="center"></td>
+			</tr>
+
+			<tr>
+				<td align="center">备注<td>
+				<td  colspan="20"><input class="input_360 easyui-validatebox" type="text" name="lengWanGuan_c1" /></td>
+			</tr>
+		</table>
+
+
+		<div class="title">
+			<span class="wenzi">8字盲板几何尺寸抽检记录</span>
+		</div>
+		<table class="table_new2 value">
+			<tr>
+				<td align="center" colspan="2">项目名称</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="baZiMangBan_a1"></td>
+				<td align="center" colspan="2">生产厂家</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="baZiMangBan_a2"></td>
+			</tr>
+
+			<tr>
+				<td align="center" colspan="2">检验依据</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="baZiMangBan_b1"></td>
+				<td align="center" colspan="2">出厂编号范围</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="baZiMangBan_b2"></td>
+			</tr>
+
+			<tr>
+			    <td align="center" colspan="2">检验数量</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="baZiMangBan_c1"></td>
+				<td align="center" colspan="2">检验比例</td>
+				<td colspan="8"><input class="input_100 easyui-validatebox" type="text" name="baZiMangBan_c2"></td>
+			</tr>
+
+			<tr>
+				<td align="center" colspan="10">抽检内容及抽检项目</td>
+			</tr>
+				
+			<tr>
+				<td align="center" rowspan="2">规格型号</td>
+				<td align="center" rowspan="2">编号</td>
+				<td align="center" colspan="3">环面（mm）</td>
+				<td align="center" colspan="2">板面（mm）</td>
+				<td align="center" rowspan="2">外观标识</td>
+				<td align="center" rowspan="2">结论</td>
+				<td align="center" rowspan="2"><a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addBaZiMangBan">
+			</tr>
+
+			<tr>
+				<td align="center">外径</td>
+				<td align="center">内径</td>
+				<td align="center">壁厚</td>
+				<td align="center">外径</td>
+				<td align="center">壁厚</td>
+			</tr>
+
+			<tr>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="baZiMangBan_l1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="baZiMangBan_l2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="baZiMangBan_l3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="baZiMangBan_l4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="baZiMangBan_l5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="baZiMangBan_l6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="baZiMangBan_l7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="baZiMangBan_l8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="baZiMangBan_l9" /></td>
+				<td align="center"></td>
+			</tr>
+			
+			<tr id="baZiMangBan">
+				<td align="center" colspan="2">标准范围</td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="baZiMangBan_d1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="baZiMangBan_d2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="baZiMangBan_d3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="baZiMangBan_d4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="baZiMangBan_d5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="baZiMangBan_d6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="baZiMangBan_d7" /></td>
+				<td align="center"></td>
+			</tr>
+
+			<tr>
+				<td align="center">备注</td>
+				<td  colspan="20"><input class="input_360 easyui-validatebox" type="text" name="baZiMangBan_e1" /></td>
+			</tr>
+		</table>
+
+		<div class="title">
+			<span class="wenzi">法兰盖几何尺寸抽检记录</span>
+		</div>
+		<table class="table_new2 value">
+			<tr>
+				<td align="center" rowspan="2">项目名称</td>
+				<td colspan="3" rowspan="2"><input class="input_100 easyui-validatebox" type="text" name="faLanGai_a1"></td>
+				<td align="center">生产厂家</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="faLanGai_a2"></td>
+				<td align="center">检验依据</td>
+				<td colspan="4"><input class="input_100 easyui-validatebox" type="text" name="faLanGai_a3"></td>
+			</tr>
+
+			<tr>
+				<td align="center">检验数量</td>
+				<td colspan="3"><input class="input_100 easyui-validatebox" type="text" name="faLanGai_b1"></td>
+				<td align="center">编号范围</td>
+				<td ><input class="input_100 easyui-validatebox" type="text" name="faLanGai_b2"></td>
+				<td align="center">检验比例</td>
+				<td colspan="4"><input class="input_100 easyui-validatebox" type="text" name="faLanGai_b3"></td>
+			</tr>
+
+			<tr>
+				<td align="center" rowspan="2">规格名称</td>
+				<td align="center" rowspan="2">编号</td>
+				<td align="center" colspan="3">法兰盖尺寸</td>
+				<td align="center" colspan="2">密封面尺寸（mm）</td>
+				<td align="center" rowspan="2">法兰盖外径（mm）D</td>
+				<td align="center" rowspan="2">法兰盖厚度（mm）C</td>
+				<td align="center" rowspan="2">外观标识</td>
+				<td align="center" rowspan="2">结论</td>
+				<td align="center" rowspan="2"><a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addFaLanGai">
+			</tr>
+
+			<tr>
+			    <td>螺栓孔直径（mm）L</td>
+			    <td>螺栓孔数量（个）N</td>
+			    <td>螺栓孔中心圆直径（mm）K</td>
+			    <td>密封面直径（mm）d</td>
+			    <td>密封面高度（mm）f1</td>		
+			</tr>
+
+			<tr>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faLanGai_l1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faLanGai_l2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faLanGai_l3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faLanGai_l4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faLanGai_l5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faLanGai_l6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faLanGai_l7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faLanGai_l8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faLanGai_l9" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faLanGai_l10" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faLanGai_l11" /></td>
+				<td align="center"></td>
+			</tr>
+			
+			<tr id="faLanGai">
+				<td align="center" colspan="2">标准范围</td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faLanGai_c1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faLanGai_c2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faLanGai_c3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faLanGai_c4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faLanGai_c5" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faLanGai_c6" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faLanGai_c7" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faLanGai_c8" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="faLanGai_c9" /></td>
+				<td align="center"></td>			
+			</tr>
+			<tr>
+				<td align="center">备注</td>
+				<td  colspan="18"><input class="input_360 easyui-validatebox" type="text" name="faLanGai_d1" /></td>
+			</tr>
+		</table>
+
+
+		
+
+
+
+
+
+
+
+		<table class="table_new mysumit234" style="position:fixed;top:50%;right:0px;width:104px;border:0;">
+			<tr>
+				<td align="center" width="100%"><a id="btn_submit" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok" style="width:100px;height:40px;">确认提交</a></td>
+			</tr>
+		</table>
+
+	</form>
+	
+</body>
+</html>

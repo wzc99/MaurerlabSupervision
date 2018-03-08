@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<link rel="stylesheet" type="text/css" href="../../themes/general.css"  />
+	<link rel="stylesheet" type="text/css" href="../../themes/icon.css" 			/>
+	<link rel="stylesheet" type="text/css" href="../../themes/jquery-ui.css" 		/>
+	<link rel="stylesheet" type="text/css" href="../../themes/default/easyui.css" 	/>
+		<script type="text/javascript" src="../../scripts/jquery-1.8.0.min.js"></script>
+		<script type="text/javascript" src="../../scripts/jquery.easyui.min.js"></script>
+		<script type="text/javascript" src="../../scripts/locale/easyui-lang-zh_CN.js"></script>
+		<script type="text/javascript" src="../../scripts/src/jquery.parser.js"></script>
+		<script type="text/javascript" src="../../scripts/general.js"></script>
+		<script type="text/javascript" src="../../scripts/sessionExpriation.js"></script>
+		<script type="text/javascript" src="../../scripts/leibie/wenjian.js"></script>
+		<style type="text/css">
+			html,body {
+				height: 100%;
+				width: 100%;
+			}
+			.inbe{
+				border: 1px solid #95B8E7;
+				border-radius: 5px 5px 5px 5px;
+				height: 25px;
+			}
+			#tableWork td{
+				padding-left:0;
+				padding-right:0;	
+			}
+			select{
+				border: 1px solid #95B8E7;
+				border-radius: 5px 5px 5px 5px;
+				height: 25px;
+			}
+			.title {
+				color: green;margin: 20px;font-size: 20px;
+			}
+			.wenzi {
+				font-size: 23px;
+				font-weight: bolder;
+			}
+		</style>
+		<script type="text/javascript">
+			$(function(){
+
+				//项目的id作为隐藏值保存在表单中
+				var projectId = $.getUrlParam('projectId');
+				$("#proId").val(projectId);
+
+				$('[id^="new_form"]').form({
+					url : "../../test/testResult.ajax",//ajax地址待修改
+					onSubmit : function() {				
+					},
+					success : function(data) {
+						var obj = $.parseJSON(data);//将json字符串转换为object对象
+						if (obj.success) {
+							$.messager.alert('提示', obj.message, 'info', function(){
+								 //刷新项目详述页面
+								 href="./project/view.html?proId="+projectId;
+								// alert(href);
+								var content = '<iframe scrolling="auto" frameborder="0"  src="'+href+'" style="width:100%;height:100%;"></iframe>';  
+							    var tt = parent.$('#tabs');  	   
+							    if (tt.tabs('exists', "项目详述")){//如果tab已经存在,则选中该tab，并更新内容          
+							        tt.tabs('select', "项目详述");  
+							        var tab =parent.$('#tabs').tabs('getSelected'); 
+							        parent.$('#tabs').tabs('update', {
+							        	tab: tab,
+							        	options: {
+							        		content:content
+							        	}
+							        });
+							    }
+							    //关闭当前页面
+							 	parent.$('#tabs').tabs('close','新增质量控制');
+							});
+						} else {
+							$.messager.alert('错误', obj.message, 'error');
+						}
+					}
+				}); 
+
+				$('#btn_submit').bind('click', function() {
+					//alert('hello');
+					$('[id^="new_form"]').submit();
+				}); 
+			});
+		</script>
+</head>
+<body>
+	<form id="new_form0" method="post" enctype="multipart/form-data">
+		<input type="text" name="proId" id="proId" >
+		<input type="text" name="proType" id="proType" value="wenJian">
+		<table class="table_new2 aa">
+			<tr>
+				<td>日期/班次</td>
+				<td><input class="easyui-validatebox input_180" type="date" name="date" required="required"/></td>
+				<td>填写人</td>
+				<td><input class="easyui-validatebox input_180" type="text" name="people" required="required"/></td>
+			</tr>
+		</table>
+		<div class="title">
+			<span class="wenzi">文件、报告审核记录</span>
+		</div>
+		<table class="table_new2 value">
+			<tr>
+				<td align="center">项目名称</td>
+				<td><input class="input_100 easyui-validatebox" type="text" name="shenHeJiLu_a1"></td>
+				<td align="center">生产厂家</td>
+				<td colspan="2"><input class="input_100 easyui-validatebox" type="text" name="shenHeJiLu_a2"></td>
+			</tr>
+
+			<tr>
+				<td align="center">文件类目</td>
+				<td colspan="4"><input  type="radio" name="shenHeJiLu_b1" value="原材料质证书"/>原材料质证书&nbsp;&nbsp;
+					               <input  type="radio" name="shenHeJiLu_b1" value="原材料复验报告"/>原材料复验报告&nbsp;&nbsp;
+					               <input  type="radio" name="shenHeJiLu_b1" value="无损检测报告"/>无损检测报告&nbsp;&nbsp;
+					               <input  type="radio" name="shenHeJiLu_b1" value="压力试验报告"/>压力试验报告&nbsp;&nbsp;
+					               <input  type="radio" name="shenHeJiLu_b1" value="理化试验报告"/>理化试验报告&nbsp;&nbsp;
+					               <input  type="radio" name="shenHeJiLu_b1" value="腐蚀试验报告"/>腐蚀试验报告&nbsp;&nbsp;
+					               <input  type="radio" name="shenHeJiLu_b1" value="产品质证书"/>产品质证书&nbsp;&nbsp;
+					               其他：<input class="input_60 easyui-validatebox" type="text" name="shenHeJiLu_b1"></td>
+			    
+			</tr>
+
+			<tr>
+				<td align="center">审核依据</td>
+				<td colspan="4"><input class="input_100 easyui-validatebox" type="text" name="shenHeJiLu_c1"></td>				
+			</tr>
+
+			<tr>
+				<td align="center" colspan="4">表1&nbsp;审核报告或记录文件清单</td>
+				<td align="center"><a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addShenHeJiLu"></td>	
+			</tr>
+
+			<tr>
+				<td align="center">文件编号</td>
+				<td align="center">文件名称</td>
+				<td align="center">物资名称/规格</td>
+				<td align="center">审核结果</td>
+				<td align="center">审核日期</td>
+				
+			</tr>
+
+			<tr>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="shenHeJiLu_l1" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="shenHeJiLu_l2" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="shenHeJiLu_l3" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="shenHeJiLu_l4" /></td>
+				<td align="center"><input class="input_60 easyui-validatebox" type="text" name="shenHeJiLu_l5" /></td>
+			</tr>
+			
+			<tr id="shenHeJiLu">
+				<td>存在问题及处理</td>
+				<td colspan="3"><input class="input_360 easyui-validatebox" type="text" name="shenHeJiLu_d1" /></td>
+				<td align="center"></td>			
+			</tr>
+
+			<tr>
+				<td colspan="5">附：清单中所列的文件/报告</td>
+			</tr>
+		</table>
+		<table class="table_new mysumit234" style="position:fixed;top:50%;right:0px;width:104px;border:0;">
+			<tr>
+				<td align="center" width="100%"><a id="btn_submit" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok" style="width:100px;height:40px;">确认提交</a></td>
+			</tr>
+		</table>
+	</form>
+</body>
+</html>
