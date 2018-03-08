@@ -239,7 +239,7 @@ $(function() {
                 
         },
 		success : function(projectStartInfoData) {
-			//alert(projectStartInfoData.subclass);
+			alert(projectStartInfoData.subclass);
 			//给一个子类的所有数据
 			if(projectStartInfoData.subclass != null){
 				$("#chooseSubClass").text(projectStartInfoData.subclass);
@@ -345,6 +345,7 @@ $(function() {
 		cache: false,
 		data : {
 			proId : projectId,
+			proType : 'quality',
 		},
 		error: function(XMLHttpRequest, textStatus, errorThrown) {
                  //   alert(XMLHttpRequest.status);
@@ -353,6 +354,41 @@ $(function() {
 			init_projectQulityFileInfo(data);
 		}
 	});
+	
+	$.ajax({//几何尺寸----注意：所有的name都没改。。。。。。
+		url : '../../test/viewResult.ajax',
+		type : 'post',
+		dataType : 'JSON',
+		cache: false,
+		data : {
+			proId : projectId,
+			proType : 'jiHeChiCun',
+		},
+		error: function(XMLHttpRequest, textStatus, errorThrown) {
+                 //   alert(XMLHttpRequest.status);
+        },
+		success : function(data) {
+			init_projectQulityFileInfoJiHe(data);
+		}
+	});
+	
+	$.ajax({//文件报告----注意：所有的name都没改。。。。。。
+		url : '../../test/viewResult.ajax',
+		type : 'post',
+		dataType : 'JSON',
+		cache: false,
+		data : {
+			proId : projectId,
+			proType : 'wenJian',
+		},
+		error: function(XMLHttpRequest, textStatus, errorThrown) {
+                 //   alert(XMLHttpRequest.status);
+        },
+		success : function(data) {
+			init_projectQulityFileInfoWenJian(data);
+		}
+	});
+	
 	$.ajax({//问题处理
 		url : '../../question/findQuestionsByProId.ajax',
 		type : 'post',
@@ -788,6 +824,17 @@ function add_quality(){
 	var projectId = $.getUrlParam('proId');
 	do_add_quality(projectId);
 }
+
+function add_qualityChouJian(){
+	var projectId = $.getUrlParam('proId');
+	parent.addTabWithIcon("新增几何尺寸抽检记录", "./project/addJiHeChiCun.html?projectId="+projectId, "icon-add");
+}
+
+function add_qualityShenHe(){
+	var projectId = $.getUrlParam('proId');
+	parent.addTabWithIcon("新增文件报告审核记录", "./project/addWenJian.html?projectId="+projectId, "icon-add");
+}
+
 //进度控制--搜索进度
 function do_search_schedule(id){
 	parent.addTabWithIcon("搜索进度", "./project/searchSchedule.htm?projectId="+id, "icon-add");
@@ -860,8 +907,8 @@ function init_dispatch_data(data){
 		$("#qualityPlan2").text(data.sendCard.tSendQualityPlan);//质量计划
 		$("#goOff2").text(data.sendCard.tSendGoTime);//出发时间
 		$("#jobContent").val();//工作内容
-		$("#submissions2").text(data.sendCard.submissions);//结束后提交材料
-		$("#remarks2").text(data.sendCard.remarks);//备注
+		$("#submissions").val();//结束后提交材料
+		$("#remarks").val();//备注
 		$("#chief2").text(data.tManagerLeader.userName);//主管领导
 		$("#chiefTel2").text(data.tManagerLeader.mobile);
 		$("#compiler").text(data.tBianzhi.userName);
@@ -956,10 +1003,62 @@ function init_projectQulityFileInfo(data){
 			//$str+='<td align="center" width="80px"><a href="editQuality.htm?QId='+data.lists[i].qid+'&proId='+data.lists[i].proId+'">修改</a></td>';//操作，查看和修改
 			$str+='<td align="center" width="80px"><a href="javascript:void(0);" onclick="viewQulity('+i+','+data.lists[i].proId+')">查看</a></td>';//操作，查看和修改
 		    $str+='</tr>';
-		    $("#projectQulityFileTab").append($str);
+		    $("#projectQulityFileTab").before($str);
 		}
 	}
 }
+
+//几何尺寸
+var myJId = [];
+function init_projectQulityFileInfoJiHe(data){
+	if(data != null && data.size > 0){
+		for(var i = 0; i < data.size; i++){//name 待修改
+			var id = data.lists[i].qid;
+			console.log(id);
+			myJId.push(id);
+			/* var myJson = {
+					id:id,
+					proId:data.lists[i].proId
+			};
+			console.log(myJson); */
+			$str='';
+	        $str+='<tr>';
+			$str+='<td align="center" width="100px">' + data.lists[i].date + '</td>';//日期/班次
+			$str+='<td align="center" width="200px">' + data.lists[i].people + '</td>';//填写人
+			//$str+='<td align="center" width="80px"><a href="editQuality.htm?QId='+data.lists[i].qid+'&proId='+data.lists[i].proId+'">修改</a></td>';//操作，查看和修改
+			$str+='<td align="center" width="80px"><a href="javascript:void(0);" onclick="viewQulityJiHe('+i+','+data.lists[i].proId+')">查看</a></td>';//操作，查看和修改
+		    $str+='</tr>';
+		    $("#projectQulityFileChouJian").before($str);
+		}
+	}
+}
+
+
+var myWId = [];
+function init_projectQulityFileInfoWenJian(data){
+	if(data != null && data.size > 0){
+		for(var i = 0; i < data.size; i++){//name 待修改
+			var id = data.lists[i].qid;
+			console.log(id);
+			myWId.push(id);
+			/* var myJson = {
+					id:id,
+					proId:data.lists[i].proId
+			};
+			console.log(myJson); */
+			$str='';
+	        $str+='<tr>';
+			$str+='<td align="center" width="100px">' + data.lists[i].date + '</td>';//日期/班次
+			$str+='<td align="center" width="200px">' + data.lists[i].people + '</td>';//填写人
+			//$str+='<td align="center" width="80px"><a href="editQuality.htm?QId='+data.lists[i].qid+'&proId='+data.lists[i].proId+'">修改</a></td>';//操作，查看和修改
+			$str+='<td align="center" width="80px"><a href="javascript:void(0);" onclick="viewQulityWenJian('+i+','+data.lists[i].proId+')">查看</a></td>';//操作，查看和修改
+		    $str+='</tr>';
+		    $("#projectQulityFileShenHe").before($str);
+		}
+	}
+}
+
+
 //问题处理
 function init_projectIssueFileInfo(data){
 	if(data != null && data.size > 0){
@@ -989,9 +1088,15 @@ function editQuestion(qusId,proId) {
 function viewQulity(index,proId) {
 	parent.addTabWithIcon("查看质量控制", "./project/editQuality.htm?QId="+myQId[index]+"&proId="+proId, "icon-tip");
 }
+function viewQulityJiHe(index,proId) {
+	parent.addTabWithIcon("查看几何尺寸", "./project/editJiHeChiCun.html?QId="+myJId[index]+"&proId="+proId, "icon-tip");
+}
+function viewQulityWenJian(index,proId) {
+	parent.addTabWithIcon("查看文件报告", "./project/editWnJian.html?QId="+myWId[index]+"&proId="+proId, "icon-tip");
+}
 
 function do_download(projectPlanFileId,type) {//下载
-	//alert("我的类型"+type);
+	alert("我的类型"+type);
 	var form = $("<form>");
     form.attr('style', 'display:none');
     form.attr('id', 'temp_download_form');
@@ -1015,11 +1120,6 @@ function do_preview(projectPlanFileId,type) {//预览。。。代码要修改哦
     form.remove();
 }
 
-function downloadTable(type){//下载审核记录表单
-	var projectId = $.getUrlParam('proId');
-    parent.parent.open("../../file/downloadTable。ajax?proId="+projectId+"&type="+type);
-}
-
 function dateChange(ss){
 	if(ss==null ||ss=='') {
 		return '';
@@ -1031,7 +1131,6 @@ function dateChange(ss){
 	var d = YY + "-" + MM + "-" + DD;
 	return d;
 }
-
 </script>
 </head>
 <body>
@@ -1455,7 +1554,7 @@ function dateChange(ss){
 			<a id="btn_edit_staff" href="javascript:generate_dispatchForm()" class="easyui-linkbutton" iconCls="icon-tip">生成派遣单</a>
 		</div>
 	</div>
-	<!-- 开工报审-->
+	<!-- 完工资料 -->
 	<div id="tabs-4">
 		<table class="table_new">
 			<tr>
@@ -1484,8 +1583,7 @@ function dateChange(ss){
 		</br>
 		<table class="table_new" id="projectSystemTab">
 			<tr>
-				<td class="td_new_subtitle" colspan="7" ><strong>生产厂质量体系文件审核记录</strong></td>
-				<td align="center" width="80px"><a id="btn_download_quality" href="javascript:downloadTable('qualityFileRecoder')" class="easyui-linkbutton" iconCls="icon-tip">下载表格</a></td>
+				<td class="td_new_subtitle" colspan="8" ><strong>生产厂质量体系文件审核记录</strong></td>
 			</tr>
 			<tr>
 				<td align="center" width="200px"><strong>资质证书/工艺文件/设计图纸名称	</strong></td>
@@ -1501,8 +1599,7 @@ function dateChange(ss){
 		</br>
 		<table class="table_new" id="projectStaffTab">
 			<tr>
-				<td class="td_new_subtitle" colspan="9" ><strong>生产厂人员资质审查记录</strong></td>
-				<td align="center" width="80px"><a id="btn_download_quality" href="javascript:downloadTable('qualityPeopleRecoder')" class="easyui-linkbutton" iconCls="icon-tip">下载表格</a></td>
+				<td class="td_new_subtitle" colspan="10" ><strong>生产厂人员资质审查记录</strong></td>
 			</tr>
 			<tr>
 				<td align="center" width="80px"><strong>姓名	</strong></td>
@@ -1520,8 +1617,7 @@ function dateChange(ss){
 		</br>
 		<table class="table_new" id="projectEquipTab">
 			<tr>
-				<td class="td_new_subtitle" colspan="9" ><strong>生产厂设备仪器检定审查记录</strong></td>
-				<td align="center"  width="80px"><a id="btn_download_quality" href="javascript:downloadTable('qualityCheckRecoder')" class="easyui-linkbutton" iconCls="icon-tip">下载表格</a></td>
+				<td class="td_new_subtitle" colspan="10" ><strong>生产厂设备仪器检定审查记录</strong></td>
 			</tr>
 			<tr>
 				<td align="center" width="120px"><strong>设备名称	</strong></td>
@@ -1540,29 +1636,72 @@ function dateChange(ss){
 		<div align="center">
 			<a id="btn_edit_start" href="javascript:edit_children()" class="easyui-linkbutton" iconCls="icon-tip">选择子类</a>&nbsp;&nbsp;
 			<a id="btn_edit_start" href="javascript:edit_goods()" 	 class="easyui-linkbutton" iconCls="icon-edit"	>填写物资清单</a>&nbsp;&nbsp;
-			<a id="btn_edit_start" href="javascript:edit_starting()" class="easyui-linkbutton" iconCls="icon-add">编辑上传文件</a>	
+			<a id="btn_edit_start" href="javascript:edit_starting()" class="easyui-linkbutton" iconCls="icon-add">上传文件</a>	
 		</div>
 	</div>
 	<!--项目进度-->
 	<div id="tabs-5">
 		
 		<div align="center">
-			<a id="btn_add_sch" href="javascript:add_schedule()" class="easyui-linkbutton" iconCls="icon-add">修&nbsp;&nbsp;改</a>&nbsp;&nbsp;&nbsp;&nbsp;
+			<a id="btn_add_sch" href="javascript:add_schedule()" class="easyui-linkbutton" iconCls="icon-add">新&nbsp;&nbsp;增</a>&nbsp;&nbsp;&nbsp;&nbsp;
 			<a id="btn_search_sch" href="javascript:search_schedule()" class="easyui-linkbutton" iconCls="icon-search">查看记录</a>
 		</div>
 	</div>
 	
 	<div id="tabs-6">
-		<table class="table_view2"  id="projectQulityFileTab">
+		<table class="table_view2" >
+			<tr>
+				<td class="td_new_subtitle" colspan="10" ><strong>质量控制模块</strong></td>
+			</tr>
 			<tr>
 				<td align="center" width="100px">日期/班次</td>
 				<td align="center" width="200px">填写人</td>
 				<td align="center" width="80px">查看修改</td>
 			</tr>
+			<tr id="projectQulityFileTab">
+				<td colspan="3"><div align="center">
+					<a id="btn_add_sch" href="javascript:add_quality()" class="easyui-linkbutton" iconCls="icon-add">新增质量控制</a>&nbsp;&nbsp;&nbsp;&nbsp;
+				</div>
+				</td>
+			</tr>
 		</table>
-			<div align="center">
-			<a id="btn_add_sch" href="javascript:add_quality()" class="easyui-linkbutton" iconCls="icon-add">新&nbsp;&nbsp;增</a>&nbsp;&nbsp;&nbsp;&nbsp;
+		
+		<table class="table_view2" >
+			<tr>
+				<td class="td_new_subtitle" colspan="10" ><strong>几何尺寸抽检记录</strong></td>
+			</tr>
+			<tr>
+				<td align="center" width="100px">日期/班次</td>
+				<td align="center" width="200px">填写人</td>
+				<td align="center" width="80px">查看修改</td>
+			</tr>
+			<tr id="projectQulityFileChouJian">
+				<td colspan="3">
+				<div align="center">
+				<a id="btn_add_sch" href="javascript:add_qualityChouJian()" class="easyui-linkbutton" iconCls="icon-add">几何尺寸抽检记录</a>&nbsp;&nbsp;&nbsp;&nbsp;
+				</div>
+				</td>
+			</tr>
+		</table>
+		
+		<table class="table_view2">
+			<tr>
+				<td class="td_new_subtitle" colspan="10" ><strong>文件报告审核记录</strong></td>
+			</tr>
+			<tr>
+				<td align="center" width="100px">日期/班次</td>
+				<td align="center" width="200px">填写人</td>
+				<td align="center" width="80px">查看修改</td>
+			</tr>
+			<tr   id="projectQulityFileShenHe">
+				<td colspan="3">
+				<div align="center">
+			<a id="btn_add_sch" href="javascript:add_qualityShenHe()" class="easyui-linkbutton" iconCls="icon-add">文件报告审核记录</a>&nbsp;&nbsp;&nbsp;&nbsp;
 		</div>
+				</td>
+			</tr>
+		</table>
+		
 		
 	</div>
 	
@@ -1592,11 +1731,9 @@ function dateChange(ss){
 			<td align="center" width="200px"><strong>资料名称	</strong></td>
 			<td align="center" width="250px"><strong>上传文件名称	</strong></td>
 			<td align="center" width="100px"><strong>数量	    </strong></td>
-			<td align="center" width="100px"><strong>上传人	    </strong></td>
-			<td align="center" width="100px"><strong>审核人	    </strong></td>
-			<!--  <td align="center" width="200px"><strong>资料名称	</strong></td>
-			<td align="center" width="250px"><strong>上传文件名称	</strong></td>
-			<td align="center" width="100px"><strong>数量 	</strong></td>-->
+			<td align="center" width="200px"><strong>上传人	</strong></td>
+			<td align="center" width="250px"><strong>审核人	</strong></td>
+			<!-- <td align="center" width="100px"><strong>数量 	</strong></td> -->
 		</table>
 		<!-- <div align="center">
 			<a id="btn_edit" href="javascript:edit_finish()" class="easyui-linkbutton" iconCls="icon-tip"	>编辑</a>	
