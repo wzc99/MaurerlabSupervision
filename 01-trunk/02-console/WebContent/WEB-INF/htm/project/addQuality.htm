@@ -65,7 +65,7 @@
 		//项目的id作为隐藏值保存在表单中
 		var projectId = $.getUrlParam('projectId');
 		$("#proId").val(projectId);
-		$("input[type='text']").val(1);
+		//$("input[type='text']").val(1);
 		$("input[type='radio'][value='符合']").attr("checked",true);
 		$('[id^="new_form"]').form({
 			url : "../../test/testResult.ajax",//ajax地址待修改
@@ -139,7 +139,7 @@
 <body>
 	<form id="new_form0" method="post" enctype="multipart/form-data">
 		<input type="text" name="proId" id="proId" >
-
+		<input type="text" name="proType" id="proType" value="quality">
 		<table class="table_new2 aa">
 			<tr>
 				<td>日期/班次</td>
