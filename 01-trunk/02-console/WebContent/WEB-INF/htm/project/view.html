@@ -648,40 +648,35 @@ function init_projectFinishFileInfo(data){
 		for(var i = 0; i < data.length; i++){//一行显示两个
 			var name0 = data.tFileForm[i].fileFormName;//文件名称
 			var file0 = data.tFileForm[i].fileFormFilename;	//上传文件名称
-			var sum0 = 1;	//文件数量
-			if(file0 == null) {
-				sum0 = 0;
-				file0 = "未上传";
+			var upload0 = data.tFileForm[i].fileFormPeople;
+			var sum0 = 0;	//文件数量
+			if(file0) {
+				sum0 = 1;
 			}
-			var name1 = "";
+			/* var name1 = "";
 			var sum1 = "";
 			if(i < data.length-1){
 				var name1 = data.tFileForm[i+1].fileFormName;//文件名称
 				var file1 = data.tFileForm[i+1].fileFormFilename;	//上传文件名称
-				var sum1 = 1;//文件数量	
-				if(file1 == null) {
-					sum1 = 0;
-					file1 = "未上传";
+				var sum1 = 0;//文件数量	
+				if(file1) {
+					sum1 = 1;
 				}
-				$str='';
-		        $str+='<tr>';
-				$str+='<td align="center" width="200px">'+ name0 + '</td>';
-				$str+='<td align="center" width="250px">'+ file0 + '</td>';
-				$str+='<td align="center" width="100px">' + sum0 + '</td>';
-				$str+='<td align="center" width="200px">' + name1 + '</td>';
-				$str+='<td align="center" width="250px">'+ file1 + '</td>';
-				$str+='<td align="center" width="100px">' +  sum1 + '</td>';
-			    $str+='</tr>';
-			} else {
-				$str='';
-		        $str+='<tr>';
-				$str+='<td align="center" width="200px">'+ name0 + '</td>';
-				$str+='<td align="center" width="250px">'+ file0 + '</td>';
-				$str+='<td align="center" width="100px">' + sum0 + '</td>';
-				$str+='</tr>';
-			}
+			} */
+			
+			$str='';
+	        $str+='<tr>';
+			$str+='<td align="center" width="200px">'+ name0 + '</td>';
+			$str+='<td align="center" width="250px">'+ file0 + '</td>';
+			$str+='<td align="center" width="100px">' + sum0 + '</td>';
+			$str+='<td align="center" width="100px">' + upload0 + '</td>';
+			
+			/* $str+='<td align="center" width="200px">' + name1 + '</td>';
+			$str+='<td align="center" width="250px">'+ file1 + '</td>';
+			$str+='<td align="center" width="100px">' +  sum1 + '</td>'; */
+		    $str+='</tr>';
 		    $("#projectFinishFileTab").append($str);
-		    i=i+1;
+		    //i=i+1;
 		}
 	}
 }
