@@ -327,7 +327,7 @@ public class GoodTypeService {
 				}else if(bigName.equals("石油专用管")) {
 					name+="oilPipe,";
 				}else if(bigName.equals("管件法兰")) {
-					name+="fittings,";
+					name+="falan";
 				}else if(bigName.equals("阀门")) {
 					name+="valve,";
 				}else if(bigName.equals("设备")) {
@@ -359,7 +359,7 @@ public class GoodTypeService {
 				}else if(bigName.equals("石油专用管")) {
 					result.add("oilPipe");
 				}else if(bigName.equals("管件法兰")) {
-					result.add("fittings");
+					result.add("falan");
 				}else if(bigName.equals("阀门")) {
 					result.add("valve");
 				}else if(bigName.equals("设备")) {
