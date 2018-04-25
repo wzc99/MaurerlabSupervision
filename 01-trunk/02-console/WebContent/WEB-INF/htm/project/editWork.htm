@@ -207,6 +207,87 @@
 			}
 		});
 		
+		
+		//第四个表单提交
+		$('#new_form_recoder4').form({
+			url : '../../work/addAndUpdateQualityCertificate.ajax?proId='+projectId,
+			onSubmit : function() {						
+				if ($(this).form('validate')) {
+					return true;//验证是否为空
+				} else {
+					return false;
+				}
+			},
+			success : function(data) {
+				
+				var obj = $.parseJSON(data);//将json字符串转换为object对象
+				//alert(obj);
+				if(obj.success){
+					$.messager.alert('提示', obj.message, 'info', function(){
+						 //刷新项目详述页面
+						 href="./project/view.html?proId="+projectId;
+						 //alert(href);
+						var content = '<iframe scrolling="auto" frameborder="0"  src="'+href+'" style="width:100%;height:100%;"></iframe>';  
+					    var tt = parent.$('#tabs');  	   
+					    if (tt.tabs('exists', "项目详述")){//如果tab已经存在,则选中该tab，并更新内容          
+					        tt.tabs('select', "项目详述");  
+					        var tab =parent.$('#tabs').tabs('getSelected'); 
+					        parent.$('#tabs').tabs('update', {
+					        	tab: tab,
+					        	options: {
+					        		content:content
+					        	}
+					        });
+					    }
+					    //关闭当前页面
+					 	parent.$('#tabs').tabs('close','开工报审');
+					});
+				} else {
+					$.messager.alert('错误', obj.message, 'error');
+				}
+			}
+		});
+		
+		//第五个表单提交
+		$('#new_form_recoder5').form({
+			url : '../../work/addAndUpdateQualityReview.ajax?proId='+projectId,
+			onSubmit : function() {						
+				if ($(this).form('validate')) {
+					return true;//验证是否为空
+				} else {
+					return false;
+				}
+			},
+			success : function(data) {
+				
+				var obj = $.parseJSON(data);//将json字符串转换为object对象
+				//alert(obj);
+				if(obj.success){
+					$.messager.alert('提示', obj.message, 'info', function(){
+						 //刷新项目详述页面
+						 href="./project/view.html?proId="+projectId;
+						 //alert(href);
+						var content = '<iframe scrolling="auto" frameborder="0"  src="'+href+'" style="width:100%;height:100%;"></iframe>';  
+					    var tt = parent.$('#tabs');  	   
+					    if (tt.tabs('exists', "项目详述")){//如果tab已经存在,则选中该tab，并更新内容          
+					        tt.tabs('select', "项目详述");  
+					        var tab =parent.$('#tabs').tabs('getSelected'); 
+					        parent.$('#tabs').tabs('update', {
+					        	tab: tab,
+					        	options: {
+					        		content:content
+					        	}
+					        });
+					    }
+					    //关闭当前页面
+					 	parent.$('#tabs').tabs('close','开工报审');
+					});
+				} else {
+					$.messager.alert('错误', obj.message, 'error');
+				}
+			}
+		});
+		
 		//第一个table如果不是第一次填写，则需要填上其他信息
 		$.ajax({//文件部分
 			url : '../../work/initBeginWorkByProId.ajax',
@@ -270,6 +351,41 @@
 				}
 			}
 		});
+		
+		$.ajax({//第五个table如果不是第一次填写，则需要填上其他信息
+			url : '../../work/getTQualityCertificate.ajax',
+			type : 'post',
+			dataType : 'JSON',
+			cache: false,
+			data : {
+				proId : projectId 
+			},
+			error: function(XMLHttpRequest, textStatus, errorThrown) {	                   
+	        },
+			success : function(data) {//加一个判断有数据就执行
+				if(!data.first){
+					init_file5(data);
+				}
+			}
+		});
+		
+		$.ajax({//第五个table如果不是第一次填写，则需要填上其他信息
+			url : '../../work/getTQualityReview.ajax',
+			type : 'post',
+			dataType : 'JSON',
+			cache: false,
+			data : {
+				proId : projectId 
+			},
+			error: function(XMLHttpRequest, textStatus, errorThrown) {	                   
+	        },
+			success : function(data) {//加一个判断有数据就执行
+				if(!data.first){
+					init_file6(data);
+				}
+			}
+		});
+
 
 		//事件绑定，点击提交就提交表单
 		$('#btn_submit').bind('click', function() {
@@ -286,6 +402,12 @@
 		
 		$('#btn_submit3').bind('click', function() {
 			$("#new_form_recoder3").submit();
+		});
+		$('#btn_submit4').bind('click', function() {
+			$("#new_form_recoder4").submit();
+		});
+		$('#btn_submit5').bind('click', function() {
+			$("#new_form_recoder5").submit();
 		});
 		
 		
@@ -511,8 +633,173 @@
 			tableEquipIndex++;
 		    $("#tableEquip").append($str);
 		});
+		
+		
+		//第五个table
+		var table5Index=1;
+		function init_file5(data){
+			table5Index = data.length;//注意这里需要修改，fileInfoIndex应从总的文件个数开始增加
+			var list = data.list;//这里是后台传过来的数值列表
+			if (table5Index>0) {
+				for (var i = 0; i < table5Index; i++) {
+					var tempDelTableequipId = "fileCertificate" + (i+1);
+					var filed="未上传";
+					if(list[i].fileName !=null){
+						filed=list[i].fileName;
+					}
+				    $str='';
+			        $str+='<tr>';
+			        $str+='<td align="center"><input type="text" name="list['+i+'].materialName"			id="materialName'+i+1+'"			class="inbe"	size="15" value="'+list[i].materialName+'"/></td>';
+			        $str+='<td align="center"><input type="text" name="list['+i+'].specifications" 		 	id="specifications'+i+1+'"				class="inbe"	size="10" value="'+list[i].specifications+'"/></td>';
+			        $str+='<td align="center"><input type="text" name="list['+i+'].materialNum" 	id="materialNum'+i+1+'" 	class="inbe"	size="20" value="'+list[i].materialNum+'"/></td>';
+			        if(list[i].checkResult=="通过"){
+						$str+='<td align="center"><select name="list['+i+'].checkResult" ><option value="通过" selected>通过</option><option value="不通过">不通过</option></select></td>';
+					}else{
+						$str+='<td align="center"><select name="list['+i+'].checkResult" ><option value="通过">通过</option><option value="不通过" selected>不通过</option></select></td>';
+					}
+			        $str+='<td align="center"><input type="text" name="list['+i+'].checkDate" 		id="checkDate'+i+1+'"		class="inbe validateDate"	size="20" value="'+list[i].checkDate+'"/></td>';
+			        $str+='<td align="center"><input type="file" name="list['+i+'].fileOriginalName"  			id="fileCertificate'+i+1+'"   		class="inbe" /></td>';
+			        
+			        $str+='<td align="center"><span>'+filed+'</span></td>';
+				    $str+='<td align="center"><a id="'+tempDelTableequipId+'" 	href="javascript:delTr(\''+tempDelTableequipId+'\')" >删除</a></td>';
+				    $str+='</tr>';
+				    $("#tableQualityCertificate").append($str);
+				   // changeToDate('checkDate'+(i+1),list[i].checkDate);
+				   // changeToDate();
+				   changeToDate('checkDate'+i+1);
+				    $('#checkDate'+i+1).datebox('setValue',list[i].checkDate);
+				}
+			}
+			
+		}
+		$("#addCertificate").click(function(){
+			var tempDelTableequipId = "fileCertificate" + (table5Index+1);
+			var temptableEquipIndex = table5Index;
+			$str='';     
+	        $str+='<tr>';
+	        $str+='<td align="center"><input type="text" name="list['+temptableEquipIndex+'].materialName"			id="materialName'+temptableEquipIndex+1+'"			class="inbe"	size="15" /></td>';
+	        $str+='<td align="center"><input type="text" name="list['+temptableEquipIndex+'].specifications" 		 	id="specifications'+temptableEquipIndex+1+'"				class="inbe"	size="10"/></td>';
+	        $str+='<td align="center"><input type="text" name="list['+temptableEquipIndex+'].materialNum" 	id="materialNum'+temptableEquipIndex+1+'" 	class="inbe"	size="20" /></td>';
+	       
+			$str+='<td align="center"><select name="list['+temptableEquipIndex+'].checkResult" ><option value="通过" selected>通过</option><option value="不通过">不通过</option></select></td>';
+			
+	        $str+='<td align="center"><input type="text" name="list['+temptableEquipIndex+'].checkDate" 		id="checkDate'+temptableEquipIndex+1+'"		class="inbe validateDate"	size="20"/></td>';
+	        $str+='<td align="center"><input type="file" name="list['+temptableEquipIndex+'].fileOriginalName"  			id="fileCertificate'+temptableEquipIndex+1+'"   		class="inbe" /></td>';
+	        
+	        $str+='<td align="center"><span></span></td>';
+		    $str+='<td align="center"><a id="'+tempDelTableequipId+'" 	href="javascript:delTr(\''+tempDelTableequipId+'\')" >删除</a></td>';
+		    $str+='</tr>';
+		    table5Index++;
+		    $("#tableQualityCertificate").append($str);
+		    //changeToDate("checkDate"+(temptableEquipIndex+1));
+		    changeToDate("checkDate"+temptableEquipIndex+1);
+		});
+		
+		//第6个table
+		var table6Index=1;
+		function init_file6(data){
+			table6Index = data.length;//注意这里需要修改，fileInfoIndex应从总的文件个数开始增加
+			var list = data.list;//这里是后台传过来的数值列表
+			if (table6Index>=1) {
+				for (var i = 0; i < table6Index; i++) {
+					var tempDelTableequipId = "fileQualityReview" + (i+1);
+					var filed="未上传";
+					if(list[i].fileName !=null){
+						filed=list[i].fileName;
+					}
+				    $str='';
+			        $str+='<tr>';
+			        $str+='<td align="center"><input type="text" name="list['+i+'].materialName"			id="materialName1'+i+1+'"			class="inbe"	size="15" value="'+list[i].materialName+'"/></td>';
+			        $str+='<td align="center"><input type="text" name="list['+i+'].specifications" 		 	id="specifications1'+i+1+'"				class="inbe"	size="10" value="'+list[i].specifications+'"/></td>';
+			        $str+='<td align="center"><input type="text" name="list['+i+'].reportName" 		 	id="reportName'+i+1+'"				class="inbe"	size="10" value="'+list[i].reportName+'"/></td>';
+			        
+			        $str+='<td align="center"><input type="text" name="list['+i+'].materialNum" 	id="materialNum1'+i+1+'" 	class="inbe"	size="20" value="'+list[i].materialNum+'"/></td>';
+			        if(list[i].checkResult=="通过"){
+						$str+='<td align="center"><select name="list['+i+'].checkResult" ><option value="通过" selected>通过</option><option value="不通过">不通过</option></select></td>';
+					}else{
+						$str+='<td align="center"><select name="list['+i+'].checkResult" ><option value="通过">通过</option><option value="不通过" selected>不通过</option></select></td>';
+					}
+			        $str+='<td align="center"><input type="text" name="list['+i+'].checkDate" 		id="checkDate1'+i+1+'"		class="inbe validateDate"	size="20" value="'+list[i].checkDate+'"/></td>';
+			        $str+='<td align="center"><input type="file" name="list['+i+'].fileOriginalName"  			id="fileCertificate1'+i+1+'"   		class="inbe" /></td>';
+			        
+			        $str+='<td align="center"><span>'+filed+'</span></td>';
+				    $str+='<td align="center"><a id="'+tempDelTableequipId+'" 	href="javascript:delTr(\''+tempDelTableequipId+'\')" >删除</a></td>';
+				    $str+='</tr>';
+				    $("#tableQualityReview").append($str);
+				   changeToDate("checkDate1"+i+1);
+				   $('#checkDate1'+i+1).datebox('setValue',list[i].checkDate);
+				    //changeToDate();
+				}
+			}
+			
+		}
+		
+		$("#addQualityReview").click(function(){
+			var tempDelTableequipId = "fileQualityReview" + (table6Index+1);
+			var temptableEquipIndex = table6Index;
+			$str='';     
+	        $str+='<tr>';
+	        $str+='<td align="center"><input type="text" name="list['+temptableEquipIndex+'].materialName"			id="materialName1'+temptableEquipIndex+1+'"			class="inbe"	size="15" /></td>';
+	        $str+='<td align="center"><input type="text" name="list['+temptableEquipIndex+'].specifications" 		 	id="specifications1'+temptableEquipIndex+1+'"				class="inbe"	size="10"/></td>';
+	        
+	        $str+='<td align="center"><input type="text" name="list['+temptableEquipIndex+'].reportName" 		 	id="reportName'+temptableEquipIndex+1+'"				class="inbe"	size="10" /></td>';
+	        
+	        $str+='<td align="center"><input type="text" name="list['+temptableEquipIndex+'].materialNum" 	id="materialNum1'+temptableEquipIndex+1+'" 	class="inbe"	size="20" /></td>';
+	       
+			$str+='<td align="center"><select name="list['+temptableEquipIndex+'].checkResult" ><option value="通过" selected>通过</option><option value="不通过">不通过</option></select></td>';
+			
+	        $str+='<td align="center"><input type="text" name="list['+temptableEquipIndex+'].checkDate" 		id="checkDate1'+temptableEquipIndex+1+'"		class="inbe validateDate"	size="20"/></td>';
+	        $str+='<td align="center"><input type="file" name="list['+temptableEquipIndex+'].fileOriginalName"  			id="fileCertificate1'+temptableEquipIndex+1+'"   		class="inbe" /></td>';
+	        
+	        $str+='<td align="center"><span></span></td>';
+		    $str+='<td align="center"><a id="'+tempDelTableequipId+'" 	href="javascript:delTr(\''+tempDelTableequipId+'\')" >删除</a></td>';
+		    $str+='</tr>';
+		    table6Index++;
+		    $("#tableQualityReview").append($str);
+		    //changeToDate('checkDate1'+(temptableEquipIndex+1));
+		    //changeToDate('checkDate1'+(temptableEquipIndex+1));
+		   /*  $('#checkDate1'+(temptableEquipIndex+1)).datebox({
+				required:true,
+			}); */
+		    changeToDate("checkDate1"+temptableEquipIndex+1);
+		});
+		
+		
+		
+		/* function changeToDate(id,value) {
+			$('#'+id).datebox({
+				onSelect: function(date){
+					if(value) {
+						$('#'+id).val(value)
+					}
+				},
+				required:true,
+				
+			});
+		} */
+		//changeToDate();
+		function changeToDate(id) {
+			$('#'+id).datebox({
+				onSelect: function(date){
+					
+				},
+				required:true,
+				
+			});
+		}
 
 });
+	/* function changeToDate(id,date) {
+		/*  */
+		/* if(date) {
+			$('#'+id).datebox('setValue',date);
+		}else {
+			$('#'+id).datebox({
+				required:true,
+			});
+		} */
+		
+	
 
 	//表单提交时验证 最后上传的那部分
 	function recordFileName(){
@@ -591,6 +878,53 @@
 	</table>
 </form>
 	<br>
+	<form id="new_form_recoder4" method="post" enctype="multipart/form-data">
+	<table class="table_view" id="tableQualityCertificate">
+		<tr>
+			<td class="td_new_subtitle" colspan="8" ><strong>原材料质量证明书审核记录</strong></td>
+		</tr>
+		<tr>
+			<td align="center" width="200px"><strong>原材料名称</strong></td>
+			<td align="center" width="120px"><strong>规格型号</strong></td>
+			<td align="center" width="180px"><strong>质量证明书编号</strong></td>
+			<td align="center" width="120px"><strong>审核结果</strong></td>
+			<td align="center" width="120px"><strong>审核日期</strong></td>
+			<td align="center" width="100px"><strong>上传</strong></td>
+			<td align="center" width="150px"><strong>已上传文件名</strong></td>
+			<td align="center" width="80px"><a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addCertificate"></a></td>
+		</tr>
+	</table>
+	<table class="table_new">
+		<tr>
+			<td align="center" width="100%"><a id="btn_submit4" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok">确认提交</a></td>
+		</tr>
+	</table>
+</form>
+<br><form id="new_form_recoder5" method="post" enctype="multipart/form-data">
+	<table class="table_view" id="tableQualityReview">
+		<tr>
+			<td class="td_new_subtitle" colspan="9" ><strong>原材料复验报告审核记录</strong></td>
+		</tr>
+		<tr>
+			<td align="center" width="200px"><strong>原材料名称</strong></td>
+			<td align="center" width="120px"><strong>规格型号</strong></td>
+			<td align="center" width="180px"><strong>复验报告名称</strong></td>
+			<td align="center" width="120px"><strong>报告编号</strong></td>
+			<td align="center" width="200px"><strong>审核结果</strong></td>
+			<td align="center" width="150px"><strong>审核日期</strong></td>
+			<td align="center" width="100px"><strong>上传</strong></td>
+			<td align="center" width="150px"><strong>已上传文件名</strong></td>
+			<td align="center" width="80px"><a href="javascript:void(0)" class="easyui-linkbutton" icon="icon-add" id="addQualityReview"></a></td>
+		</tr>
+		
+	</table>
+	<table class="table_new">
+		<tr>
+			<td align="center" width="100%"><a id="btn_submit5" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok">确认提交</a></td>
+		</tr>
+	</table>
+</form>
+<br>
 <form id="new_form_recoder1" method="post" enctype="multipart/form-data">
 	<table class="table_view" id="tableWork">
 		<tr>
@@ -621,7 +955,7 @@
 		</tr>
 	</table>
 </form>
-	</br>
+	<br>
 <form id="new_form_recoder2" method="post" enctype="multipart/form-data">
 	<table class="table_view2" id="tablePeople">
 		<tr>

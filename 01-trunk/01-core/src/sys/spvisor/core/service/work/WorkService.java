@@ -15,21 +15,29 @@ import org.springframework.web.multipart.MultipartFile;
 
 import sys.file.common.AutoCreateFileName;
 import sys.spvisor.core.dao.project.TFileFormMapper;
+import sys.spvisor.core.dao.work.TQualityCertificateMapper;
 import sys.spvisor.core.dao.work.TQualityCheckRecoderMapper;
 import sys.spvisor.core.dao.work.TQualityFileRecoderMapper;
 import sys.spvisor.core.dao.work.TQualityPeopleRecoderMapper;
+import sys.spvisor.core.dao.work.TQualityReviewMapper;
 import sys.spvisor.core.entity.project.TFileForm;
 import sys.spvisor.core.entity.project.TFileFormExample;
 import sys.spvisor.core.entity.project.TFileFormExample.Criteria;
+import sys.spvisor.core.entity.work.TQualityCertificate;
+import sys.spvisor.core.entity.work.TQualityCertificateExample;
 import sys.spvisor.core.entity.work.TQualityCheckRecoder;
 import sys.spvisor.core.entity.work.TQualityCheckRecoderExample;
 import sys.spvisor.core.entity.work.TQualityFileRecoder;
 import sys.spvisor.core.entity.work.TQualityFileRecoderExample;
 import sys.spvisor.core.entity.work.TQualityPeopleRecoder;
 import sys.spvisor.core.entity.work.TQualityPeopleRecoderExample;
+import sys.spvisor.core.entity.work.TQualityReview;
+import sys.spvisor.core.entity.work.TQualityReviewExample;
+import sys.spvisor.core.result.work.TQualityCertificateModel;
 import sys.spvisor.core.result.work.TQualityCheckRecoderModel;
 import sys.spvisor.core.result.work.TQualityFileRecoderModel;
 import sys.spvisor.core.result.work.TQualityPeopleRecoderModel;
+import sys.spvisor.core.result.work.TQualityReviewModel;
 import sys.spvisor.core.service.project.FileService;
 
 
@@ -47,6 +55,10 @@ public class WorkService {
 	TQualityPeopleRecoderMapper tQualityPeopleRecoderMapper;	//生产厂人员资质审查记录
 	@Autowired
 	TQualityCheckRecoderMapper tQualityCheckRecoderMapper;	//生产厂设备仪器检定审查记录
+	@Autowired
+	TQualityCertificateMapper tQualityCertificateMapper;  //原材料质量证明书审核记录
+	@Autowired
+	TQualityReviewMapper tQualityReviewMapper;  //原材料复验报告审核记录
 
 	//获取项目中的生产厂设备仪器检定审查记录
 	@Transactional
@@ -74,6 +86,24 @@ public class WorkService {
 		criteria.andProIdEqualTo(proId);
 		List<TQualityPeopleRecoder> result = tQualityPeopleRecoderMapper.selectByExample(example);
 		return result;
+	}
+	
+	//获取项目中的原材料质量证明书审核记录
+	public List<TQualityCertificate> getTQualityCertificate(int proId) {
+		TQualityCertificateExample example = new TQualityCertificateExample();
+		sys.spvisor.core.entity.work.TQualityCertificateExample.Criteria criteria = example.createCriteria();
+		criteria.andProIdEqualTo(proId);
+		List<TQualityCertificate> lists = tQualityCertificateMapper.selectByExample(example);
+		return lists;
+	}
+	
+	//获取项目中的原材料复验报告审核记录
+	public List<TQualityReview> getTQualityReview(int proId) {
+		TQualityReviewExample example = new TQualityReviewExample();
+		sys.spvisor.core.entity.work.TQualityReviewExample.Criteria criteria = example.createCriteria();
+		criteria.andProIdEqualTo(proId);
+		List<TQualityReview> lists = tQualityReviewMapper.selectByExample(example);
+		return lists;
 	}
 	
 	@Transactional
@@ -245,6 +275,302 @@ public class WorkService {
 			}	
 		}
 		
+		return null;
+	}
+	
+	@Transactional
+	public int addTQualityCertificate(TQualityCertificateModel model,
+			Map<String, MultipartFile> fileMap, String username, Long userId,
+			HttpServletRequest request, int proId) {
+		List<TQualityCertificate> lists = model.getList();
+		//记录改变了和新增了几行
+		int rows = 0;
+		
+		//查看是否是第一次添加
+		TQualityCertificateExample example = new TQualityCertificateExample();
+		sys.spvisor.core.entity.work.TQualityCertificateExample.Criteria criteria = example.createCriteria();
+		criteria.andProIdEqualTo(proId);
+		List<TQualityCertificate> originalLists = tQualityCertificateMapper.selectByExample(example);
+		if(originalLists.size() == 0) {
+			
+			int index = 0;
+			for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
+				MultipartFile mf 	= entity.getValue();
+				System.out.println(mf.getOriginalFilename());
+				System.out.println("index:" + index);
+				TQualityCertificate recoder = lists.get(index);
+				while(recoder.getMaterialName() == null) {
+					index++;
+					recoder = lists.get(index);
+				}
+				
+				//有可能中间空着不填，就不添加到数据库里面了
+				if( recoder.getMaterialName() != null && recoder.getMaterialName().length() != 0 ) {
+					recoder.setProId(proId);
+					recoder.setUserId(userId.intValue());
+					//recoder.setUploadTime(new Date(new java.util.Date().getTime()));
+					if(!mf.getOriginalFilename().equals("")){
+						//如果提交了问价就保存，没有就不保存
+						recoder.setFileName(mf.getOriginalFilename());
+						//tPlanForm.setFileFormDate(new Date(new java.util.Date().getTime()));
+						File targetFile = AutoCreateFileName.createFileName(request, mf ,proId);
+						//设置存放的服务器路径
+						recoder.setPath(targetFile.getName());
+						recoder.setSaveName(targetFile.getName());
+					}
+					tQualityCertificateMapper.insert(recoder);
+					rows++;
+				}
+				index++;
+			}
+		}else {
+			//如果不是第一次添加
+			int index = 0;
+			
+			//把删除的从数据库中去掉
+			for (int i = 0; i < originalLists.size(); i++) {
+				for (int j = 0; j < model.getList().size(); j++) {
+					//TODO
+					//这里需要什么条件才能判别是同一项记录
+					if(originalLists.get(i).getMaterialName().equals(model.getList().get(j).getMaterialName())&&
+							originalLists.get(i).getMaterialNum().equals(model.getList().get(j).getMaterialNum())
+							&&originalLists.get(i).getSpecifications().equals(model.getList().get(j).getSpecifications())) {
+						originalLists.remove(i);
+						i--;
+						break;
+					}
+				}
+			}
+			
+			//这样剩下的就是要删除的元素了
+			for (int i = 0; i < originalLists.size(); i++) {
+				tQualityCertificateMapper.deleteByPrimaryKey(originalLists.get(i).getId());
+			}
+			
+			for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
+				MultipartFile mf 	= entity.getValue();
+				System.out.println(mf.getOriginalFilename());
+				System.out.println("index:" + index);
+				TQualityCertificate recoder = lists.get(index);
+				while(recoder.getMaterialName() == null) {
+					index++;
+					recoder = lists.get(index);
+				}
+				
+				//有可能中间空着不填，就不添加到数据库里面了
+				if( recoder.getMaterialName() != null && recoder.getMaterialName().length() != 0 ) {
+					TQualityCertificate isBoolean = checkIsTQualityCertificate(lists.get(index),proId);
+					//如果原来已经存在了，
+					if(isBoolean != null) {
+						//TODO
+						//看到底用几个条件判断是否是一条记录
+						//isBoolean.setDesignName(recoder.getDesignName());
+						//isBoolean.setUnit(recoder.getUnit());
+						//isBoolean.setNumVersion(recoder.getNumVersion());
+						isBoolean.setUserId(userId.intValue());
+						isBoolean.setCheckResult(recoder.getCheckResult());
+						isBoolean.setCheckDate(recoder.getCheckDate());
+						if(!mf.getOriginalFilename().equals("")){
+							//如果提交了文件就保存，没有就不保存
+							isBoolean.setFileName(mf.getOriginalFilename());
+							//tPlanForm.setFileFormDate(new Date(new java.util.Date().getTime()));
+							File targetFile = AutoCreateFileName.createFileName(request, mf ,proId);
+							//设置存放的服务器路径
+							isBoolean.setPath(targetFile.getName());
+							isBoolean.setSaveName(targetFile.getName());
+						}
+						tQualityCertificateMapper.updateByPrimaryKey(isBoolean);
+					}else {
+						recoder.setProId(proId);
+						recoder.setUserId(userId.intValue());
+						if(!mf.getOriginalFilename().equals("")){
+							//如果提交了问价就保存，没有就不保存
+							recoder.setFileName(mf.getOriginalFilename());
+							//tPlanForm.setFileFormDate(new Date(new java.util.Date().getTime()));
+							File targetFile = AutoCreateFileName.createFileName(request, mf ,proId);
+							//设置存放的服务器路径
+							recoder.setPath(targetFile.getName());
+							recoder.setSaveName(targetFile.getName());
+						}
+						tQualityCertificateMapper.insert(recoder);
+					}
+					rows++;
+					index++;
+				}
+					
+			}
+		}
+		
+		return rows;
+	}
+	
+	@Transactional
+	public TQualityCertificate checkIsTQualityCertificate(TQualityCertificate recoder,int proId) {
+		TQualityCertificateExample example = new TQualityCertificateExample();
+		sys.spvisor.core.entity.work.TQualityCertificateExample.Criteria criteria = example.createCriteria();
+		criteria.andProIdEqualTo(proId);
+		if(!recoder.getMaterialName().trim().isEmpty()) {
+			criteria.andMaterialNameEqualTo(recoder.getMaterialName());
+		}
+		if(!recoder.getMaterialNum().trim().isEmpty()) {
+			criteria.andMaterialNumEqualTo(recoder.getMaterialNum());
+		}
+		if(!recoder.getSpecifications().trim().isEmpty()) {
+			criteria.andSpecificationsEqualTo(recoder.getSpecifications());
+		}
+		//TODO
+		//看到底用几个条件判断是否是一条记录
+		
+		List<TQualityCertificate> lists = tQualityCertificateMapper.selectByExample(example);
+		if(lists.size()>0) {
+			return lists.get(0);
+		}
+		return null;
+	}
+	
+	@Transactional
+	public int addTQualityReview(TQualityReviewModel model,
+			Map<String, MultipartFile> fileMap, String username, Long userId,
+			HttpServletRequest request, int proId) {
+		List<TQualityReview> lists = model.getList();
+		//记录改变了和新增了几行
+		int rows = 0;
+		
+		//查看是否是第一次添加
+		TQualityReviewExample example = new TQualityReviewExample();
+		sys.spvisor.core.entity.work.TQualityReviewExample.Criteria criteria = example.createCriteria();
+		criteria.andProIdEqualTo(proId);
+		List<TQualityReview> originalLists = tQualityReviewMapper.selectByExample(example);
+		if(originalLists.size() == 0) {
+			
+			int index = 0;
+			for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
+				MultipartFile mf 	= entity.getValue();
+				System.out.println(mf.getOriginalFilename());
+				System.out.println("index:" + index);
+				TQualityReview recoder = lists.get(index);
+				while(recoder.getMaterialName() == null) {
+					index++;
+					recoder = lists.get(index);
+				}
+				
+				//有可能中间空着不填，就不添加到数据库里面了
+				if( recoder.getMaterialName() != null && recoder.getMaterialName().length() != 0 ) {
+					recoder.setProId(proId);
+					recoder.setUserId(userId.intValue());
+					//recoder.setUploadTime(new Date(new java.util.Date().getTime()));
+					if(!mf.getOriginalFilename().equals("")){
+						//如果提交了问价就保存，没有就不保存
+						recoder.setFileName(mf.getOriginalFilename());
+						//tPlanForm.setFileFormDate(new Date(new java.util.Date().getTime()));
+						File targetFile = AutoCreateFileName.createFileName(request, mf ,proId);
+						//设置存放的服务器路径
+						recoder.setPath(targetFile.getName());
+						recoder.setSaveName(targetFile.getName());
+					}
+					tQualityReviewMapper.insert(recoder);
+					rows++;
+				}
+				index++;
+			}
+		}else {
+			//如果不是第一次添加
+			int index = 0;
+			
+			//把删除的从数据库中去掉
+			for (int i = 0; i < originalLists.size(); i++) {
+				for (int j = 0; j < model.getList().size(); j++) {
+					//TODO
+					//这里需要什么条件才能判别是同一项记录
+					if(originalLists.get(i).getMaterialName().equals(model.getList().get(j).getMaterialName())&&
+							originalLists.get(i).getMaterialNum().equals(model.getList().get(j).getMaterialNum())
+							&&originalLists.get(i).getSpecifications().equals(model.getList().get(j).getSpecifications())) {
+						originalLists.remove(i);
+						i--;
+						break;
+					}
+				}
+			}
+			
+			//这样剩下的就是要删除的元素了
+			for (int i = 0; i < originalLists.size(); i++) {
+				tQualityReviewMapper.deleteByPrimaryKey(originalLists.get(i).getId());
+			}
+			
+			for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
+				MultipartFile mf 	= entity.getValue();
+				System.out.println(mf.getOriginalFilename());
+				System.out.println("index:" + index);
+				TQualityReview recoder = lists.get(index);
+				while(recoder.getMaterialName() == null) {
+					index++;
+					recoder = lists.get(index);
+				}
+				
+				//有可能中间空着不填，就不添加到数据库里面了
+				if( recoder.getMaterialName() != null && recoder.getMaterialName().length() != 0 ) {
+					TQualityReview isBoolean = checkIsTQualityReview(lists.get(index),proId);
+					//如果原来已经存在了，
+					if(isBoolean != null) {
+						//TODO
+						//看到底用几个条件判断是否是一条记录
+						isBoolean.setUserId(userId.intValue());
+						isBoolean.setCheckResult(recoder.getCheckResult());
+						isBoolean.setCheckDate(recoder.getCheckDate());
+						if(!mf.getOriginalFilename().equals("")){
+							//如果提交了文件就保存，没有就不保存
+							isBoolean.setFileName(mf.getOriginalFilename());
+							//tPlanForm.setFileFormDate(new Date(new java.util.Date().getTime()));
+							File targetFile = AutoCreateFileName.createFileName(request, mf ,proId);
+							//设置存放的服务器路径
+							isBoolean.setPath(targetFile.getName());
+							isBoolean.setSaveName(targetFile.getName());
+						}
+						tQualityReviewMapper.updateByPrimaryKey(isBoolean);
+					}else {
+						recoder.setProId(proId);
+						recoder.setUserId(userId.intValue());
+						if(!mf.getOriginalFilename().equals("")){
+							//如果提交了问价就保存，没有就不保存
+							recoder.setFileName(mf.getOriginalFilename());
+							//tPlanForm.setFileFormDate(new Date(new java.util.Date().getTime()));
+							File targetFile = AutoCreateFileName.createFileName(request, mf ,proId);
+							//设置存放的服务器路径
+							recoder.setPath(targetFile.getName());
+							recoder.setSaveName(targetFile.getName());
+						}
+						tQualityReviewMapper.insert(recoder);
+					}
+					rows++;
+					index++;
+				}
+					
+			}
+		}
+		return rows;
+	}
+	
+	@Transactional
+	public TQualityReview checkIsTQualityReview(TQualityReview recoder,int proId) {
+		TQualityReviewExample example = new TQualityReviewExample();
+		sys.spvisor.core.entity.work.TQualityReviewExample.Criteria criteria = example.createCriteria();
+		criteria.andProIdEqualTo(proId);
+		if(!recoder.getMaterialName().trim().isEmpty()) {
+			criteria.andMaterialNameEqualTo(recoder.getMaterialName());
+		}
+		if(!recoder.getMaterialNum().trim().isEmpty()) {
+			criteria.andMaterialNumEqualTo(recoder.getMaterialNum());
+		}
+		if(!recoder.getSpecifications().trim().isEmpty()) {
+			criteria.andSpecificationsEqualTo(recoder.getSpecifications());
+		}
+		//TODO
+		//看到底用几个条件判断是否是一条记录
+		
+		List<TQualityReview> lists = tQualityReviewMapper.selectByExample(example);
+		if(lists.size()>0) {
+			return lists.get(0);
+		}
 		return null;
 	}
 	
@@ -772,6 +1098,6 @@ public class WorkService {
 			return lists.get(0);
 		}
 		return null;
-		
+
 	}
 }

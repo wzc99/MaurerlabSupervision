@@ -290,6 +290,36 @@ $(function() {
 			init_file3(data);
 		}
 	});
+	
+	$.ajax({//开工报审--生产厂设备仪器检定审查记录
+		url : '../../work/getTQualityCertificate.ajax',
+		type : 'post',
+		dataType : 'JSON',
+		cache: false,
+		data : {
+			proId : projectId,
+		},
+		error: function(XMLHttpRequest, textStatus, errorThrown) {
+        },
+		success : function(data) {
+			init_file4(data);
+		}
+	});
+	
+	$.ajax({//开工报审--生产厂设备仪器检定审查记录
+		url : '../../work/getTQualityReview.ajax',
+		type : 'post',
+		dataType : 'JSON',
+		cache: false,
+		data : {
+			proId : projectId,
+		},
+		error: function(XMLHttpRequest, textStatus, errorThrown) {
+        },
+		success : function(data) {
+			init_file5(data);
+		}
+	});
 /*	$.ajax({//开工报审--判断编辑按钮是否可用
 		url : '../../ana/xxx.ajax',//待修改
 		type : 'post',
@@ -677,6 +707,66 @@ function init_file3(data){
 		}
 	}
 }
+
+function init_file4(data){
+	if(data != null && data.length > 0){		
+		for(var i = 0; i < data.length; i++){
+			var materialName = data.tFileForm[i].materialName;
+			var specifications = data.tFileForm[i].specifications;
+			var materialNum = data.tFileForm[i].materialNum;
+			var checkResult = data.tFileForm[i].checkResult;
+			var checkDate = dateChange(data.tFileForm[i].checkDate);
+			var fileName = data.tFileForm[i].fileName;
+			var download = "下载";
+			var preview = "预览";
+			
+			$str='';
+	        $str+='<tr>';
+			$str+='<td align="center" width="200px">'+ materialName + '</td>';
+			$str+='<td align="center" width="100px">' + specifications + '</td>';
+			$str+='<td align="center" width="120px"> ' + materialNum + '</td>';
+			$str+='<td align="center" width="150px"> ' + checkResult + '</td>';
+			$str+='<td align="center" width="80px"> ' + checkDate + '</td>';
+			$str+='<td align="center" width="150px"> ' +  filename + '</td>';
+			//$str+='<td align="center" width="80px"><a href="javascript:do_preview(' + data.tFileForm[i].fileFormId +','+1+ ')">'+preview+' </a> </td>';//审核状态
+			$str+='<td align="center" width="80px"><a href="../ViewPDF.html?fileurl=' + data.tFileForm[i].id + '&type='+7+'" target="_blank">'+preview+' </a> </td>';
+			$str+='<td align="center" width="80px"><a href="javascript:do_download(' + data.tFileForm[i].id +','+7+ ')">'+download+'</a></td>';//审核状态
+		    $str+='</tr>';
+		    $("#projectSystemQuality").append($str);
+		}
+	}
+}
+function init_file5(data){
+	if(data != null && data.length > 0){		
+		for(var i = 0; i < data.length; i++){
+			var materialName = data.tFileForm[i].materialName;
+			var specifications = data.tFileForm[i].specifications;
+			var reportName = data.tFileForm[i].reportName;
+			var materialNum = data.tFileForm[i].materialNum;
+			var checkResult = data.tFileForm[i].checkResult;
+			var checkDate = dateChange(data.tFileForm[i].checkDate);
+			var fileName = data.tFileForm[i].fileName;
+			var download = "下载";
+			var preview = "预览";
+			
+			$str='';
+	        $str+='<tr>';
+			$str+='<td align="center" width="200px">'+ materialName + '</td>';
+			$str+='<td align="center" width="100px">' + specifications + '</td>';
+			$str+='<td align="center" width="100px">' + reportName + '</td>';
+			$str+='<td align="center" width="120px"> ' + materialNum + '</td>';
+			$str+='<td align="center" width="150px"> ' + checkResult + '</td>';
+			$str+='<td align="center" width="80px"> ' + checkDate + '</td>';
+			$str+='<td align="center" width="150px"> ' +  filename + '</td>';
+			//$str+='<td align="center" width="80px"><a href="javascript:do_preview(' + data.tFileForm[i].fileFormId +','+1+ ')">'+preview+' </a> </td>';//审核状态
+			$str+='<td align="center" width="80px"><a href="../ViewPDF.html?fileurl=' + data.tFileForm[i].id + '&type='+8+'" target="_blank">'+preview+' </a> </td>';
+			$str+='<td align="center" width="80px"><a href="javascript:do_download(' + data.tFileForm[i].id +','+8+ ')">'+download+'</a></td>';//审核状态
+		    $str+='</tr>';
+		    $("#projectSystemQualityReview").append($str);
+		}
+	}
+}
+
 //完工资料--显示文件
 function init_projectFinishFileInfo(data){
 	console.log(data);
@@ -1568,6 +1658,41 @@ function dateChange(ss){
 				<td align="center" width="120px"><strong>上传时间	</strong></td>
 				<td align="center" width="120px"><strong>上传人  	</strong></td>
 				<td align="center" width="80px"><strong>审核状态 	</strong></td>
+				<td align="center" width="80px"><strong>预览  	</strong></td>
+				<td align="center" width="80px"><strong>下载 	</strong></td>
+			</tr>
+		</table>
+		<br>
+		<table class="table_new" id="projectSystemQuality">
+			<tr>
+				<td class="td_new_subtitle" colspan="8" ><strong>原材料质量证明书审核记录</strong></td>
+			</tr>
+			<tr>
+				<td align="center" width="200px"><strong>序号</strong></td>
+				<td align="center" width="120px"><strong>原材料名称</strong></td>
+				<td align="center" width="150px"><strong>规格型号</strong></td>
+				<td align="center" width="120px"><strong>质量证明书编号</strong></td>
+				<td align="center" width="80px"><strong>审核结果</strong></td>
+				<td align="center" width="80px"><strong>审核日期</strong></td>
+				<td align="center" width="150px"><strong>文件名称 	</strong></td>
+				<td align="center" width="80px"><strong>预览  	</strong></td>
+				<td align="center" width="80px"><strong>下载 	</strong></td>
+			</tr>
+		</table>
+		<br>
+		<table class="table_new" id="projectSystemQualityReview">
+			<tr>
+				<td class="td_new_subtitle" colspan="8" ><strong>原材料复验报告审核记录</strong></td>
+			</tr>
+			<tr>
+				<td align="center" width="200px"><strong>序号</strong></td>
+				<td align="center" width="120px"><strong>原材料名称</strong></td>
+				<td align="center" width="150px"><strong>规格型号</strong></td>
+				<td align="center" width="120px"><strong>复验报告名称</strong></td>
+				<td align="center" width="120px"><strong>报告编号</strong></td>
+				<td align="center" width="80px"><strong>审核结果</strong></td>
+				<td align="center" width="80px"><strong>审核日期</strong></td>
+				<td align="center" width="150px"><strong>文件名称 	</strong></td>
 				<td align="center" width="80px"><strong>预览  	</strong></td>
 				<td align="center" width="80px"><strong>下载 	</strong></td>
 			</tr>

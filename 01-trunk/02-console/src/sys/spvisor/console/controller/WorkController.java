@@ -23,13 +23,17 @@ import sys.spvisor.core.dao.project.TFileFormMapper;
 import sys.spvisor.core.entity.project.TFileForm;
 import sys.spvisor.core.entity.project.TGoodsLists;
 import sys.spvisor.core.entity.work.TProductTypeMapping;
+import sys.spvisor.core.entity.work.TQualityCertificate;
 import sys.spvisor.core.entity.work.TQualityCheckRecoder;
 import sys.spvisor.core.entity.work.TQualityFileRecoder;
 import sys.spvisor.core.entity.work.TQualityPeopleRecoder;
+import sys.spvisor.core.entity.work.TQualityReview;
 import sys.spvisor.core.result.work.TGoodListModel;
+import sys.spvisor.core.result.work.TQualityCertificateModel;
 import sys.spvisor.core.result.work.TQualityCheckRecoderModel;
 import sys.spvisor.core.result.work.TQualityFileRecoderModel;
 import sys.spvisor.core.result.work.TQualityPeopleRecoderModel;
+import sys.spvisor.core.result.work.TQualityReviewModel;
 import sys.spvisor.core.result.work.TypeIdResult;
 import sys.spvisor.core.result.work.TypeModel;
 import sys.spvisor.core.result.work.TypeResult;
@@ -304,6 +308,57 @@ public class WorkController {
 		return result;
 	}
 	
+	@RequestMapping("/addAndUpdateQualityCertificate.ajax")
+	public @ResponseBody Map<String, Object> addAndUpdateQualityCertificate(TQualityCertificateModel model,int proId,
+			MultipartHttpServletRequest request, 
+			HttpSession session, HttpServletRequest req) {
+		String username = (String) session.getAttribute("USER_NAME");
+		Long userId =  (Long) session.getAttribute("USER_ID");
+		Map<String,Object> result = new HashMap<String,Object>();
+		Map<String, MultipartFile> fileMap 	= request.getFileMap();
+		System.out.println(fileMap.size());
+		for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
+			MultipartFile mf 	= entity.getValue();
+			System.out.println(mf.getOriginalFilename());
+		}
+		
+		int rows = workService.addTQualityCertificate(model, fileMap, username, userId, request, proId);
+		if(rows != 0) {
+			result.put("message", "添加/修改原材料质量证明书审核记录成功");
+			result.put("success", true);
+		} else {
+			result.put("message", "添加/修改原材料质量证明书审核记录失败");
+			result.put("success", false);
+		}
+		return result;
+	}
+	
+	@RequestMapping("/addAndUpdateQualityReview.ajax")
+	public @ResponseBody Map<String, Object> addAndUpdateQualityReview(TQualityReviewModel model,int proId,
+			MultipartHttpServletRequest request, 
+			HttpSession session, HttpServletRequest req) {
+		String username = (String) session.getAttribute("USER_NAME");
+		Long userId =  (Long) session.getAttribute("USER_ID");
+		Map<String,Object> result = new HashMap<String,Object>();
+		Map<String, MultipartFile> fileMap 	= request.getFileMap();
+		System.out.println(fileMap.size());
+		for (Map.Entry<String, MultipartFile> entity : fileMap.entrySet()) {
+			MultipartFile mf 	= entity.getValue();
+			System.out.println(mf.getOriginalFilename());
+		}
+		
+		int rows = workService.addTQualityReview(model, fileMap, username, userId, request, proId);
+		if(rows != 0) {
+			result.put("message", "添加/修改原材料复验报告审核记录成功");
+			result.put("success", true);
+		} else {
+			result.put("message", "添加/修改原材料复验报告审核记录失败");
+			result.put("success", false);
+		}
+		return result;
+	}
+	
+	
 	@RequestMapping("/addOrUpdateGoodList.ajax")
 	public @ResponseBody Map<String, Object> addOrUpdateGoodList(int proId,TGoodListModel model) {
 		Map<String,Object> result = new HashMap<String,Object>(2);
@@ -377,6 +432,36 @@ public class WorkController {
 			fileDownAndPrewService.download(response, request, 7, lists.get(0).getFileFormId());
 			result.put("success", true);
 			result.put("message", "先生成物资清单完毕");
+		}
+		return result;
+	}
+	
+	//获取项目中的原材料质量证明书审核记录
+	@RequestMapping("/getTQualityCertificate.ajax")
+	public @ResponseBody Map<String, Object> getTQualityCertificate(int proId) {
+		Map<String,Object> result = new HashMap<String,Object>(1);
+		List<TQualityCertificate> lists = workService.getTQualityCertificate(proId);
+		if(lists.size() == 0) {
+			result.put("first", true);
+		}else {
+			result.put("first", false);
+			result.put("length", lists.size());
+			result.put("list", lists);
+		}
+		return result;
+	}
+	
+	//获取项目中的原材料复验报告审核记录
+	@RequestMapping("/getTQualityReview.ajax")
+	public @ResponseBody Map<String, Object> getTQualityReview(int proId) {
+		Map<String,Object> result = new HashMap<String,Object>(1);
+		List<TQualityReview> lists = workService.getTQualityReview(proId);
+		if(lists.size() == 0) {
+			result.put("first", true);
+		}else {
+			result.put("first", false);
+			result.put("length", lists.size());
+			result.put("list", lists);
 		}
 		return result;
 	}
