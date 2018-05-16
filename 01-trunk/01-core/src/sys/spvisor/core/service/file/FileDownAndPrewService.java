@@ -12,17 +12,21 @@ import sys.spvisor.core.dao.examine.TExamineMapper;
 import sys.spvisor.core.dao.file.TCompanyFileManageMapper;
 import sys.spvisor.core.dao.journal.TJournalMapper;
 import sys.spvisor.core.dao.project.TFileFormMapper;
+import sys.spvisor.core.dao.work.TQualityCertificateMapper;
 import sys.spvisor.core.dao.work.TQualityCheckRecoderMapper;
 import sys.spvisor.core.dao.work.TQualityFileRecoderMapper;
 import sys.spvisor.core.dao.work.TQualityPeopleRecoderMapper;
+import sys.spvisor.core.dao.work.TQualityReviewMapper;
 import sys.spvisor.core.entity.examine.TExamine;
 import sys.spvisor.core.entity.file.TCompanyFileManage;
 import sys.spvisor.core.entity.journal.TJournal;
 import sys.spvisor.core.entity.journal.TJournalExample;
 import sys.spvisor.core.entity.project.TFileForm;
+import sys.spvisor.core.entity.work.TQualityCertificate;
 import sys.spvisor.core.entity.work.TQualityCheckRecoder;
 import sys.spvisor.core.entity.work.TQualityFileRecoder;
 import sys.spvisor.core.entity.work.TQualityPeopleRecoder;
+import sys.spvisor.core.entity.work.TQualityReview;
 import sys.spvisor.core.util.DecideFileType;
 import sys.spvisor.core.util.OfficeUtils;
 
@@ -40,6 +44,10 @@ public class FileDownAndPrewService {
 	TCompanyFileManageMapper tCompanyFileManageMapper;
 	@Autowired
 	TJournalMapper journalMapper;
+	@Autowired
+	TQualityCertificateMapper tQualityCertificateMapper;
+	@Autowired
+	TQualityReviewMapper tQualityReviewMapper;
 	
 	
 	/**
@@ -51,6 +59,8 @@ public class FileDownAndPrewService {
 	 * 4表示在生产厂质量体系文件审核记录里面的文件（t_quality_file_recoder）
 	 * 5表示在生产厂人员资质审查记录里面的文件（t_quality_people_recoder）
 	 * 6表示资料档案
+	 * 8表示在原材料质量证明书审核记录里面的文件（TQualityCertificate）
+	 * 9表示在原材料复验报告审核记录里面的文件（TQualityReview）
 	 * @param fileId
 	 */
 	public void download(HttpServletResponse response, HttpServletRequest request,int type,int fileId) {
@@ -87,7 +97,28 @@ public class FileDownAndPrewService {
 			proId = tFileForm.getFileFormProjectId();
 			fileName = "material_list.docx";
 			
+		}else if(type==8) {
+			TQualityCertificate fileForm = tQualityCertificateMapper.selectByPrimaryKey(fileId);
+			proId = fileForm.getProId();
+			fileName = fileForm.getPath();
+		}else if(type==9) {
+			TQualityReview review = tQualityReviewMapper.selectByPrimaryKey(fileId);
+			proId = review.getProId();
+			fileName = review.getPath();
 		}
+		
+		else if(type==10) {
+			System.out.println(fileId);
+			TFileForm tFileForm = tFileFormMapper.selectByPrimaryKey(fileId);
+			proId = tFileForm.getFileFormProjectId();
+			fileName = "checkrecord.docx";
+		}else if(type==11) {
+			System.out.println(fileId);
+			TFileForm tFileForm = tFileFormMapper.selectByPrimaryKey(fileId);
+			proId = tFileForm.getFileFormProjectId();
+			fileName = "checkreview.docx";
+		}
+		
 		if(isJournal) {
 			AutoCreateFileName.JournalFilesDownload(request, response, fileName);
 		}else {
@@ -104,6 +135,8 @@ public class FileDownAndPrewService {
 	 * 3表示在生产厂设备仪器检定审查记录里面的文件（t_quality_check_recoder）
 	 * 4表示在生产厂质量体系文件审核记录里面的文件（t_quality_file_recoder）
 	 * 5表示在生产厂人员资质审查记录里面的文件（t_quality_people_recoder）
+	 * 8表示在原材料质量证明书审核记录里面的文件（TQualityCertificate）
+	 * 9表示在原材料复验报告审核记录里面的文件（TQualityReview）
 	 * @param fileId
 	 * @return 
 	 * @throws Exception 
@@ -137,6 +170,14 @@ public class FileDownAndPrewService {
 			TCompanyFileManage recoder = tCompanyFileManageMapper.selectByPrimaryKey(fileId);
 			fileName = recoder.getPostPath();
 			proId = 0;
+		}else if(type==8) {
+			TQualityCertificate fileForm = tQualityCertificateMapper.selectByPrimaryKey(fileId);
+			proId = fileForm.getProId();
+			fileName = fileForm.getPath();
+		}else if(type==9) {
+			TQualityReview review = tQualityReviewMapper.selectByPrimaryKey(fileId);
+			proId = review.getProId();
+			fileName = review.getPath();
 		}
 		//判断文件是图片还是PDF还是其他文件
 		boolean isPicture = DecideFileType.isPicture(fileName);

@@ -410,6 +410,55 @@
 			$("#new_form_recoder5").submit();
 		});
 		
+		$('#btn_submit_file').bind('click',function() {
+			$.ajax({
+				url : '../../work/produceTQualityCertificate.ajax',
+				type : 'post',
+				dataType : 'JSON',
+				cache: false,
+				async:false,
+				data : {
+					proId : projectId 
+				},
+				error: function(XMLHttpRequest, textStatus, errorThrown) {
+		                   
+		        },
+				success : function(data) {//传过来一个json对象
+					if(data.success) {
+						alert(data.message)
+						var fileId = data.fileId;
+						$("#recordFileId").html(fileId);
+					}else {
+						alert(data.message)
+					}
+				}
+			});
+		});
+		$('#btn_submit_file1').bind('click',function() {
+			$.ajax({
+				url : '../../work/produceTQualityReview.ajax',
+				type : 'post',
+				dataType : 'JSON',
+				cache: false,
+				async:false,
+				data : {
+					proId : projectId 
+				},
+				error: function(XMLHttpRequest, textStatus, errorThrown) {
+		                   
+		        },
+				success : function(data) {//传过来一个json对象
+					if(data.success) {
+						alert(data.message)
+						var fileId = data.fileId;
+						$("#recordFileId1").html(fileId);
+					}else {
+						alert(data.message)
+					}
+				}
+			});
+		});
+		
 		
 	//第一个table
 	var fileInfoIndex = 5;
@@ -478,7 +527,7 @@
 				for (var i = 1; i < tableWorkIndex; i++) {
 					var tempDelTableworkId = "work" + (i+1);
 					var filed="未上传";
-					if(list[i].fileName !=null){
+					if(list[i].fileName){
 						filed=list[i].fileName;
 					}
 				    $str='';
@@ -536,7 +585,7 @@
 				for (var i = 1; i < tablePeopleIndex; i++) {
 					var tempDelTablepeopleId = "people" + (i+1);
 					var filed="未上传";
-					if(list[i].fileName !=null){
+					if(list[i].fileName){
 						filed=list[i].fileName;
 					}
 				    $str='';
@@ -596,7 +645,7 @@
 				for (var i = 1; i < tableEquipIndex; i++) {
 					var tempDelTableequipId = "equip" + (i+1);
 					var filed="未上传";
-					if(list[i].fileName !=null){
+					if(list[i].fileName){
 						filed=list[i].fileName;
 					}
 				    $str='';
@@ -639,12 +688,12 @@
 		var table5Index=1;
 		function init_file5(data){
 			table5Index = data.length;//注意这里需要修改，fileInfoIndex应从总的文件个数开始增加
-			var list = data.list;//这里是后台传过来的数值列表
+			var list = data.tFileForm;//这里是后台传过来的数值列表
 			if (table5Index>0) {
 				for (var i = 0; i < table5Index; i++) {
 					var tempDelTableequipId = "fileCertificate" + (i+1);
 					var filed="未上传";
-					if(list[i].fileName !=null){
+					if(list[i].fileName){
 						filed=list[i].fileName;
 					}
 				    $str='';
@@ -699,12 +748,12 @@
 		var table6Index=1;
 		function init_file6(data){
 			table6Index = data.length;//注意这里需要修改，fileInfoIndex应从总的文件个数开始增加
-			var list = data.list;//这里是后台传过来的数值列表
+			var list = data.tFileForm;//这里是后台传过来的数值列表
 			if (table6Index>=1) {
 				for (var i = 0; i < table6Index; i++) {
 					var tempDelTableequipId = "fileQualityReview" + (i+1);
 					var filed="未上传";
-					if(list[i].fileName !=null){
+					if(list[i].fileName){
 						filed=list[i].fileName;
 					}
 				    $str='';
@@ -820,6 +869,38 @@
 		var obj  = $("#" + tempTdId);
 		$(obj).parent().parent().remove();  
 	}
+	function do_download() {//下载
+		if(!$("#recordFileId").html()){
+			alert('请先生成原材料质量证明书审核记录，再进行下载！');
+			return;
+		}
+		//alert("我的类型"+7);
+		var form = $("<form>");
+	    form.attr('style', 'display:none');
+	    form.attr('id', 'temp_download_form');
+	    form.attr('target', '');
+	    form.attr('method', 'post');
+	    form.attr('action', '../../file/download.ajax?fileId='+$("#recordFileId").html()+'&type='+10);
+	    $('body').append(form);
+	    form.submit();
+	    form.remove();
+	}
+	function do_download1() {//下载
+		if(!$("#recordFileId1").html()){
+			alert('请先生成原材料复验报告审核记录，再进行下载！');
+			return;
+		}
+		//alert("我的类型"+7);
+		var form = $("<form>");
+	    form.attr('style', 'display:none');
+	    form.attr('id', 'temp_download_form1');
+	    form.attr('target', '');
+	    form.attr('method', 'post');
+	    form.attr('action', '../../file/download.ajax?fileId='+$("#recordFileId1").html()+'&type='+11);
+	    $('body').append(form);
+	    form.submit();
+	    form.remove();
+	}
 	</script>
 </head>
 
@@ -896,9 +977,13 @@
 	</table>
 	<table class="table_new">
 		<tr>
-			<td align="center" width="100%"><a id="btn_submit4" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok">确认提交</a></td>
+			<span id="recordFileId" style="display: none;"></span>
+			<td align="center" width="100%"><a id="btn_submit4" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok">确认提交</a>
+			<a id="btn_submit_file" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok">生成物资清单</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<a id="btn_down_file" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok" onclick="do_download()">下载物资清单</a>
 		</tr>
 	</table>
+	
 </form>
 <br><form id="new_form_recoder5" method="post" enctype="multipart/form-data">
 	<table class="table_view" id="tableQualityReview">
@@ -920,7 +1005,13 @@
 	</table>
 	<table class="table_new">
 		<tr>
-			<td align="center" width="100%"><a id="btn_submit5" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok">确认提交</a></td>
+			<span id="recordFileId1" style="display: none;"></span>
+			<td align="center" width="100%">
+			<a id="btn_submit5" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok">确认提交</a>
+			<a id="btn_submit_file1" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok">生成物资清单</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<a id="btn_down_file1" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok" onclick="do_download1()">下载物资清单</a>
+			</td>
+		
 		</tr>
 	</table>
 </form>
@@ -951,7 +1042,9 @@
 	</table>
 	<table class="table_new">
 		<tr>
-			<td align="center" width="100%"><a id="btn_submit1" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok">确认提交</a></td>
+			<td align="center" width="100%">
+			<a id="btn_submit1" href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-ok">确认提交</a>
+			</td>
 		</tr>
 	</table>
 </form>

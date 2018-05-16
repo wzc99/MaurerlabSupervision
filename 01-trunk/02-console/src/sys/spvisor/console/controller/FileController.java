@@ -248,6 +248,9 @@ public class FileController extends BaseController {
 	 *            3表示在生产厂设备仪器检定审查记录里面的文件（t_quality_check_recoder）
 	 *            4表示在生产厂质量体系文件审核记录里面的文件（t_quality_file_recoder）
 	 *            5表示在生产厂人员资质审查记录里面的文件（t_quality_people_recoder）
+	 *            8表示在原材料质量证明书审核记录里面的文件（TQualityCertificate）
+	 *            9表示在原材料复验报告审核记录里面的文件（TQualityReview）
+	 *            
 	 */
 	@RequestMapping("/download.ajax")
 	public void downLoad(HttpServletResponse response, HttpServletRequest request, int type, int fileId) {
@@ -255,7 +258,7 @@ public class FileController extends BaseController {
 	}
 	
 	//生成开工报审生产厂质量记录
-	@RequestMapping("/downloadTable。ajax")
+	@RequestMapping("/downloadTable.ajax")
 	public void DownloadTable(HttpServletResponse response, HttpServletRequest request,int proId,String type){
 		System.out.println("开始下载项目"+proId+"文件");
 			

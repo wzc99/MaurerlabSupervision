@@ -719,18 +719,20 @@ function init_file4(data){
 			var fileName = data.tFileForm[i].fileName;
 			var download = "下载";
 			var preview = "预览";
+			var num= i+1;
 			
 			$str='';
 	        $str+='<tr>';
+	        $str+='<td align="center" width="200px">'+ num + '</td>';
 			$str+='<td align="center" width="200px">'+ materialName + '</td>';
 			$str+='<td align="center" width="100px">' + specifications + '</td>';
 			$str+='<td align="center" width="120px"> ' + materialNum + '</td>';
 			$str+='<td align="center" width="150px"> ' + checkResult + '</td>';
 			$str+='<td align="center" width="80px"> ' + checkDate + '</td>';
-			$str+='<td align="center" width="150px"> ' +  filename + '</td>';
+			$str+='<td align="center" width="150px"> ' +  fileName + '</td>';
 			//$str+='<td align="center" width="80px"><a href="javascript:do_preview(' + data.tFileForm[i].fileFormId +','+1+ ')">'+preview+' </a> </td>';//审核状态
-			$str+='<td align="center" width="80px"><a href="../ViewPDF.html?fileurl=' + data.tFileForm[i].id + '&type='+7+'" target="_blank">'+preview+' </a> </td>';
-			$str+='<td align="center" width="80px"><a href="javascript:do_download(' + data.tFileForm[i].id +','+7+ ')">'+download+'</a></td>';//审核状态
+			$str+='<td align="center" width="80px"><a href="../ViewPDF.html?fileurl=' + data.tFileForm[i].id + '&type='+8+'" target="_blank">'+preview+' </a> </td>';
+			$str+='<td align="center" width="80px"><a href="javascript:do_download(' + data.tFileForm[i].id +','+8+ ')">'+download+'</a></td>';//审核状态
 		    $str+='</tr>';
 		    $("#projectSystemQuality").append($str);
 		}
@@ -748,19 +750,21 @@ function init_file5(data){
 			var fileName = data.tFileForm[i].fileName;
 			var download = "下载";
 			var preview = "预览";
+			var num= i+1;
 			
 			$str='';
 	        $str+='<tr>';
+	        $str+='<td align="center" width="200px">'+ num + '</td>';
 			$str+='<td align="center" width="200px">'+ materialName + '</td>';
 			$str+='<td align="center" width="100px">' + specifications + '</td>';
 			$str+='<td align="center" width="100px">' + reportName + '</td>';
 			$str+='<td align="center" width="120px"> ' + materialNum + '</td>';
 			$str+='<td align="center" width="150px"> ' + checkResult + '</td>';
 			$str+='<td align="center" width="80px"> ' + checkDate + '</td>';
-			$str+='<td align="center" width="150px"> ' +  filename + '</td>';
+			$str+='<td align="center" width="150px"> ' +  fileName + '</td>';
 			//$str+='<td align="center" width="80px"><a href="javascript:do_preview(' + data.tFileForm[i].fileFormId +','+1+ ')">'+preview+' </a> </td>';//审核状态
-			$str+='<td align="center" width="80px"><a href="../ViewPDF.html?fileurl=' + data.tFileForm[i].id + '&type='+8+'" target="_blank">'+preview+' </a> </td>';
-			$str+='<td align="center" width="80px"><a href="javascript:do_download(' + data.tFileForm[i].id +','+8+ ')">'+download+'</a></td>';//审核状态
+			$str+='<td align="center" width="80px"><a href="../ViewPDF.html?fileurl=' + data.tFileForm[i].id + '&type='+9+'" target="_blank">'+preview+' </a> </td>';
+			$str+='<td align="center" width="80px"><a href="javascript:do_download(' + data.tFileForm[i].id +','+9+ ')">'+download+'</a></td>';//审核状态
 		    $str+='</tr>';
 		    $("#projectSystemQualityReview").append($str);
 		}
@@ -1665,7 +1669,7 @@ function dateChange(ss){
 		<br>
 		<table class="table_new" id="projectSystemQuality">
 			<tr>
-				<td class="td_new_subtitle" colspan="8" ><strong>原材料质量证明书审核记录</strong></td>
+				<td class="td_new_subtitle" colspan="10" ><strong>原材料质量证明书审核记录</strong></td>
 			</tr>
 			<tr>
 				<td align="center" width="200px"><strong>序号</strong></td>
@@ -1682,7 +1686,7 @@ function dateChange(ss){
 		<br>
 		<table class="table_new" id="projectSystemQualityReview">
 			<tr>
-				<td class="td_new_subtitle" colspan="8" ><strong>原材料复验报告审核记录</strong></td>
+				<td class="td_new_subtitle" colspan="10" ><strong>原材料复验报告审核记录</strong></td>
 			</tr>
 			<tr>
 				<td align="center" width="200px"><strong>序号</strong></td>

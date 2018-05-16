@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +32,8 @@ import com.sun.star.io.IOException;
 
 import sys.spvisor.core.entity.project.TFileForm;
 import sys.spvisor.core.entity.project.TGoodsLists;
+import sys.spvisor.core.entity.work.TQualityCertificate;
+import sys.spvisor.core.entity.work.TQualityReview;
 
 public class OfficeUtils {
 
@@ -40,12 +43,6 @@ public class OfficeUtils {
 	 * @param response
 	 * @return 返回生成文件的存储地址 待协商考虑地址
 	 */
-	/*@Autowired
-	static
-	TFileFormMapper tFileFormMapper;
-	@Autowired
-	static
-	FileDownAndPrewService fileDownAndPrewService;*/
 
 	public static TFileForm createMaterialList(HttpServletRequest request, HttpServletResponse response,List<TGoodsLists> list,int proId,String userName,long userId) {
 		//String metrialListPath = FileUtils.getAndSetAbsolutePath(request, SystemConstants.materialListFilesPath,
@@ -143,9 +140,214 @@ public class OfficeUtils {
 		//AutoCreateFileName.FilesDownload(request, response,"/upload/"+proId+"/material_list.docx");
 	}
 
-	// public static int writeDailyJournalTotalProcessDate(){
-	//
-	// }
+	/**
+	 * @author admin 生成原材料质量说明书
+	 * @param request
+	 * @param response
+	 * @return 返回生成文件的存储地址 待协商考虑地址
+	 */
+
+	public static TFileForm createQualityCertificate(HttpServletRequest request, HttpServletResponse response,List<TQualityCertificate> list,int proId,String userName,long userId) {
+		//String metrialListPath = FileUtils.getAndSetAbsolutePath(request, SystemConstants.materialListFilesPath,
+				//".docx");
+		String metrialListPath = request.getSession().getServletContext().getRealPath("upload/"+proId+"/checkrecord.docx");
+		File fileDir = new File(request.getSession().getServletContext().getRealPath("upload/"+proId));
+		
+		if (!fileDir.exists()) {    fileDir.mkdirs();    }
+		System.out.print(metrialListPath);
+		String tempFilePath = FileUtils.getServerPath(request, SystemConstants.tempFilesPath).replace(File.separator + "console", File.separator)
+				+ "\\checkrecord.docx";    
+		System.out.println(tempFilePath);
+
+		// String path = System.getProperty("user.dir");
+		// System.out.println(path);
+		// String file = "/t1_material_list.docx";
+		//
+		// String tempFilePath = path + file;
+		InputStream is = null;
+		XWPFDocument doc = null;
+		try {
+			is = new FileInputStream(tempFilePath);
+			doc = new XWPFDocument(is);
+		} catch (FileNotFoundException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		} catch (java.io.IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		/*if (doc == null) {
+
+			return null;
+		}*/
+		// 获取文档中所有的表格
+		List<XWPFTable> tables = doc.getTables();
+		XWPFTable table = tables.get(0);
+
+		for (int i = 0; i < list.size(); i++) {
+			TQualityCertificate temp = list.get(i);
+			XWPFTableRow row = table.createRow();
+			row.getCell(0).setText((i + 1) + "");
+			row.getCell(1).setText(temp.getMaterialName());
+			row.getCell(2).setText(temp.getSpecifications());
+			row.getCell(3).setText(temp.getMaterialNum());
+			row.getCell(4).setText(temp.getCheckResult());
+			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+			String dateString = formatter.format(temp.getCheckDate());
+			row.getCell(5).setText(dateString);
+
+			for (XWPFTableCell cell : row.getTableCells()) {
+				cell.getParagraphs().get(0).setAlignment(ParagraphAlignment.CENTER);
+			}
+		}
+
+		FileOutputStream out;
+		try {
+			out = new FileOutputStream(metrialListPath);
+
+			doc.write(out);
+			out.close();
+
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (java.io.IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			is.close();
+		} catch (java.io.IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		//return metrialListPath.substring(metrialListPath.indexOf("console")+7);
+		TFileForm tPlanForm = new TFileForm();
+		
+		tPlanForm.setFileFormFilename("checkrecord.docx");
+		/*tPlanForm.setFileFormContent(mf.getBytes());*/
+		tPlanForm.setFileFormName("质量证明书");
+		tPlanForm.setFileFormPeople(userName);
+		tPlanForm.setFileFormUserId((int)userId);
+		tPlanForm.setFileFormDate(new Date(new java.util.Date().getTime()));
+		tPlanForm.setFileFormProjectId(proId);
+		tPlanForm.setFileFormCurrentStatus("D");
+		tPlanForm.setFileFormCurrentStatusNum(0);
+		tPlanForm.setFileFormNotpassTimes(0);
+		tPlanForm.setFileFormType("质量证明书");
+		//设置存放的服务器路径
+		tPlanForm.setFileFormPath("checkrecord.docx");
+		return tPlanForm;
+		//download(HttpServletResponse response, HttpServletRequest request,int type,int fileId)
+		//AutoCreateFileName.FilesDownload(request, response,"/upload/"+proId+"/material_list.docx");
+	}
+	
+	/**
+	 * @author admin 生成原材料审核书
+	 * @param request
+	 * @param response
+	 * @return 返回生成文件的存储地址 待协商考虑地址
+	 */
+
+	public static TFileForm createQualityReview(HttpServletRequest request, HttpServletResponse response,List<TQualityReview> list,int proId,String userName,long userId) {
+		//String metrialListPath = FileUtils.getAndSetAbsolutePath(request, SystemConstants.materialListFilesPath,
+				//".docx");
+		String metrialListPath = request.getSession().getServletContext().getRealPath("upload/"+proId+"/checkreview.docx");
+		File fileDir = new File(request.getSession().getServletContext().getRealPath("upload/"+proId));
+		
+		if (!fileDir.exists()) {    fileDir.mkdirs();    }
+		System.out.print(metrialListPath);
+		String tempFilePath = FileUtils.getServerPath(request, SystemConstants.tempFilesPath).replace(File.separator + "console", File.separator)
+				+ "\\checkreview.docx";    
+		System.out.println(tempFilePath);
+
+		// String path = System.getProperty("user.dir");
+		// System.out.println(path);
+		// String file = "/t1_material_list.docx";
+		//
+		// String tempFilePath = path + file;
+		InputStream is = null;
+		XWPFDocument doc = null;
+		try {
+			is = new FileInputStream(tempFilePath);
+			doc = new XWPFDocument(is);
+		} catch (FileNotFoundException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		} catch (java.io.IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		/*if (doc == null) {
+
+			return null;
+		}*/
+		// 获取文档中所有的表格
+		List<XWPFTable> tables = doc.getTables();
+		XWPFTable table = tables.get(0);
+
+		for (int i = 0; i < list.size(); i++) {
+			TQualityReview temp = list.get(i);
+			XWPFTableRow row = table.createRow();
+			row.getCell(0).setText((i + 1) + "");
+			row.getCell(1).setText(temp.getMaterialName());
+			row.getCell(2).setText(temp.getSpecifications());
+			row.getCell(3).setText(temp.getReportName());
+			row.getCell(4).setText(temp.getMaterialNum());
+			row.getCell(5).setText(temp.getCheckResult());
+			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+			String dateString = formatter.format(temp.getCheckDate());
+			row.getCell(6).setText(dateString);
+
+			for (XWPFTableCell cell : row.getTableCells()) {
+				cell.getParagraphs().get(0).setAlignment(ParagraphAlignment.CENTER);
+			}
+		}
+
+		FileOutputStream out;
+		try {
+			out = new FileOutputStream(metrialListPath);
+
+			doc.write(out);
+			out.close();
+
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (java.io.IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			is.close();
+		} catch (java.io.IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		//return metrialListPath.substring(metrialListPath.indexOf("console")+7);
+		TFileForm tPlanForm = new TFileForm();
+		
+		tPlanForm.setFileFormFilename("checkreview.docx");
+		/*tPlanForm.setFileFormContent(mf.getBytes());*/
+		tPlanForm.setFileFormName("质量审核书");
+		tPlanForm.setFileFormPeople(userName);
+		tPlanForm.setFileFormUserId((int)userId);
+		tPlanForm.setFileFormDate(new Date(new java.util.Date().getTime()));
+		tPlanForm.setFileFormProjectId(proId);
+		tPlanForm.setFileFormCurrentStatus("D");
+		tPlanForm.setFileFormCurrentStatusNum(0);
+		tPlanForm.setFileFormNotpassTimes(0);
+		tPlanForm.setFileFormType("质量审核书");
+		//设置存放的服务器路径
+		tPlanForm.setFileFormPath("checkreview.docx");
+		return tPlanForm;
+		//download(HttpServletResponse response, HttpServletRequest request,int type,int fileId)
+		//AutoCreateFileName.FilesDownload(request, response,"/upload/"+proId+"/material_list.docx");
+	}
 
 	/**
 	 * @Description: 跨列合并

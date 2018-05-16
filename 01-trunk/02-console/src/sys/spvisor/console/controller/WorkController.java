@@ -391,6 +391,61 @@ public class WorkController {
 		return result;
 	}
 	
+	@RequestMapping("/produceTQualityCertificate.ajax")
+	public @ResponseBody Map<String, Object> produceTQualityCertificate(HttpServletResponse response,HttpServletRequest request,HttpSession session,int proId) {
+		String username = (String) session.getAttribute("USER_NAME");
+		Long userId =  (Long) session.getAttribute("USER_ID");
+		Map<String,Object> result = new HashMap<String,Object>(2);
+		
+		//判断原来数据库里面是否有物资清单
+		List<TFileForm> originLists = fileService.selectByMsgIdAndType(proId, "质量证明书");
+		if(originLists.size() > 0) {
+			for (int i = 0; i < originLists.size(); i++) {
+				fileService.deleteByPrimaryKey(originLists.get(i).getFileFormId());
+			}
+		}
+		
+		List<TQualityCertificate> lists = workService.getTQualityCertificate(proId);
+		TFileForm form = OfficeUtils.createQualityCertificate(request,response, lists,proId,username,userId);
+		tFileFormMapper.insert(form);
+		if(form != null) {
+			result.put("success",true);
+			result.put("message", "生成原材料质量证明书审核记录成功");
+			result.put("fileId", form.getFileFormId());
+		}else {
+			result.put("success", false);
+			result.put("message", "生成原材料质量证明书审核记录失败");
+		}
+		return result;
+	}
+	@RequestMapping("/produceTQualityReview.ajax")
+	public @ResponseBody Map<String, Object> produceTQualityReview(HttpServletResponse response,HttpServletRequest request,HttpSession session,int proId) {
+		String username = (String) session.getAttribute("USER_NAME");
+		Long userId =  (Long) session.getAttribute("USER_ID");
+		Map<String,Object> result = new HashMap<String,Object>(2);
+		
+		//判断原来数据库里面是否有物资清单
+		List<TFileForm> originLists = fileService.selectByMsgIdAndType(proId, "质量审核书");
+		if(originLists.size() > 0) {
+			for (int i = 0; i < originLists.size(); i++) {
+				fileService.deleteByPrimaryKey(originLists.get(i).getFileFormId());
+			}
+		}
+		
+		List<TQualityReview> lists = workService.getTQualityReview(proId);
+		TFileForm form = OfficeUtils.createQualityReview(request,response, lists,proId,username,userId);
+		tFileFormMapper.insert(form);
+		if(form != null) {
+			result.put("success",true);
+			result.put("message", "生成原材料复验报告审核记录成功");
+			result.put("fileId", form.getFileFormId());
+		}else {
+			result.put("success", false);
+			result.put("message", "生成原材料复验报告审核记录失败");
+		}
+		return result;
+	}
+	
 	@RequestMapping("/produceGoodsFile.ajax")
 	public @ResponseBody Map<String, Object> produceGoodsFile(HttpServletResponse response,HttpServletRequest request,HttpSession session,int proId) {
 		String username = (String) session.getAttribute("USER_NAME");
@@ -410,11 +465,11 @@ public class WorkController {
 		tFileFormMapper.insert(form);
 		if(form != null) {
 			result.put("success",true);
-			result.put("message", "先生成物资清单成功");
+			result.put("message", "生成物资清单成功");
 			result.put("fileId", form.getFileFormId());
 		}else {
 			result.put("success", false);
-			result.put("message", "先生成物资清单失败");
+			result.put("message", "生成物资清单失败");
 		}
 		return result;
 	}
@@ -446,7 +501,7 @@ public class WorkController {
 		}else {
 			result.put("first", false);
 			result.put("length", lists.size());
-			result.put("list", lists);
+			result.put("tFileForm", lists);
 		}
 		return result;
 	}
@@ -461,7 +516,7 @@ public class WorkController {
 		}else {
 			result.put("first", false);
 			result.put("length", lists.size());
-			result.put("list", lists);
+			result.put("tFileForm", lists);
 		}
 		return result;
 	}
