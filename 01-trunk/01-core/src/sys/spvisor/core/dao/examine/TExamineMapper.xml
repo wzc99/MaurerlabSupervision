@@ -118,11 +118,11 @@
 		</if>
 	</delete>
 	<insert id="insert" parameterType="sys.spvisor.core.entity.examine.TExamine" useGeneratedKeys="true" keyProperty="id">
-		insert into t_examine (id, submit_id, submit_time,
+		insert into t_examine (submit_id, submit_time,
 		status, exa_type, exa_title,
 		exa_content, exa_file_flag, exa_file_path,
 		exa_link_id, exa_pro_id)
-		values (#{id,jdbcType=INTEGER}, #{submitId,jdbcType=INTEGER},
+		values (#{submitId,jdbcType=INTEGER},
 		#{submitTime,jdbcType=TIMESTAMP},
 		#{status,jdbcType=INTEGER}, #{exaType,jdbcType=INTEGER}, #{exaTitle,jdbcType=VARCHAR},
 		#{exaContent,jdbcType=VARCHAR}, #{exaFileFlag,jdbcType=INTEGER},

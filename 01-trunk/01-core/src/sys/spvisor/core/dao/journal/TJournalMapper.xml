@@ -29,7 +29,8 @@
 									and ${criterion.condition} #{criterion.value}
 								</when>
 								<when test="criterion.betweenValue">
-									and ${criterion.condition} #{criterion.value} and
+									and ${criterion.condition} #{criterion.value}
+									and
 									#{criterion.secondValue}
 								</when>
 								<when test="criterion.listValue">
@@ -61,7 +62,8 @@
 									and ${criterion.condition} #{criterion.value}
 								</when>
 								<when test="criterion.betweenValue">
-									and ${criterion.condition} #{criterion.value} and
+									and ${criterion.condition} #{criterion.value}
+									and
 									#{criterion.secondValue}
 								</when>
 								<when test="criterion.listValue">
@@ -79,7 +81,8 @@
 		</where>
 	</sql>
 	<sql id="Base_Column_List">
-		id, pid, pname, type, status, first_time, file, week, j_time, last_time,
+		id, pid, pname, type, status, first_time, file, week,
+		j_time, last_time,
 		handler,
 		year_int
 	</sql>
@@ -109,7 +112,8 @@
 		where id = #{id,jdbcType=INTEGER}
 	</select>
 	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-		delete from t_journal
+		delete from
+		t_journal
 		where id = #{id,jdbcType=INTEGER}
 	</delete>
 	<delete id="deleteByExample" parameterType="sys.spvisor.core.entity.journal.TJournalExample">
@@ -118,18 +122,27 @@
 			<include refid="Example_Where_Clause" />
 		</if>
 	</delete>
-	<insert id="insert" parameterType="sys.spvisor.core.entity.journal.TJournal">
-		insert into t_journal ( pid, pname,
+	<insert id="insert" parameterType="sys.spvisor.core.entity.journal.TJournal"
+		useGeneratedKeys="true" keyProperty="id">
+		insert into t_journal ( pid,
+		pname,
 		type, status, first_time,
 		file, week, j_time, last_time,
-		handler, year_int)
+		handler,
+		year_int)
 		values ( #{pid,jdbcType=INTEGER},
 		#{pname,jdbcType=VARCHAR},
-		#{type,jdbcType=INTEGER}, #{status,jdbcType=INTEGER}, #{firstTime,jdbcType=TIMESTAMP},
-		#{file,jdbcType=VARCHAR}, #{week,jdbcType=INTEGER},
-		#{jTime,jdbcType=DATE}, #{lastTime,jdbcType=TIMESTAMP},
-		#{handler,jdbcType=INTEGER}, #{yearInt,jdbcType=INTEGER})
+		#{type,jdbcType=INTEGER}, #{status,jdbcType=INTEGER},
+		#{firstTime,jdbcType=TIMESTAMP},
+		#{file,jdbcType=VARCHAR},
+		#{week,jdbcType=INTEGER},
+		#{jTime,jdbcType=DATE},
+		#{lastTime,jdbcType=TIMESTAMP},
+		#{handler,jdbcType=INTEGER},
+		#{yearInt,jdbcType=INTEGER})
 	</insert>
+
+
 	<insert id="insertSelective" parameterType="sys.spvisor.core.entity.journal.TJournal">
 		insert into t_journal
 		<trim prefix="(" suffix=")" suffixOverrides=",">
@@ -263,17 +276,28 @@
 	<update id="updateByExample" parameterType="map">
 		update t_journal
 		set id = #{record.id,jdbcType=INTEGER},
-		pid = #{record.pid,jdbcType=INTEGER},
-		pname = #{record.pname,jdbcType=VARCHAR},
-		type = #{record.type,jdbcType=INTEGER},
-		status = #{record.status,jdbcType=INTEGER},
-		first_time = #{record.firstTime,jdbcType=TIMESTAMP},
-		file = #{record.file,jdbcType=VARCHAR},
-		week = #{record.week,jdbcType=INTEGER},
-		j_time = #{record.jTime,jdbcType=DATE},
-		last_time = #{record.lastTime,jdbcType=TIMESTAMP},
-		handler = #{record.handler,jdbcType=INTEGER},
-		year_int = #{record.yearInt,jdbcType=INTEGER}
+		pid =
+		#{record.pid,jdbcType=INTEGER},
+		pname =
+		#{record.pname,jdbcType=VARCHAR},
+		type =
+		#{record.type,jdbcType=INTEGER},
+		status =
+		#{record.status,jdbcType=INTEGER},
+		first_time =
+		#{record.firstTime,jdbcType=TIMESTAMP},
+		file =
+		#{record.file,jdbcType=VARCHAR},
+		week =
+		#{record.week,jdbcType=INTEGER},
+		j_time =
+		#{record.jTime,jdbcType=DATE},
+		last_time =
+		#{record.lastTime,jdbcType=TIMESTAMP},
+		handler =
+		#{record.handler,jdbcType=INTEGER},
+		year_int =
+		#{record.yearInt,jdbcType=INTEGER}
 		<if test="_parameter != null">
 			<include refid="Update_By_Example_Where_Clause" />
 		</if>
@@ -324,12 +348,15 @@
 		type = #{type,jdbcType=INTEGER},
 		status = #{status,jdbcType=INTEGER},
 		first_time = #{firstTime,jdbcType=TIMESTAMP},
-		file = #{file,jdbcType=VARCHAR},
+		file =
+		#{file,jdbcType=VARCHAR},
 		week = #{week,jdbcType=INTEGER},
-		j_time = #{jTime,jdbcType=DATE},
+		j_time =
+		#{jTime,jdbcType=DATE},
 		last_time = #{lastTime,jdbcType=TIMESTAMP},
 		handler = #{handler,jdbcType=INTEGER},
-		year_int = #{yearInt,jdbcType=INTEGER}
+		year_int =
+		#{yearInt,jdbcType=INTEGER}
 		where id = #{id,jdbcType=INTEGER}
 	</update>
 </mapper>

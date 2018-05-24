@@ -2,6 +2,8 @@ package sys.spvisor.core.dao.journal;
 
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
+
+import sys.spvisor.core.entity.examine.TExamine;
 import sys.spvisor.core.entity.journal.TJournal;
 import sys.spvisor.core.entity.journal.TJournalExample;
 
@@ -27,4 +29,6 @@ public interface TJournalMapper {
     int updateByPrimaryKeySelective(TJournal record);
 
     int updateByPrimaryKey(TJournal record);
+    
+    int insertAndReturnId(TJournal record);
 }

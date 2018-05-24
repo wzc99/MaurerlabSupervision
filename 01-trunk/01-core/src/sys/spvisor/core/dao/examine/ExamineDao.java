@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import sys.spvisor.core.entity.examine.TExamine;
+import sys.spvisor.core.entity.journal.TJournal;
 
 @Component
 public class ExamineDao {
@@ -21,4 +22,9 @@ public class ExamineDao {
 		 getSqlSession().insert("sys.spvisor.core.dao.examine.TExamineMapper.insert", examine);
 		 return examine.getId();
 	}
+	
+//	public int insertAndReturnId(TJournal journal){
+//		 getSqlSession().insert("sys.spvisor.core.dao.journal.TJournalMapper.insert", journal);
+//		 return journal.getId();
+//	}
 }
