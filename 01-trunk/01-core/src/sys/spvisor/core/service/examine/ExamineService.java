@@ -100,6 +100,15 @@ public class ExamineService {
 
 	}
 
+	/**
+	 * 获取由我审核的列表 待审核状态
+	 * 
+	 * @param userId
+	 * @param pageSize
+	 * @param index
+	 *            从1开始
+	 * @return
+	 */
 	@Transactional
 	public int getExamineIdByOtherTable(int type, int linkId) {
 		int result = 0;
